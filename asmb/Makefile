@@ -1,13 +1,13 @@
-all: asma.o test.o
+all: asmb.o test.o
 
-asma.o: asma.s
+asma.o: asmb.s
 test.o: test
 
 asma.s:
-	gcc -Wall -c asma.s -o asma.o
+	gcc -Wall -c asmb.s -o asmb.o
 
 test:
-	gcc -Wall asma.o -o test test.c
+	gcc -Wall asmb.o -o test test.c
 
 clean:
-	rm -f asma.o test.o test
+	rm -f asmb.o test.o test
