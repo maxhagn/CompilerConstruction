@@ -1,13 +1,4 @@
-all: asma.o test.o
-
-asma.o: asma.s
-test.o: test
-
-asma.s:
-	gcc -Wall -c asma.s -o asma.o
-
-test:
-	gcc -Wall asma.o -o test test.c
-
+all:
+	flex --yylineno scanner.l && gcc scanner.c lex.yy.c -o scanner
 clean:
-	rm -f asma.o test.o test
+	rm -f lex.yy.c scanner
