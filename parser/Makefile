@@ -1,13 +1,4 @@
-all: asma.o test.o
-
-asma.o: asma.s
-test.o: test
-
-asma.s:
-	gcc -Wall -c asma.s -o asma.o
-
-test:
-	gcc -Wall asma.o -o test test.c
-
+all:
+	flex scanner.l && yacc -d -v parser.y && gcc lex.yy.c y.tab.c -o parser
 clean:
-	rm -f asma.o test.o test
+	rm -f lex.yy.c parser y.output y.tab.c y.tab.h
