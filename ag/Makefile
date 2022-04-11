@@ -1,13 +1,23 @@
-all: asma.o test.o
+ag: list.o y.tab.o lex.yy.o
+	gcc -g list.o y.tab.o lex.yy.o -ly -ll -o ag
 
-asma.o: asma.s
-test.o: test
+list.o: list.c list.h
+	gcc -g -c -pedantic -Wall list.c
 
-asma.s:
-	gcc -Wall -c asma.s -o asma.o
+oxout.y oxout.l: gram.y scanner.l
+	./ox gram.y scanner.l
 
-test:
-	gcc -Wall asma.o -o test test.c
+y.tab.c y.tab.h: oxout.y
+	yacc -d oxout.y
+
+lex.yy.c: oxout.l
+	lex oxout.l
+
+y.tab.o: y.tab.c
+	cc -c y.tab.c
+
+lex.yy.o: lex.yy.c y.tab.h
+	cc -c lex.yy.c
 
 clean:
-	rm -f asma.o test.o test
+	rm -f lex.yy.c y.output y.tab.c y.tab.h ag lex.yy.o list.o .oxout.l oxout.l oxout.y y.tab.o
