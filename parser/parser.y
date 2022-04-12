@@ -29,7 +29,7 @@ Program     :
             ;
 
 Def         : ID BRACKET_OPEN Pars BRACKET_CLOSE Stats END
-	    | ID CURLY_BRACKET_OPEN Pars CURLY_BRACKET_CLOSE BRACKET_OPEN Pars BRACKET_CLOSE Stats END
+	    	| ID CURLY_BRACKET_OPEN Pars CURLY_BRACKET_CLOSE BRACKET_OPEN Pars BRACKET_CLOSE Stats END
             ;
 
 Pars        : Par ID
@@ -44,8 +44,8 @@ Stats       :
             ;
 
 Labeldef    :
-	    | Labeldef ID COLON
-	    ;
+	    	| Labeldef ID COLON
+	    	;
 
 Stat        : RETURN Expr
 	    | GOTO ID
