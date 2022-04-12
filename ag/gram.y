@@ -19,8 +19,7 @@
 @attributes { char *name; int lineNr; } ID
 @attributes { node_t *pars; } Pars Par
 @attributes { node_t *labels; } Labeldef
-@attributes { node_t *in; node_t* out; } Stats
-@attributes { node_t *in; node_t* out; } Stat
+@attributes { node_t *in; node_t* out; } Stats Stat
 @attributes { node_t *ids; } Expr RepeatExpr Term AndTerm MulTerm AddTerm NotOrSub Lexpr
 
 @traversal @postorder vis
