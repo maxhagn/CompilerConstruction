@@ -1,0 +1,57 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+
+#include "tree.h"
+#include "code_generator.h"
+%}
+
+%start stat
+%term OP_RETURN=0 OP_ADDRESS_READ=1 OP_ADD=2 OP_MUL=3 OP_AND=4 OP_LESS_EQUAL=5 OP_NOT_EQUAL=6 OP_NOT=7 OP_MINUS=8 OP_NUMBER=9 OP_ID=10
+
+%%
+
+stat:   ret                             # 0 #
+
+ret:    OP_RETURN(expr)                 # 1 #   writeReturnWithValue(bnode->regStor);
+
+expr:   const                           # 1 #   writeMovev(bnode->value, bnode->regStor);
+
+expr:   OP_ADDRESS_READ(expr)           # 1 #   writeAddressRead(bnode->kids[0]->regStor, bnode->regStor);  
+
+expr:   OP_ADD(expr, expr)              # 1 #   writeAdd(bnode->kids[1]->regStor, bnode->kids[0]->regStor);
+expr:   OP_ADD(const, expr)             # 1 #   writeAddv(bnode->kids[0]->value, bnode->kids[1]->regStor); writeMove(bnode->kids[1]->regStor, bnode->regStor); 
+expr:   OP_ADD(expr, const)             # 1 #   writeAddv(bnode->kids[1]->value, bnode->kids[0]->regStor);
+
+expr:   OP_MUL(expr, expr)              # 1 #   writeMul(bnode->kids[1]->regStor, bnode->kids[0]->regStor);
+expr:   OP_MUL(const, expr)             # 1 #   writeMulv(bnode->kids[0]->value, bnode->kids[1]->regStor); writeMove(bnode->kids[1]->regStor, bnode->regStor);
+expr:   OP_MUL(expr, const)             # 1 #   writeMulv(bnode->kids[1]->value, bnode->kids[0]->regStor);
+
+
+expr:   OP_AND(expr, expr)              # 1 #   writeAnd(bnode->kids[1]->regStor, bnode->kids[0]->regStor);
+expr:   OP_AND(const, expr)             # 1 #   writeAndv(bnode->kids[0]->value, bnode->kids[1]->regStor); writeMove(bnode->kids[1]->regStor, bnode->regStor); 
+expr:   OP_AND(expr, const)             # 1 #   writeAndv(bnode->kids[1]->value, bnode->kids[0]->regStor);
+
+expr:   OP_LESS_EQUAL(expr, expr)       # 1 #   writeLessEqual(bnode->kids[1]->regStor, bnode->kids[0]->regStor, bnode->regStor); 
+expr:   OP_LESS_EQUAL(expr, const)       # 1 #   writeLessEqualFv(bnode->kids[1]->value, bnode->kids[0]->regStor, bnode->regStor);
+
+
+expr:   OP_NOT_EQUAL(expr, expr)        # 1 #   writeNotEqual(bnode->kids[1]->regStor, bnode->kids[0]->regStor, bnode->regStor);
+expr:   OP_NOT_EQUAL(const, expr)       # 1 #   writeNotEqualv(bnode->kids[0]->value, bnode->kids[1]->regStor, bnode->regStor); 
+expr:   OP_NOT_EQUAL(expr, const)       # 1 #   writeNotEqualv(bnode->kids[1]->value, bnode->kids[0]->regStor, bnode->regStor);
+
+expr:   OP_NOT(expr)                    # 1 #   writeNot(bnode->regStor); 
+expr:   OP_MINUS(expr)                  # 1 #   writeNeg(bnode->regStor); 
+expr:   OP_ID                           # 1 #   if (bnode->parameterIndex != -1) writeMove(getParameterRegister(bnode->parameterIndex), bnode->regStor);   
+
+const:  OP_NUMBER                       # 0 #
+const:  OP_ADD(const, const)            # 0 #   bnode->value = bnode->kids[0]->value + bnode->kids[1]->value;
+const:  OP_MUL(const, const)            # 0 #   bnode->value = bnode->kids[0]->value * bnode->kids[1]->value;
+const:  OP_AND(const, const)            # 0 #   bnode->value = bnode->kids[0]->value & bnode->kids[1]->value;
+const:  OP_LESS_EQUAL(const, const)     # 0 #   bnode->value = bnode->kids[0]->value <= bnode->kids[1]->value ? -1 : 0;
+const:  OP_NOT_EQUAL(const, const)      # 0 #   bnode->value = bnode->kids[0]->value != bnode->kids[1]->value ? -1 : 0;
+const:  OP_NOT(const)                   # 0 #   bnode->value = ~bnode->kids[0]->value;
+const:  OP_MINUS(const)                 # 0 #   bnode->value = -bnode->kids[0]->value;
+
+%%

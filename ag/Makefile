@@ -5,7 +5,7 @@ list.o: list.c list.h
 	gcc -g -c -pedantic -Wall list.c
 
 oxout.y oxout.l: gram.y scanner.l
-	./ox gram.y scanner.l
+	ox gram.y scanner.l
 
 y.tab.c y.tab.h: oxout.y
 	yacc -d oxout.y
