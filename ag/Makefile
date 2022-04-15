@@ -4,8 +4,8 @@ ag: list.o y.tab.o lex.yy.o
 list.o: list.c list.h
 	gcc -g -c -pedantic -Wall list.c
 
-oxout.y oxout.l: gram.y scanner.l
-	ox gram.y scanner.l
+oxout.y oxout.l: parser.y scanner.l
+	ox parser.y scanner.l
 
 y.tab.c y.tab.h: oxout.y
 	yacc -d oxout.y
