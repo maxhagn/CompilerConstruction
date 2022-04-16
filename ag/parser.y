@@ -16,7 +16,7 @@
 
 @autoinh ids
 
-@attributes { long unsigned int value; } NUM
+@attributes { long value; } NUM
 @attributes { char *name; int lineNr; } ID
 @attributes { Node *pars; } Pars Par
 @attributes { Node *labels; } Labeldef
