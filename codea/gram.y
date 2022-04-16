@@ -15,6 +15,7 @@
 %start Program
 
 @autoinh ids
+@autosyn tree
 
 @attributes { char *name; int lineNr; } ID
 @attributes { node_t *pars; } Pars Par
@@ -22,9 +23,9 @@
 @attributes { node_t *in; node_t* out; } Stats Stat
 @attributes { node_t *ids; } Expr RepeatExpr Term AndTerm MulTerm AddTerm NotOrSub Lexpr
 
+@traversal @preorder reg
+@traversal @postorder gen
 @traversal @postorder vis
-@traversal @postorder print
-
 %%
 
 Program     :
@@ -34,10 +35,12 @@ Program     :
 Def         : ID BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 			@{
                 @i @Stats.in@ = mergeThreeDev(@Pars.pars@, @Par.pars@, @Stats.out@, "Def");
+                @gen @revorder(1) writeEnterFunction(@ID.name@);
             @}
 	    	| ID CURLY_BRACKET_OPEN Pars Par CURLY_BRACKET_CLOSE BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 	   		@{
                 @i @Stats.in@ = mergeThreeDev(@Pars.pars@, @Par.pars@, @Stats.out@, "Def");
+                @gen @revorder(1) writeEnterFunction(@ID.name@);
 	    	@}
             ;
 

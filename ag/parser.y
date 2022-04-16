@@ -1,6 +1,6 @@
 %{
 
-#include "gram.h"
+#include "parser.h"
 
 %}
 
@@ -16,11 +16,12 @@
 
 @autoinh ids
 
+@attributes { long unsigned int value; } NUM
 @attributes { char *name; int lineNr; } ID
-@attributes { node_t *pars; } Pars Par
-@attributes { node_t *labels; } Labeldef
-@attributes { node_t *in; node_t* out; } Stats Stat
-@attributes { node_t *ids; } Expr RepeatExpr Term AndTerm MulTerm AddTerm NotOrSub Lexpr
+@attributes { Node *pars; } Pars Par
+@attributes { Node *labels; } Labeldef
+@attributes { Node *in; Node* out; } Stats Stat
+@attributes { Node *ids; } Expr RepeatExpr Term AndTerm MulTerm AddTerm NotOrSub Lexpr
 
 @traversal @postorder vis
 @traversal @postorder print
@@ -33,11 +34,11 @@ Program     :
 
 Def         : ID BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 			@{
-                @i @Stats.in@ = mergeThreeDev(@Pars.pars@, @Par.pars@, @Stats.out@, "Def");
+                @i @Stats.in@ = merge(merge(@Pars.pars@, @Par.pars@), @Stats.out@);
             @}
 	    	| ID CURLY_BRACKET_OPEN Pars Par CURLY_BRACKET_CLOSE BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 	   		@{
-                @i @Stats.in@ = mergeThreeDev(@Pars.pars@, @Par.pars@, @Stats.out@, "Def");
+                @i @Stats.in@ = merge(merge(@Pars.pars@, @Par.pars@), @Stats.out@);
 	    	@}
             ;
 
@@ -47,13 +48,13 @@ Pars        :
             @}
 	    	| Pars ID COMMA
 	    	@{
-	        	@i @Pars.pars@ = addDev(@Pars.1.pars@, @ID.name@, PARAMETER, @ID.lineNr@, "Pars - Pars ID");
+	        	@i @Pars.pars@ = add(@Pars.1.pars@, @ID.name@, PARAMETER, @ID.lineNr@);
 	    	@}
             ;
 
 Par         : ID
             @{
-                @i @Par.pars@ = addDev(newList(), @ID.name@, PARAMETER, @ID.lineNr@, "Par - ID");
+                @i @Par.pars@ = add(newList(), @ID.name@, PARAMETER, @ID.lineNr@);
 	    	@}
             ;
 
@@ -64,8 +65,8 @@ Stats       :
             | Labeldef Stat SEMICOLON Stats
             @{
             	@i @Stat.0.in@ = @Stats.0.in@;
-            	@i @Stats.0.out@ = mergeDev(@Labeldef.labels@,@Stats.1.out@, "dunnio");
-            	@i @Stats.1.in@ = mergeDev(@Stats.0.in@, @Stat.out@, "Stats");
+            	@i @Stats.0.out@ = merge(@Labeldef.labels@, @Stats.1.out@);
+            	@i @Stats.1.in@ = merge(@Stats.0.in@, @Stat.out@);
 	    	@}
             ;
 
@@ -75,7 +76,7 @@ Labeldef    :
 			@}
 	    	| Labeldef ID COLON
 	    	@{
-				@i @Labeldef.labels@ = addDev(@Labeldef.1.labels@, @ID.name@, LABEL, @ID.lineNr@, "Labeldef");
+				@i @Labeldef.labels@ = add(@Labeldef.1.labels@, @ID.name@, LABEL, @ID.lineNr@);
 			@}
 	    	;
 
@@ -98,7 +99,7 @@ Stat        : RETURN Expr
 			| VAR ID EQUAL Expr
 			@{
 				@i @Expr.ids@ = @Stat.in@;
-				@i @Stat.out@ = addDev(newList(), @ID.name@, VARIABLE, @ID.lineNr@, "Stat - VAR ASSIGN");
+				@i @Stat.out@ = add(newList(), @ID.name@, VARIABLE, @ID.lineNr@);
 			@}
 			| Lexpr EQUAL Expr
 			@{

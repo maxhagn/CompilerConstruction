@@ -1,8 +1,8 @@
-ag: list.o y.tab.o lex.yy.o
-	gcc -g list.o y.tab.o lex.yy.o -ly -ll -o ag
+ag: symbol_table.o y.tab.o lex.yy.o
+	gcc -g symbol_table.o y.tab.o lex.yy.o -ly -ll -o ag
 
-list.o: list.c list.h
-	gcc -g -c -pedantic -Wall list.c
+symbol_table.o: symbol_table.c symbol_table.h
+	gcc -g -c -pedantic -Wall symbol_table.c
 
 oxout.y oxout.l: parser.y scanner.l
 	ox parser.y scanner.l
@@ -20,4 +20,4 @@ lex.yy.o: lex.yy.c y.tab.h
 	cc -c lex.yy.c
 
 clean:
-	rm -f lex.yy.c y.output y.tab.c y.tab.h ag lex.yy.o list.o .oxout.l oxout.l oxout.y y.tab.o
+	rm -f lex.yy.c y.output y.tab.c y.tab.h ag lex.yy.o symbol_table.o .oxout.l oxout.l oxout.y y.tab.o

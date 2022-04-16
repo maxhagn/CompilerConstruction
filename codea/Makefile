@@ -1,11 +1,11 @@
 codea: list.o tree.o y.tab.o lex.yy.o code_generator.o codegen.o
-	gcc -g list.o y.tab.o lex.yy.o -ly -ll -o codea
+	gcc -g list.o tree.o codegen.o code_generator.o y.tab.o lex.yy.o -ly -ll -o codea
 
 codegen.o: codegen.c
 	gcc -g -c -pedantic -Wall codegen.c
 
 codegen.c: codegen.bfe
-	bfe < codegen.bfe | ./iburg > codegen.c
+	bfe < codegen.bfe | iburg > codegen.c
 
 tree.o: tree.c tree.h
 	gcc -g -c -pedantic -Wall tree.c

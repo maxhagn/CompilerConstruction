@@ -35,10 +35,12 @@ whitespace	    [\t\n ]
 ">"	            return GREATER;
 "-"		        return SUB;
 "@"		        return AT_SIGN;
+\n              { yylineno++; }
 
 {identifier}	return ID; @{ @ID.name@ = strdup(yytext); @ID.lineNr@ = yylineno; @}
-{decimal}	    return NUM;
-{hex}	        return NUM;
+{decimal}	    return NUM; @{ @NUM.value@ = strtoul(yytext, NULL, 10); @}
+{hex}	        return NUM; @{if(yytext[0] == '$'){memmove(yytext, yytext+1, strlen(yytext));}; @NUM.value@ = strtoul(yytext, NULL, 16); @}
+
 {whitespace}+	;
 {comment} 	    ;
 .		        lexicalError();
