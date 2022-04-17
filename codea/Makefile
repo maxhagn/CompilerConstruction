@@ -1,7 +1,7 @@
-GCC=gcc -std=c89
-CC=gcc -std=c89
+GCC=gcc
+CC=gcc
 
-codea: symbol_table.o tree.o y.tab.o lex.yy.o code_generator.o codegen.o
+codea: y.tab.o lex.yy.o symbol_table.o tree.o code_generator.o codegen.o
 	$(GCC) -g symbol_table.o tree.o codegen.o code_generator.o y.tab.o lex.yy.o -ly -ll -o codea
 
 codegen.o: codegen.c
@@ -23,10 +23,10 @@ oxout.y oxout.l: parser.y scanner.l
 	ox parser.y scanner.l
 
 y.tab.c y.tab.h: oxout.y
-	yacc -d oxout.y
+	yacc -vd oxout.y
 
 lex.yy.c: oxout.l
-	lex oxout.l
+	flex oxout.l
 
 y.tab.o: y.tab.c
 	$(CC) -c y.tab.c

@@ -1,6 +1,7 @@
 %{
 
 #include "parser.h"
+extern void invoke_burm(NODEPTR_TYPE root);
 
 %}
 
@@ -27,7 +28,7 @@
 @attributes { Node *ids; tree_t *tree; } Expr RepeatExpr Term AndTerm MulTerm AddTerm NotOrSub Lexpr
 
 @traversal @preorder reg
-@traversal @postorder gen
+@traversal @postorder codegen
 @traversal @postorder vis
 
 %%
@@ -39,12 +40,14 @@ Program     :
 Def         : ID BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 			@{
                 @i @Stats.in@ = merge(merge(@Pars.pars@, @Par.pars@), @Stats.out@);
-                @gen @revorder(1) writeEnterFunction(@ID.name@);
+
+                @codegen @revorder(1) writeEnterFunction(@ID.name@);
             @}
 	    	| ID CURLY_BRACKET_OPEN Pars Par CURLY_BRACKET_CLOSE BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 	   		@{
                 @i @Stats.in@ = merge(merge(@Pars.pars@, @Par.pars@), @Stats.out@);
-                @gen @revorder(1) writeEnterFunction(@ID.name@);
+
+                @codegen @revorder(1) writeEnterFunction(@ID.name@);
 	    	@}
             ;
 
@@ -74,7 +77,7 @@ Stats       :
             	@i @Stats.0.out@ = merge(@Labeldef.labels@, @Stats.1.out@);
             	@i @Stats.1.in@ = merge(@Stats.0.in@, @Stat.out@);
 
-            	@gen test(@Stat.tree@);
+            	@codegen invoke_burm(@Stat.tree@);
 	    	@}
             ;
 
@@ -275,11 +278,4 @@ int main(void)
 {
     yyparse();
     return 0;
-}
-
-void test(tree_t *tree) {
-    if(tree != NULL){
-        burm_label(tree);
-        burm_reduce(tree, 1);
-    }
 }

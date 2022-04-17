@@ -34,7 +34,7 @@ expr:   OP_AND(const, expr)             # 1 #   writeAndv(bnode->kids[0]->value,
 expr:   OP_AND(expr, const)             # 1 #   writeAndv(bnode->kids[1]->value, bnode->kids[0]->regStor);
 
 expr:   OP_LESS_EQUAL(expr, expr)       # 1 #   writeLessEqual(bnode->kids[1]->regStor, bnode->kids[0]->regStor, bnode->regStor); 
-expr:   OP_LESS_EQUAL(expr, const)       # 1 #   writeLessEqualFv(bnode->kids[1]->value, bnode->kids[0]->regStor, bnode->regStor);
+expr:   OP_LESS_EQUAL(expr, const)      # 1 #   writeLessEqualFv(bnode->kids[1]->value, bnode->kids[0]->regStor, bnode->regStor);
 
 
 expr:   OP_NOT_EQUAL(expr, expr)        # 1 #   writeNotEqual(bnode->kids[1]->regStor, bnode->kids[0]->regStor, bnode->regStor);
@@ -55,3 +55,13 @@ const:  OP_NOT(const)                   # 0 #   bnode->value = ~bnode->kids[0]->
 const:  OP_MINUS(const)                 # 0 #   bnode->value = -bnode->kids[0]->value;
 
 %%
+
+extern tree_t *root;
+extern int yyparse(void);
+void burm_reduce(NODEPTR_TYPE bnode, int goalnt);
+
+void invoke_burm(NODEPTR_TYPE root) {
+    burm_label(root);
+    burm_reduce(root, 1);
+}
+

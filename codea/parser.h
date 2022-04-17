@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "symbol_table.h"
-#include "parser.c"
 #include "tree.h"
 #include "code_generator.h"
 

@@ -29,8 +29,9 @@ typedef struct tree_t
     char *regStor;
 } tree_t;
 
-typedef tree_t *NODEPTR_TYPE;
+typedef tree_t *treenodep;
 
+#define NODEPTR_TYPE	treenodep
 #define OP_LABEL(p) ((p)->op)
 #define LEFT_CHILD(p) ((p)->kids[0])
 #define RIGHT_CHILD(p) ((p)->kids[1])
