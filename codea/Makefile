@@ -1,5 +1,5 @@
-GCC=gcc
-CC=gcc
+GCC=gcc -g
+CC=gcc -g
 
 codea: y.tab.o lex.yy.o symbol_table.o tree_grammar.o code_generator.o codegen.o
 	$(GCC) -g symbol_table.o tree_grammar.o codegen.o code_generator.o y.tab.o lex.yy.o -ly -ll -o codea

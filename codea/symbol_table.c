@@ -11,7 +11,7 @@ void checkForError(ListNode *node, char *name, short type, int lineNr) {
     return;
 }
 
-ListNode *newList() {
+ListNode *newListNode() {
     return (ListNode *) NULL;
 }
 
@@ -59,7 +59,7 @@ ListNode *add(ListNode *list, char *name, short type, int lineNr) {
 
 ListNode *merge(ListNode *head_A, ListNode *head_B) {
 
-    ListNode *mergedList = newList();
+    ListNode *mergedList = newListNode();
 
     ListNode *nextNode = head_A;
     while (nextNode != NULL) {

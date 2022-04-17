@@ -29,9 +29,8 @@ typedef struct TreeNode
     char *regStor;
 } TreeNode;
 
-typedef TreeNode *treenodep;
+typedef TreeNode *NODEPTR_TYPE;
 
-#define NODEPTR_TYPE	treenodep
 #define OP_LABEL(p)     ((p)->op)
 #define LEFT_CHILD(p)   ((p)->kids[0])
 #define RIGHT_CHILD(p)  ((p)->kids[1])
@@ -39,6 +38,6 @@ typedef TreeNode *treenodep;
 #define PANIC           printf
 
 TreeNode *newTreeNode(operators_t op, TreeNode *left, TreeNode *right);
-TreeNode *newRegisterNode(char *name, int parameterIndex);
-TreeNode *newNumberNode(long value);
+TreeNode *newRegisterTreeNode(char *name, int parameterIndex);
+TreeNode *newNumberTreeNode(long value);
 

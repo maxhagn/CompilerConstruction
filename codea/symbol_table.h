@@ -18,7 +18,7 @@ typedef struct ListNode {
 } ListNode;
 
 
-ListNode* newList();
+ListNode* newListNode();
 
 ListNode* add(ListNode*, char*, short, int);
 ListNode* addDev(ListNode*, char*, short, int, char*);
@@ -31,8 +31,9 @@ ListNode* mergeThreeDev(ListNode*, ListNode*, ListNode*, char*);
 
 ListNode* duplicate(ListNode*);
 
-bool   isEmpty(ListNode*);
+bool      isEmpty(ListNode*);
 
 void isVisible(ListNode*, char*, short, int);
 void printItems(ListNode*);
+
 int getParameterIndex(ListNode*, char*);

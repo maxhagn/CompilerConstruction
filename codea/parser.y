@@ -52,7 +52,7 @@ Def         : ID BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 
 Pars        :
 	    	@{
-                @i @Pars.pars@ = newList();
+                @i @Pars.pars@ = newListNode();
             @}
 	    	| Pars ID COMMA
 	    	@{
@@ -62,13 +62,13 @@ Pars        :
 
 Par         : ID
             @{
-                @i @Par.pars@ = add(newList(), @ID.name@, PARAMETER, @ID.lineNr@);
+                @i @Par.pars@ = add(newListNode(), @ID.name@, PARAMETER, @ID.lineNr@);
 	    	@}
             ;
 
 Stats       :
 			@{
-            	@i @Stats.out@ = newList();
+            	@i @Stats.out@ = newListNode();
 	    	@}
             | Labeldef Stat SEMICOLON Stats
             @{
@@ -82,7 +82,7 @@ Stats       :
 
 Labeldef    :
 			@{
-				@i @Labeldef.labels@ = newList();
+				@i @Labeldef.labels@ = newListNode();
 			@}
 	    	| Labeldef ID COLON
 	    	@{
@@ -93,7 +93,7 @@ Labeldef    :
 Stat        : RETURN Expr
 	    	@{
                 @i @Expr.ids@ = @Stat.in@;
-                @i @Stat.out@ = newList();
+                @i @Stat.out@ = newListNode();
 
                 @i @Stat.tree@ = newTreeNode(OP_RETURN, @Expr.tree@, NULL);
 				@reg @Stat.tree@->regStor = getFirstRegister();
@@ -101,7 +101,7 @@ Stat        : RETURN Expr
             @}
 			| GOTO ID
 			@{
-				@i @Stat.out@ = newList();
+				@i @Stat.out@ = newListNode();
 
 				@i @Stat.tree@ = NULL;
 
@@ -110,7 +110,7 @@ Stat        : RETURN Expr
 			| IF Expr GOTO ID
 			@{
 				@i @Expr.ids@ = @Stat.in@;
-				@i @Stat.out@ = newList();
+				@i @Stat.out@ = newListNode();
 
 				@i @Stat.tree@ = NULL;
 
@@ -119,7 +119,7 @@ Stat        : RETURN Expr
 			| VAR ID EQUAL Expr
 			@{
 				@i @Expr.ids@ = @Stat.in@;
-				@i @Stat.out@ = add(newList(), @ID.name@, VARIABLE, @ID.lineNr@);
+				@i @Stat.out@ = add(newListNode(), @ID.name@, VARIABLE, @ID.lineNr@);
 
 				@i @Stat.tree@ = NULL;
 			@}
@@ -127,14 +127,14 @@ Stat        : RETURN Expr
 			@{
 				@i @Expr.ids@ = @Stat.in@;
 				@i @Lexpr.ids@ = @Stat.in@;
-				@i @Stat.out@ = newList();
+				@i @Stat.out@ = newListNode();
 
 				@i @Stat.tree@ = NULL;
 			@}
 			| Term
 			@{
 				@i @Term.ids@ = @Stat.in@;
-				@i @Stat.out@ = newList();
+				@i @Stat.out@ = newListNode();
 
 				@i @Stat.tree@ = NULL;
 			@}
