@@ -1,6 +1,6 @@
 #include "symbol_table.h"
 
-void checkForError(Node *node, char *name, short type, int lineNr) {
+void checkForError(ListNode *node, char *name, short type, int lineNr) {
 
     if (strcmp(node->name, name) == 0) {
         fprintf(stderr, "Identifier '%s' on line %d conflicts with identifier on line %d\n",
@@ -11,14 +11,14 @@ void checkForError(Node *node, char *name, short type, int lineNr) {
     return;
 }
 
-Node *newList() {
-    return (Node *) NULL;
+ListNode *newList() {
+    return (ListNode *) NULL;
 }
 
-Node *add(Node *list, char *name, short type, int lineNr) {
+ListNode *add(ListNode *list, char *name, short type, int lineNr) {
 
     if (list == NULL) {
-        list = (Node *) malloc(sizeof(Node));
+        list = (ListNode *) malloc(sizeof(ListNode));
         list->name = name;
         list->type = type;
         list->lineNr = lineNr;
@@ -28,7 +28,7 @@ Node *add(Node *list, char *name, short type, int lineNr) {
 
     checkForError(list, name, type, lineNr);
 
-    Node *newNode = (Node *) malloc(sizeof(Node));
+    ListNode *newNode = (ListNode *) malloc(sizeof(ListNode));
     newNode->name = name;
     newNode->type = type;
     newNode->lineNr = lineNr;
@@ -40,7 +40,7 @@ Node *add(Node *list, char *name, short type, int lineNr) {
         return list;
     }
 
-    Node *nextNode = list->next;
+    ListNode *nextNode = list->next;
 
     while (true) {
         checkForError(nextNode, name, type, lineNr);
@@ -57,11 +57,11 @@ Node *add(Node *list, char *name, short type, int lineNr) {
     return list;
 }
 
-Node *merge(Node *head_A, Node *head_B) {
+ListNode *merge(ListNode *head_A, ListNode *head_B) {
 
-    Node *mergedList = newList();
+    ListNode *mergedList = newList();
 
-    Node *nextNode = head_A;
+    ListNode *nextNode = head_A;
     while (nextNode != NULL) {
         mergedList = add(mergedList, nextNode->name, nextNode->type, nextNode->lineNr);
         nextNode = nextNode->next;
@@ -84,9 +84,9 @@ short adjustType(short inputType) {
     return inputType;
 }
 
-void isVisible(Node *head, char *name, short type, int lineNr) {
+void isVisible(ListNode *head, char *name, short type, int lineNr) {
 
-    Node *nextNode = head;
+    ListNode *nextNode = head;
 
     while (nextNode != NULL) {
         if (adjustType(nextNode->type) == type
@@ -102,9 +102,9 @@ void isVisible(Node *head, char *name, short type, int lineNr) {
     exit(3);
 }
 
-int getParameterIndex(Node * list,  char *name) {
+int getParameterIndex(ListNode * list,  char *name) {
 
-    Node *nextNode = list;
+    ListNode *nextNode = list;
 
     int index = 0;
 

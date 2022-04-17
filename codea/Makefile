@@ -1,8 +1,8 @@
 GCC=gcc
 CC=gcc
 
-codea: y.tab.o lex.yy.o symbol_table.o tree.o code_generator.o codegen.o
-	$(GCC) -g symbol_table.o tree.o codegen.o code_generator.o y.tab.o lex.yy.o -ly -ll -o codea
+codea: y.tab.o lex.yy.o symbol_table.o tree_grammar.o code_generator.o codegen.o
+	$(GCC) -g symbol_table.o tree_grammar.o codegen.o code_generator.o y.tab.o lex.yy.o -ly -ll -o codea
 
 codegen.o: codegen.c
 	$(GCC) -g -c -pedantic -Wall codegen.c
@@ -10,8 +10,8 @@ codegen.o: codegen.c
 codegen.c: codegen.bfe
 	bfe < codegen.bfe | iburg > codegen.c
 
-tree.o: tree.c tree.h
-	$(GCC) -g -c -pedantic -Wall tree.c
+tree.o: tree_grammar.c tree_grammar.h
+	$(GCC) -g -c -pedantic -Wall tree_grammar.c
 
 code_generator.o: code_generator.c code_generator.h
 	$(GCC) -g -c -pedantic -Wall code_generator.c

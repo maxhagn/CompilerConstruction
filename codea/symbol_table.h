@@ -10,29 +10,29 @@ enum IdentifierType {
     PARAMETER = 2
 };
 
-typedef struct Node {
+typedef struct ListNode {
     char  *name;
     short  type;
     int    lineNr;
-    struct Node *next;
-} Node;
+    struct ListNode *next;
+} ListNode;
 
 
-Node* newList();
+ListNode* newList();
 
-Node* add(Node*, char*, short, int);
-Node* addDev(Node*, char*, short, int, char*);
+ListNode* add(ListNode*, char*, short, int);
+ListNode* addDev(ListNode*, char*, short, int, char*);
 
-Node* merge(Node*, Node*);
-Node* mergeDev(Node*, Node*, char*);
+ListNode* merge(ListNode*, ListNode*);
+ListNode* mergeDev(ListNode*, ListNode*, char*);
 
-Node* mergeThree(Node*, Node*, Node*);
-Node* mergeThreeDev(Node*, Node*, Node*, char*);
+ListNode* mergeThree(ListNode*, ListNode*, ListNode*);
+ListNode* mergeThreeDev(ListNode*, ListNode*, ListNode*, char*);
 
-Node* duplicate(Node*);
+ListNode* duplicate(ListNode*);
 
-bool   isEmpty(Node*);
+bool   isEmpty(ListNode*);
 
-void isVisible(Node*, char*, short, int);
-void printItems(Node*);
-int getParameterIndex(Node*, char*);
+void isVisible(ListNode*, char*, short, int);
+void printItems(ListNode*);
+int getParameterIndex(ListNode*, char*);

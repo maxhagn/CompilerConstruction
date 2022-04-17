@@ -4,7 +4,7 @@ typedef struct burm_state *STATEPTR_TYPE;
 #include <stdlib.h>
 #include <assert.h>
 
-#include "tree.h"
+#include "tree_grammar.h"
 #include "code_generator.h"
 #ifndef ALLOC
 #define ALLOC(n) malloc(n)
@@ -533,7 +533,7 @@ NODEPTR_TYPE burm_child(NODEPTR_TYPE p, int index) {
 
 #endif
 
-extern tree_t *root;
+extern TreeNode *root;
 extern int yyparse(void);
 void burm_reduce(NODEPTR_TYPE bnode, int goalnt);
 

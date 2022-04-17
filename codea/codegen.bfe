@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "tree.h"
+#include "tree_grammar.h"
 #include "code_generator.h"
 %}
 
@@ -56,7 +56,7 @@ const:  OP_MINUS(const)                 # 0 #   bnode->value = -bnode->kids[0]->
 
 %%
 
-extern tree_t *root;
+extern TreeNode *root;
 extern int yyparse(void);
 void burm_reduce(NODEPTR_TYPE bnode, int goalnt);
 

@@ -1,7 +1,6 @@
 %{
 
 #include "parser.h"
-extern void invoke_burm(NODEPTR_TYPE root);
 
 %}
 
@@ -20,12 +19,12 @@ extern void invoke_burm(NODEPTR_TYPE root);
 
 @attributes { long value; } NUM
 @attributes { char *name; int lineNr; } ID
-@attributes { Node *pars; } Pars Par
-@attributes { Node *labels; } Labeldef
-@attributes { Node *in; Node* out; } Stats
-@attributes { Node *in; Node* out; tree_t *tree; } Stat
+@attributes { ListNode *pars; } Pars Par
+@attributes { ListNode *labels; } Labeldef
+@attributes { ListNode *in; ListNode* out; } Stats
+@attributes { ListNode *in; ListNode* out; TreeNode *tree; } Stat
 
-@attributes { Node *ids; tree_t *tree; } Expr RepeatExpr Term AndTerm MulTerm AddTerm NotOrSub Lexpr
+@attributes { ListNode *ids; TreeNode *tree; } Expr RepeatExpr Term AndTerm MulTerm AddTerm NotOrSub Lexpr
 
 @traversal @preorder reg
 @traversal @postorder codegen
@@ -96,7 +95,7 @@ Stat        : RETURN Expr
                 @i @Expr.ids@ = @Stat.in@;
                 @i @Stat.out@ = newList();
 
-                @i @Stat.tree@ = createNode(OP_RETURN, @Expr.tree@, NULL);
+                @i @Stat.tree@ = newTreeNode(OP_RETURN, @Expr.tree@, NULL);
 				@reg @Stat.tree@->regStor = getFirstRegister();
 				@reg @Expr.tree@->regStor = @Stat.tree@->regStor;
             @}
@@ -149,7 +148,7 @@ Lexpr       : ID
             @}
             | Term SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
             @{
-				@i @Lexpr.tree@ = createNode(OP_AND, @Term.tree@, @Term.tree@);
+				@i @Lexpr.tree@ = newTreeNode(OP_AND, @Term.tree@, @Term.tree@);
 			@}
             ;
 
@@ -159,32 +158,32 @@ Expr        : NotOrSub
 			@}
             | Term AddTerm
             @{
-				@i @Expr.tree@ = createNode(OP_ADD, @Term.tree@, @AddTerm.tree@);
+				@i @Expr.tree@ = newTreeNode(OP_ADD, @Term.tree@, @AddTerm.tree@);
 
 				@reg @Term.tree@->regStor = @Expr.tree@->regStor;
 				@reg @AddTerm.tree@->regStor = getNextRegister(@Expr.tree@->regStor);
 			@}
             | Term MulTerm
             @{
-				@i @Expr.tree@ = createNode(OP_MUL, @Term.tree@, @MulTerm.tree@);
+				@i @Expr.tree@ = newTreeNode(OP_MUL, @Term.tree@, @MulTerm.tree@);
 				@reg @Term.tree@->regStor = @Expr.tree@->regStor;
 				@reg @MulTerm.tree@->regStor = getNextRegister(@Expr.tree@->regStor);
 			@}
             | Term AndTerm
             @{
-				@i @Expr.tree@ = createNode(OP_AND, @Term.tree@, @AndTerm.tree@);
+				@i @Expr.tree@ = newTreeNode(OP_AND, @Term.tree@, @AndTerm.tree@);
 				@reg @Term.tree@->regStor = @Expr.tree@->regStor;
 				@reg @AndTerm.tree@->regStor = getNextRegister(@Expr.tree@->regStor);
 			@}
             | Term GREATER Term
             @{
-				@i @Expr.tree@ = createNode(OP_LESS_EQUAL, @Term.0.tree@, @Term.1.tree@);
+				@i @Expr.tree@ = newTreeNode(OP_LESS_EQUAL, @Term.0.tree@, @Term.1.tree@);
 				@reg @Term.0.tree@->regStor = @Expr.tree@->regStor;
 				@reg @Term.1.tree@->regStor = getNextRegister(@Expr.tree@->regStor);
 			@}
             | Term EQUAL Term
             @{
-				@i @Expr.tree@ = createNode(OP_LESS_EQUAL, @Term.0.tree@, @Term.1.tree@);
+				@i @Expr.tree@ = newTreeNode(OP_LESS_EQUAL, @Term.0.tree@, @Term.1.tree@);
 				@reg @Term.0.tree@->regStor = @Expr.tree@->regStor;
 				@reg @Term.1.tree@->regStor = getNextRegister(@Expr.tree@->regStor);
 			@}
@@ -196,12 +195,12 @@ NotOrSub    : Term
             @}
 	    	| NOT NotOrSub
 	    	@{
-				@i @NotOrSub.0.tree@ = createNode(OP_NOT, @NotOrSub.1.tree@, NULL);
+				@i @NotOrSub.0.tree@ = newTreeNode(OP_NOT, @NotOrSub.1.tree@, NULL);
 				@reg @NotOrSub.1.tree@->regStor = @NotOrSub.0.tree@->regStor;
 			@}
             | SUB NotOrSub
             @{
-				@i @NotOrSub.0.tree@ = createNode(OP_MINUS, @NotOrSub.1.tree@, NULL);
+				@i @NotOrSub.0.tree@ = newTreeNode(OP_MINUS, @NotOrSub.1.tree@, NULL);
 				@reg @NotOrSub.1.tree@->regStor = @NotOrSub.0.tree@->regStor;
 			@}
             ;
@@ -209,7 +208,7 @@ NotOrSub    : Term
 AddTerm     : ADD Term
             | ADD Term AddTerm
             @{
-				@i @AddTerm.0.tree@ = createNode(OP_ADD, @Term.tree@, @AddTerm.1.tree@);
+				@i @AddTerm.0.tree@ = newTreeNode(OP_ADD, @Term.tree@, @AddTerm.1.tree@);
 				@reg @Term.tree@->regStor = @AddTerm.0.tree@->regStor;
 				@reg @AddTerm.1.tree@->regStor = getNextRegister(@AddTerm.0.tree@->regStor);
 			@}
@@ -218,7 +217,7 @@ AddTerm     : ADD Term
 MulTerm     : MUL Term
             | MUL Term MulTerm
             @{
-				@i @MulTerm.0.tree@ = createNode(OP_MUL, @Term.tree@, @MulTerm.1.tree@);
+				@i @MulTerm.0.tree@ = newTreeNode(OP_MUL, @Term.tree@, @MulTerm.1.tree@);
 				@reg @Term.tree@->regStor = @MulTerm.0.tree@->regStor;
 				@reg @MulTerm.1.tree@->regStor = getNextRegister(@MulTerm.0.tree@->regStor);
 			@}
@@ -227,7 +226,7 @@ MulTerm     : MUL Term
 AndTerm     : AND Term
             | AND Term AndTerm
             @{
-				@i @AndTerm.0.tree@ = createNode(OP_AND, @Term.tree@, @AndTerm.1.tree@);
+				@i @AndTerm.0.tree@ = newTreeNode(OP_AND, @Term.tree@, @AndTerm.1.tree@);
 				@reg @Term.tree@->regStor = @AndTerm.0.tree@->regStor;
 				@reg @AndTerm.1.tree@->regStor = getNextRegister(@AndTerm.0.tree@->regStor);
 			@}
@@ -236,29 +235,29 @@ AndTerm     : AND Term
 Term        : BRACKET_OPEN Expr BRACKET_CLOSE
             | NUM
             @{
-				@i @Term.tree@ = createNumericalLeaf(@NUM.value@);
+				@i @Term.tree@ = newNumberTreeNode(@NUM.value@);
 			@}
             | Term SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
             @{
-				@i @Term.tree@ = createNode(OP_AND, @Term.1.tree@, @Term.1.tree@);
+				@i @Term.tree@ = newTreeNode(OP_AND, @Term.1.tree@, @Term.1.tree@);
 			@}
             | ID
             @{
-           		@i @Term.tree@ = createIdentifierLeaf(@ID.name@, getParameterIndex(@Term.ids@, @ID.name@));
+           		@i @Term.tree@ = newRegisterTreeNode(@ID.name@, getParameterIndex(@Term.ids@, @ID.name@));
 
 				@vis isVisible(@Term.ids@, @ID.name@, VARIABLE, @ID.lineNr@);
 			@}
             | ID BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
             @{
-				@i @Term.tree@ = createIdentifierLeaf(@ID.name@, getParameterIndex(@Term.ids@, @ID.name@));
+				@i @Term.tree@ = newRegisterTreeNode(@ID.name@, getParameterIndex(@Term.ids@, @ID.name@));
 			@}
             | ID CURLY_BRACKET_OPEN RepeatExpr Expr CURLY_BRACKET_CLOSE
             @{
-				@i @Term.tree@ = createIdentifierLeaf(@ID.name@, getParameterIndex(@Term.ids@, @ID.name@));
+				@i @Term.tree@ = newRegisterTreeNode(@ID.name@, getParameterIndex(@Term.ids@, @ID.name@));
 			@}
             | Term AT_SIGN BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
             @{
-				@i @Term.tree@ = createNode(OP_AND, @Term.1.tree@, @Term.1.tree@);
+				@i @Term.tree@ = newTreeNode(OP_AND, @Term.1.tree@, @Term.1.tree@);
 			@}
             ;
 
