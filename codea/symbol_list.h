@@ -17,3 +17,4 @@ ListNode* newListNode();
 ListNode* add(ListNode*, char*, short, int);
 ListNode* merge(int arg_count,...);
 void      isVisible(ListNode*, char*, short, int);
+int       getParameterIndex(ListNode * list,  char *name);
