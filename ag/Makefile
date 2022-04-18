@@ -8,11 +8,11 @@ FLEX=flex
 ag: helper.o symbol_list.o y.tab.o lex.yy.o
 	$(CC) helper.o symbol_list.o y.tab.o lex.yy.o -ly -ll -o ag
 
-symbol_list.o: symbol_list.c symbol_list.h
-	$(CC) -c -pedantic -Wall symbol_list.c
-
 helper.o: helper.c helper.h
 	$(CC) -c -pedantic -Wall helper.c
+
+symbol_list.o: symbol_list.c symbol_list.h
+	$(CC) -c -pedantic -Wall symbol_list.c
 
 oxout.y oxout.l: parser.y scanner.l
 	$(OX) parser.y scanner.l

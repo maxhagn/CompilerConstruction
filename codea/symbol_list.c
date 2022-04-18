@@ -1,104 +1,104 @@
 #include "symbol_list.h"
 
-void checkForError(ListNode *node, char *name, short type, int lineNr) {
-
-    if (strcmp(node->name, name) == 0) {
-        fprintf(stderr, "Identifier '%s' on line %d conflicts with identifier on line %d\n",
-                name, lineNr, node->lineNr);
-        exit(3);
-    }
-
-    return;
-}
-
 ListNode *newListNode() {
     return (ListNode *) NULL;
 }
 
-ListNode *add(ListNode *list, char *name, short type, int lineNr) {
-
-    if (list == NULL) {
-        list = (ListNode *) malloc(sizeof(ListNode));
-        list->name = name;
-        list->type = type;
-        list->lineNr = lineNr;
-        list->next = NULL;
-        return list;
-    }
-
-    checkForError(list, name, type, lineNr);
+ListNode *add(ListNode *head, char *name, short type, int line) {
 
     ListNode *newNode = (ListNode *) malloc(sizeof(ListNode));
     newNode->name = name;
     newNode->type = type;
-    newNode->lineNr = lineNr;
+    newNode->line = line;
     newNode->next = NULL;
 
-    if (list->next == NULL) {
-        list->next = newNode;
-
-        return list;
+    if (head == NULL) {
+        head = newNode;
+        return head;
     }
 
-    ListNode *nextNode = list->next;
+    ListNode *nextNode = head;
+    while (nextNode != NULL) {
 
-    while (true) {
-        checkForError(nextNode, name, type, lineNr);
+        if (strcmp(nextNode->name, name) == 0) {
 
-        if (nextNode->next != NULL) {
-            nextNode = nextNode->next;
-        } else {
-            break;
+            setTerminalColorRed();
+            printf("%s: ", errorTypeToString(REDEFINITION));
+            setTerminalColorDefault();
+
+            printf("redefinition of %s '%s' \n "
+                            "%s '%s' redefined at line %d \n "
+                            "%s '%s' previously defined at line %d\n",
+                    identifierTypeToString(type), name,
+                    identifierTypeToString(type), name, line,
+                    identifierTypeToString(nextNode->type), nextNode->name, nextNode->line);
+            exit(3);
         }
+
+
+        if (nextNode->next == NULL) {
+            nextNode->next = newNode;
+            return head;
+        }
+        nextNode = nextNode->next;
     }
 
-    nextNode->next = newNode;
-
-    return list;
+    return head;
 }
 
-ListNode *merge(ListNode *head_A, ListNode *head_B) {
+ListNode *merge(int arg_count,...) {
 
+    va_list arg;
+    va_start(arg, arg_count);
     ListNode *mergedList = newListNode();
 
-    ListNode *nextNode = head_A;
-    while (nextNode != NULL) {
-        mergedList = add(mergedList, nextNode->name, nextNode->type, nextNode->lineNr);
-        nextNode = nextNode->next;
-    }
-
-    nextNode = head_B;
-    while (nextNode != NULL) {
-        mergedList = add(mergedList, nextNode->name, nextNode->type, nextNode->lineNr);
-        nextNode = nextNode->next;
+    for (int i = 0; i < arg_count; i++) {
+        ListNode *nextNode = va_arg(arg, ListNode*);
+        while (nextNode != NULL) {
+            mergedList = add(mergedList, nextNode->name, nextNode->type, nextNode->line);
+            nextNode = nextNode->next;
+        }
+        free(nextNode);
     }
 
     return mergedList;
 }
 
-short adjustType(short inputType) {
-    if (inputType == PARAMETER) {
-        return VARIABLE;
-    }
-
-    return inputType;
-}
-
-void isVisible(ListNode *head, char *name, short type, int lineNr) {
+void isVisible(ListNode *head, char *name, short type, int line) {
 
     ListNode *nextNode = head;
 
+
     while (nextNode != NULL) {
-        if (adjustType(nextNode->type) == type
-            && strcmp(nextNode->name, name) == 0) {
-            return;
+
+        if (strcmp(nextNode->name, name) == 0) {
+
+            switch (type) {
+
+                case VARIABLE:
+                    if (nextNode->type == VARIABLE || nextNode->type == PARAMETER) { return; }
+                    break;
+                case LABEL:
+                    if (nextNode->type == LABEL) { return; }
+                    break;
+                case PARAMETER:
+                    if (nextNode->type == VARIABLE || nextNode->type == PARAMETER) { return; }
+                    break;
+
+            }
         }
 
         nextNode = nextNode->next;
     }
 
-    fprintf(stderr, "Identifier with name '%s' on line %d is not visible in the current scope\n",
-            name, lineNr);
+    setTerminalColorRed();
+    printf("%s: ", errorTypeToString(UNDECLARED));
+    setTerminalColorDefault();
+
+    printf("use of undeclared %s '%s' at line %d\n",
+            identifierTypeToString(type),
+            name,
+            line);
     exit(3);
 }
 
@@ -123,4 +123,3 @@ int getParameterIndex(ListNode * list,  char *name) {
 
     return -1;
 }
-
