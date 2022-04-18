@@ -23,8 +23,7 @@
 @attributes { ListNode *in; ListNode* out; } Stats Stat
 @attributes { ListNode *ids; } Expr RepeatExpr Term AndTerm MulTerm AddTerm NotOrSub Lexpr
 
-@traversal @postorder vis
-@traversal @postorder print
+@traversal @postorder visibility
 
 %%
 
@@ -34,11 +33,11 @@ Program     :
 
 Def         : ID BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 			@{
-                @i @Stats.in@ = merge(merge(@Pars.pars@, @Par.pars@), @Stats.out@);
+                @i @Stats.in@ = merge(3, @Pars.pars@, @Par.pars@, @Stats.out@);
             @}
 	    	| ID CURLY_BRACKET_OPEN Pars Par CURLY_BRACKET_CLOSE BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 	   		@{
-                @i @Stats.in@ = merge(merge(@Pars.pars@, @Par.pars@), @Stats.out@);
+                @i @Stats.in@ = merge(5, @Pars.0.pars@, @Par.0.pars@, @Pars.1.pars@, @Par.1.pars@ ,@Stats.out@);
 	    	@}
             ;
 
@@ -64,9 +63,9 @@ Stats       :
 	    	@}
             | Labeldef Stat SEMICOLON Stats
             @{
-            	@i @Stat.0.in@ = @Stats.0.in@;
-            	@i @Stats.0.out@ = merge(@Labeldef.labels@, @Stats.1.out@);
-            	@i @Stats.1.in@ = merge(@Stats.0.in@, @Stat.out@);
+            	@i @Stat.0.in@   = @Stats.0.in@;
+            	@i @Stats.0.out@ = merge(2, @Labeldef.labels@, @Stats.1.out@);
+            	@i @Stats.1.in@  = merge(2, @Stats.0.in@, @Stat.out@);
 	    	@}
             ;
 
@@ -88,13 +87,13 @@ Stat        : RETURN Expr
 			| GOTO ID
 			@{
 				@i @Stat.out@ = newListNode();
-				@vis isVisible(@Stat.in@, @ID.name@, LABEL, @ID.line@);
+				@visibility isVisible(@Stat.in@, @ID.name@, LABEL, @ID.line@);
 			@}
 			| IF Expr GOTO ID
 			@{
 				@i @Expr.ids@ = @Stat.in@;
 				@i @Stat.out@ = newListNode();
-				@vis isVisible(@Stat.in@, @ID.name@, LABEL, @ID.line@);
+				@visibility isVisible(@Stat.in@, @ID.name@, LABEL, @ID.line@);
 			@}
 			| VAR ID EQUAL Expr
 			@{
@@ -116,7 +115,7 @@ Stat        : RETURN Expr
 
 Lexpr       : ID
 			@{
-                @vis isVisible(@Lexpr.ids@, @ID.name@, VARIABLE, @ID.line@);
+                @visibility isVisible(@Lexpr.ids@, @ID.name@, VARIABLE, @ID.line@);
             @}
             | Term SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
             ;
@@ -151,7 +150,7 @@ Term        : BRACKET_OPEN Expr BRACKET_CLOSE
             | Term SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
             | ID
             @{
-				@vis isVisible(@Term.ids@, @ID.name@, VARIABLE, @ID.line@);
+				@visibility isVisible(@Term.ids@, @ID.name@, VARIABLE, @ID.line@);
 			@}
             | ID BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
             | ID CURLY_BRACKET_OPEN RepeatExpr Expr CURLY_BRACKET_CLOSE

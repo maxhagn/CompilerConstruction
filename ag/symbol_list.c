@@ -46,20 +46,19 @@ ListNode *add(ListNode *head, char *name, short type, int line) {
     return head;
 }
 
-ListNode *merge(ListNode *head_A, ListNode *head_B) {
+ListNode *merge(int arg_count,...) {
 
+    va_list arg;
+    va_start(arg, arg_count);
     ListNode *mergedList = newListNode();
 
-    ListNode *nextNode = head_A;
-    while (nextNode != NULL) {
-        mergedList = add(mergedList, nextNode->name, nextNode->type, nextNode->line);
-        nextNode = nextNode->next;
-    }
-
-    nextNode = head_B;
-    while (nextNode != NULL) {
-        mergedList = add(mergedList, nextNode->name, nextNode->type, nextNode->line);
-        nextNode = nextNode->next;
+    for (int i = 0; i < arg_count; i++) {
+        ListNode *nextNode = va_arg(arg, ListNode*);
+        while (nextNode != NULL) {
+            mergedList = add(mergedList, nextNode->name, nextNode->type, nextNode->line);
+            nextNode = nextNode->next;
+        }
+        free(nextNode);
     }
 
     return mergedList;
@@ -101,5 +100,4 @@ void isVisible(ListNode *head, char *name, short type, int line) {
             name,
             line);
     exit(3);
-
 }

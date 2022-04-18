@@ -4,4 +4,4 @@
 #include "y.tab.h"
 #include "symbol_list.h"
 
-void lexicalError(void);
+void syntaxError(void);

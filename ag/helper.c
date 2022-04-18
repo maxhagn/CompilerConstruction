@@ -3,6 +3,10 @@
 const char* errorTypeToString(short errorType) {
 
     switch (errorType) {
+        case SYNTAX:
+            return "syntax error";
+        case PARSING:
+            return "parsing error";
         case UNDECLARED:
             return "undeclared error";
         case REDEFINITION:
@@ -30,6 +34,14 @@ const char* identifierTypeToString(short identifierType) {
 
 void setTerminalColorRed() {
     printf("\033[0;31m");
+}
+
+void setTerminalColorPurple() {
+    printf("\033[0;35m");
+}
+
+void setTerminalColorGreen() {
+    printf("\033[0;32m");
 }
 
 void setTerminalColorDefault() {

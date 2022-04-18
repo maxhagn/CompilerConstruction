@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -14,5 +15,5 @@ typedef struct ListNode {
 
 ListNode* newListNode();
 ListNode* add(ListNode*, char*, short, int);
-ListNode* merge(ListNode*, ListNode*);
-void isVisible(ListNode*, char*, short, int);
+ListNode* merge(int arg_count,...);
+void      isVisible(ListNode*, char*, short, int);

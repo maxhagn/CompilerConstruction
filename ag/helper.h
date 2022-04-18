@@ -1,8 +1,10 @@
 #include <stdio.h>
 
 enum ErrorType {
-    UNDECLARED   = 0,
-    REDEFINITION = 1
+    SYNTAX = 0,
+    PARSING = 1,
+    UNDECLARED   = 2,
+    REDEFINITION = 3
 };
 
 enum IdentifierType {
@@ -13,5 +15,7 @@ enum IdentifierType {
 
 const char* errorTypeToString(short errorType);
 const char* identifierTypeToString(short identifierType);
-void setTerminalColorRed();
-void setTerminalColorDefault();
+void        setTerminalColorRed();
+void        setTerminalColorPurple();
+void        setTerminalColorGreen();
+void        setTerminalColorDefault();

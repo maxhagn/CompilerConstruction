@@ -43,7 +43,7 @@ whitespace	    [\t\n ]
 
 {whitespace}+	;
 {comment} 	    ;
-.		        lexicalError();
+.		        syntaxError();
 
 %%
 
@@ -51,13 +51,33 @@ int yywrap(void) {
 	return 1;
 }
 
-void yyerror (char const *message)
-{
-    fprintf(stderr, "Parsing error '%s' at line %d.\n", message, yylineno);
+void yyerror (char const *message) {
+    setTerminalColorRed();
+    printf("\n%s: ", errorTypeToString(PARSING));
+    setTerminalColorDefault();
+
+    printf("use of undefined instruction sequence at line %d.\n", yylineno);
     exit(2);
 }
 
-void lexicalError(void) {
-	fprintf(stderr, "Syntax error '%s' at line %d.\n", yytext, yylineno);
+void syntaxError(void) {
+    setTerminalColorRed();
+    printf("\n%s: ", errorTypeToString(SYNTAX));
+    setTerminalColorDefault();
+
+	printf("use of undefined token '%s' at line %d.\n", yytext, yylineno);
+
+    setTerminalColorGreen();
+    printf("hint: ");
+    setTerminalColorDefault();
+
+    printf("token '%s' is not defined in this language. \n possible tokens are: \n", yytext);
+    printf("\tinstructions: end, return, goto, if, var, not, and. \n");
+    printf("\tdelimiter: ';', ':', ',', '@'. \n");
+    printf("\tbrackets: '(', ')', '{', '}', '[', ']'. \n");
+    printf("\toperators: '=', '>', '+', '-', '*' \n");
+
+
+
 	exit(1);
 }
