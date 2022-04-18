@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "symbol_table.h"
+#include "symbol_list.h"
 #include "tree_grammar.h"
 #include "code_generator.h"
 

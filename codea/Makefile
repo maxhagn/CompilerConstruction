@@ -6,22 +6,22 @@ YACC=yacc
 FLEX=flex
 
 codea: y.tab.o lex.yy.o symbol_table.o tree_grammar.o code_generator.o codegen.o
-	$(CC) -g symbol_table.o tree_grammar.o codegen.o code_generator.o y.tab.o lex.yy.o -ly -ll -o codea
+	$(CC) symbol_list.o tree_grammar.o codegen.o code_generator.o y.tab.o lex.yy.o -ly -ll -o codea
 
 codegen.o: codegen.c
-	$(CC) -g -c -pedantic -Wall codegen.c
+	$(CC) -c -pedantic -Wall codegen.c
 
 codegen.c: codegen.bfe
 	$(BFE) < codegen.bfe | $(BURG) > codegen.c
 
 tree.o: tree_grammar.c tree_grammar.h
-	$(CC) -g -c -pedantic -Wall tree_grammar.c
+	$(CC) -c -pedantic -Wall tree_grammar.c
 
 code_generator.o: code_generator.c code_generator.h
-	$(CC) -g -c -pedantic -Wall code_generator.c
+	$(CC) -c -pedantic -Wall code_generator.c
 
-symbol_table.o: symbol_table.c symbol_table.h
-	$(CC) -g -c -pedantic -Wall symbol_table.c
+symbol_table.o: symbol_list.c symbol_list.h
+	$(CC) -c -pedantic -Wall symbol_list.c
 
 oxout.y oxout.l: parser.y scanner.l
 	$(OX) parser.y scanner.l

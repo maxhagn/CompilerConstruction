@@ -2,6 +2,6 @@
 #include <string.h>
 
 #include "y.tab.h"
-#include "symbol_table.h"
+#include "symbol_list.h"
 
 void lexicalError(void);

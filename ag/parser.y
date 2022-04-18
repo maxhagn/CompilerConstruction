@@ -17,11 +17,11 @@
 @autoinh ids
 
 @attributes { long value; } NUM
-@attributes { char *name; int lineNr; } ID
-@attributes { Node *pars; } Pars Par
-@attributes { Node *labels; } Labeldef
-@attributes { Node *in; Node* out; } Stats Stat
-@attributes { Node *ids; } Expr RepeatExpr Term AndTerm MulTerm AddTerm NotOrSub Lexpr
+@attributes { char *name; int line; } ID
+@attributes { ListNode *pars; } Pars Par
+@attributes { ListNode *labels; } Labeldef
+@attributes { ListNode *in; ListNode* out; } Stats Stat
+@attributes { ListNode *ids; } Expr RepeatExpr Term AndTerm MulTerm AddTerm NotOrSub Lexpr
 
 @traversal @postorder vis
 @traversal @postorder print
@@ -44,23 +44,23 @@ Def         : ID BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 
 Pars        :
 	    	@{
-                @i @Pars.pars@ = newList();
+                @i @Pars.pars@ = newListNode();
             @}
 	    	| Pars ID COMMA
 	    	@{
-	        	@i @Pars.pars@ = add(@Pars.1.pars@, @ID.name@, PARAMETER, @ID.lineNr@);
+	        	@i @Pars.pars@ = add(@Pars.1.pars@, @ID.name@, PARAMETER, @ID.line@);
 	    	@}
             ;
 
 Par         : ID
             @{
-                @i @Par.pars@ = add(newList(), @ID.name@, PARAMETER, @ID.lineNr@);
+                @i @Par.pars@ = add(newListNode(), @ID.name@, PARAMETER, @ID.line@);
 	    	@}
             ;
 
 Stats       :
 			@{
-            	@i @Stats.out@ = newList();
+            	@i @Stats.out@ = newListNode();
 	    	@}
             | Labeldef Stat SEMICOLON Stats
             @{
@@ -72,51 +72,51 @@ Stats       :
 
 Labeldef    :
 			@{
-				@i @Labeldef.labels@ = newList();
+				@i @Labeldef.labels@ = newListNode();
 			@}
 	    	| Labeldef ID COLON
 	    	@{
-				@i @Labeldef.labels@ = add(@Labeldef.1.labels@, @ID.name@, LABEL, @ID.lineNr@);
+				@i @Labeldef.labels@ = add(@Labeldef.1.labels@, @ID.name@, LABEL, @ID.line@);
 			@}
 	    	;
 
 Stat        : RETURN Expr
 	    	@{
                 @i @Expr.ids@ = @Stat.in@;
-                @i @Stat.out@ = newList();
+                @i @Stat.out@ = newListNode();
             @}
 			| GOTO ID
 			@{
-				@i @Stat.out@ = newList();
-				@vis isVisible(@Stat.in@, @ID.name@, LABEL, @ID.lineNr@);
+				@i @Stat.out@ = newListNode();
+				@vis isVisible(@Stat.in@, @ID.name@, LABEL, @ID.line@);
 			@}
 			| IF Expr GOTO ID
 			@{
 				@i @Expr.ids@ = @Stat.in@;
-				@i @Stat.out@ = newList();
-				@vis isVisible(@Stat.in@, @ID.name@, LABEL, @ID.lineNr@);
+				@i @Stat.out@ = newListNode();
+				@vis isVisible(@Stat.in@, @ID.name@, LABEL, @ID.line@);
 			@}
 			| VAR ID EQUAL Expr
 			@{
 				@i @Expr.ids@ = @Stat.in@;
-				@i @Stat.out@ = add(newList(), @ID.name@, VARIABLE, @ID.lineNr@);
+				@i @Stat.out@ = add(newListNode(), @ID.name@, VARIABLE, @ID.line@);
 			@}
 			| Lexpr EQUAL Expr
 			@{
 				@i @Expr.ids@ = @Stat.in@;
 				@i @Lexpr.ids@ = @Stat.in@;
-				@i @Stat.out@ = newList();
+				@i @Stat.out@ = newListNode();
 			@}
 			| Term
 			@{
 				@i @Term.ids@ = @Stat.in@;
-				@i @Stat.out@ = newList();
+				@i @Stat.out@ = newListNode();
 			@}
             ;
 
 Lexpr       : ID
 			@{
-                @vis isVisible(@Lexpr.ids@, @ID.name@, VARIABLE, @ID.lineNr@);
+                @vis isVisible(@Lexpr.ids@, @ID.name@, VARIABLE, @ID.line@);
             @}
             | Term SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
             ;
@@ -151,7 +151,7 @@ Term        : BRACKET_OPEN Expr BRACKET_CLOSE
             | Term SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
             | ID
             @{
-				@vis isVisible(@Term.ids@, @ID.name@, VARIABLE, @ID.lineNr@);
+				@vis isVisible(@Term.ids@, @ID.name@, VARIABLE, @ID.line@);
 			@}
             | ID BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
             | ID CURLY_BRACKET_OPEN RepeatExpr Expr CURLY_BRACKET_CLOSE

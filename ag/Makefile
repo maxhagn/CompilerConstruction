@@ -1,23 +1,33 @@
-ag: symbol_table.o y.tab.o lex.yy.o
-	gcc -g symbol_table.o y.tab.o lex.yy.o -ly -ll -o ag
+GCC=gcc -g
+BFE=bfe
+BURG=iburg
+OX=ox
+YACC=yacc
+FLEX=flex
 
-symbol_table.o: symbol_table.c symbol_table.h
-	gcc -g -c -pedantic -Wall symbol_table.c
+ag: helper.o symbol_list.o y.tab.o lex.yy.o
+	$(CC) helper.o symbol_list.o y.tab.o lex.yy.o -ly -ll -o ag
+
+symbol_list.o: symbol_list.c symbol_list.h
+	$(CC) -c -pedantic -Wall symbol_list.c
+
+helper.o: helper.c helper.h
+	$(CC) -c -pedantic -Wall helper.c
 
 oxout.y oxout.l: parser.y scanner.l
-	ox parser.y scanner.l
+	$(OX) parser.y scanner.l
 
 y.tab.c y.tab.h: oxout.y
-	yacc -d oxout.y
+	$(YACC) -d oxout.y
 
 lex.yy.c: oxout.l
-	lex oxout.l
+	$(FLEX) oxout.l
 
 y.tab.o: y.tab.c
-	cc -c y.tab.c
+	$(CC) -c y.tab.c
 
 lex.yy.o: lex.yy.c y.tab.h
-	cc -c lex.yy.c
+	$(CC) -c lex.yy.c
 
 clean:
-	rm -f lex.yy.c y.output y.tab.c y.tab.h ag lex.yy.o symbol_table.o .oxout.l oxout.l oxout.y y.tab.o
+	rm -f lex.yy.c y.output y.tab.c y.tab.h lex.yy.o symbol_list.o helper.o .oxout.l oxout.l oxout.y y.tab.o ag
