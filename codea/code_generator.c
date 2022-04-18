@@ -63,6 +63,8 @@ void assembleFunctionLevel_2(char *name) {
     fprintf(stdout, "\t.global\t%s\n", name);
     fprintf(stdout, "\t.type\t%s, @function\n", name);
     fprintf(stdout, "%s:\n", name);
+    fprintf(stdout, "\tmovq\t8(%rsi),%r10\n");
+    fprintf(stdout, "\tmovq\t16(%rsi),%r9\n");
 }
 
 void assembleAdd(char *src, char *dst) {

@@ -42,4 +42,4 @@ codegen.c: codegen.bfe
 	$(BFE) < codegen.bfe | $(BURG) > codegen.c
 
 clean:
-	rm -f code_generator.o codea codegen.c codegen.o grammar_tree.o helper.o lex.yy.c lex.yy.o oxout.l oxout.y y.tab.c y.tab.h y.tab.o
+	rm -f code_generator.o codea codegen.c codegen.o grammar_tree.o helper.o lex.yy.c lex.yy.o oxout.l oxout.y symbol_list.o y.tab.c y.tab.h y.tab.o
