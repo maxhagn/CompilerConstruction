@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "tree_grammar.h"
+#include "grammar_tree.h"
 
 TreeNode *newTreeNode(operators_t op, TreeNode *left, TreeNode *right) {
     TreeNode *node = (TreeNode *) malloc(sizeof(TreeNode));

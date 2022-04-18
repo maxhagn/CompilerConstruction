@@ -1,6 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include "code_generator.h"
 
 char* getFirstRegister() {
     return "rax";

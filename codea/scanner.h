@@ -3,7 +3,7 @@
 
 #include "y.tab.h"
 #include "symbol_list.h"
-#include "tree_grammar.h"
+#include "grammar_tree.h"
 #include "code_generator.h"
 
 void syntaxError(void);
