@@ -8,10 +8,10 @@ typedef enum  {
     OP_ADD,
     OP_MUL,
     OP_AND,
-    OP_LESS_EQUAL,
-    OP_NOT_EQUAL,
+    OP_GREATER,
+    OP_EQUAL,
     OP_NOT,
-    OP_MINUS,
+    OP_SUB,
     OP_NUMBER,
     OP_ID
 } operators_t;

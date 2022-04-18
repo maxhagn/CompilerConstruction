@@ -53,111 +53,117 @@ char* getByteRegisterName(char* name) {
    exit(3);
 }
 
-void writeEnterFunction(char *name) {
+void assembleFunctionLevel_1(char *name) {
     fprintf(stdout, "\t.global\t%s\n", name);
     fprintf(stdout, "\t.type\t%s, @function\n", name);
     fprintf(stdout, "%s:\n", name);
 }
 
-void writeAdd(char *src, char *dst) {
+void assembleFunctionLevel_2(char *name) {
+    fprintf(stdout, "\t.global\t%s\n", name);
+    fprintf(stdout, "\t.type\t%s, @function\n", name);
+    fprintf(stdout, "%s:\n", name);
+}
+
+void assembleAdd(char *src, char *dst) {
     fprintf(stdout, "\taddq\t%%%s, %%%s\n", src, dst);
 }
 
-void writeAddv(long value, char *dst) {
+void assembleAddv(long value, char *dst) {
     fprintf(stdout, "\taddq\t$%ld, %%%s\n", value, dst);
 }
 
-void writeSub(char *src, char *dst) {
+void assembleSub(char *src, char *dst) {
     fprintf(stdout, "\tsubq\t%%%s, %%%s\n", src, dst);
 }
 
-void writeSubv(long value, char *dst) {
+void assembleSubv(long value, char *dst) {
     fprintf(stdout, "\tsubq\t$%ld, %%%s\n", value, dst);
 }
 
-void writeMul(char *src, char *dst) {
+void assembleMul(char *src, char *dst) {
     fprintf(stdout, "\timulq\t%%%s, %%%s\n", src, dst);
 }
 
-void writeMulv(long value, char *dst) {
+void assembleMulv(long value, char *dst) {
     fprintf(stdout, "\timulq\t$%ld, %%%s\n", value, dst);
 }
 
-void writeMove(char *src, char *dst) {
+void assembleMove(char *src, char *dst) {
     fprintf(stdout, "\tmovq\t%%%s, %%%s\n", src, dst);
 }
 
-void writeMovev(long value, char *dst) {
+void assembleMovev(long value, char *dst) {
     fprintf(stdout, "\tmovq\t$%ld, %%%s\n", value, dst);
 }
 
-void writeAnd(char *src, char *dst) {
+void assembleAnd(char *src, char *dst) {
     fprintf(stdout, "\tand\t%%%s, %%%s\n", src, dst);
 }
-void writeAndv(long value, char *dst) {
+void assembleAndv(long value, char *dst) {
     fprintf(stdout, "\tand\t$%ld, %%%s\n", value, dst);
 }
 
-void writeNeg(char *name){
+void assembleNeg(char *name){
     fprintf(stdout, "\tnegq\t%%%s\n", name);
 }
 
-void writeNot(char *name) {
+void assembleNot(char *name) {
     fprintf(stdout, "\tnotq\t%%%s\n", name);
 }
 
-void writeAddressRead(char *src, char *dst) {
+void assembleAddressRead(char *src, char *dst) {
     fprintf(stdout, "\tmovq\t(%%%s), %%%s\n", src, dst); 
 }
 
-void writeAddressReadv(long value, char *dst) {
+void assembleAddressReadv(long value, char *dst) {
     fprintf(stdout, "\tmovq\t($%ld), %%%s\n", value, dst); 
 }
 
-void writeNotEqual(char *first, char *second, char *dst) {
+void assembleEqual(char *first, char *second, char *dst) {
     fprintf(stdout, "\tcmp\t%%%s, %%%s\n", first, second);
     fprintf(stdout, "\tsetne\t%%%s\n", getByteRegisterName(dst));
     fprintf(stdout, "\tand\t$1, %%%s\n", dst);
-    writeNeg(dst);
+    assembleNeg(dst);
 }
 
-void writeNotEqualv(long value, char *second, char *dst) {
+void assembleEqualv(long value, char *second, char *dst) {
     fprintf(stdout, "\tcmp\t\t$%ld, %%%s\n", value, second);
     fprintf(stdout, "\tsetne\t%%%s\n", getByteRegisterName(dst));
     fprintf(stdout, "\tand\t\t$1, %%%s\n", dst);
-    writeNeg(dst);
+    assembleNeg(dst);
 }
 
-void writeLessEqual(char *first, char *second, char *dst) {
+void assembleGreater(char *first, char *second, char *dst) {
     fprintf(stdout, "\tcmp\t\t%%%s, %%%s\n", first, second);
     fprintf(stdout, "\tsetle\t%%%s\n", getByteRegisterName(dst));
     fprintf(stdout, "\tand\t\t$1, %%%s\n", dst);
-    writeNeg(dst);
+    assembleNeg(dst);
 }
 
-void writeLessEqualFv(long value, char *second, char *dst) {
+void assembleGreaterFv(long value, char *second, char *dst) {
     fprintf(stdout, "\tcmp\t\t$%ld, %%%s\n", value, second);
     fprintf(stdout, "\tsetle\t%%%s\n", getByteRegisterName(dst));
     fprintf(stdout, "\tand\t\t$1, %%%s\n", dst);
-    writeNeg(dst);
+    assembleNeg(dst);
 }
 
-void writeLessEqualSv(char *first, long value, char *dst) {
+void assembleGreaterSv(char *first, long value, char *dst) {
     fprintf(stdout, "\tcmp\t\t$%ld, %%%s\n", value, first);
     fprintf(stdout, "\tsetnle\t%%%s\n", getByteRegisterName(dst));
     fprintf(stdout, "\tand\t\t$1, %%%s\n", dst);
-    writeNeg(dst);
+    assembleNeg(dst);
 }
 
-void writeReturn() {
+void assembleReturn() {
     fprintf(stdout, "\tret\n");
 }
 
-void writeReturnWithValue(char *retRegister) {
+void assembleReturnWithValue(char *retRegister) {
     
     if (retRegister != NULL && strcmp(retRegister, "rax") != 0) {
-        writeMove(retRegister, "rax");
+        assembleMove(retRegister, "rax");
     }
 
-    writeReturn();
+    assembleReturn();
 }

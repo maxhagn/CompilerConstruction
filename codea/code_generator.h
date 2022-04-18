@@ -8,37 +8,37 @@ char* getNextRegister(char*);
 char* getParameterRegister(int);
 char* getByteRegisterName(char*);
 
-void writeEnterFunction(char*); 
+void assembleEnterFunction(char*);
 
-void writeAdd(char*, char*);
-void writeAddv(long, char*);
+void assembleAdd(char*, char*);
+void assembleAddv(long, char*);
 
-void writeSub(char*, char*);
-void writeSubv(long, char*);
+void assembleSub(char*, char*);
+void assembleSubv(long, char*);
 
-void writeMul(char*, char*);
-void writeMulv(long, char*);
+void assembleMul(char*, char*);
+void assembleMulv(long, char*);
 
-void writeMove(char*, char*);
-void writeMovev(long, char*);
+void assembleMove(char*, char*);
+void assembleMovev(long, char*);
 
-void writeAnd(char*, char*);
-void writeAndv(long, char*);
+void assembleAnd(char*, char*);
+void assembleAndv(long, char*);
 
-void writeNeg(char*);
-void writeNot(char*);
+void assembleNeg(char*);
+void assembleNot(char*);
 
-void writeAddressRead(char*, char*);
-void writeAddressReadv(long, char*);
+void assembleAddressRead(char*, char*);
+void assembleAddressReadv(long, char*);
 
-void writeNotEqual(char*, char*, char*);
-void writeNotEqualv(long, char*, char*);
+void assembleEqual(char*, char*, char*);
+void assembleEqualv(long, char*, char*);
 
-void writeLessEqual(char*, char*, char*);
-void writeLessEqualFv(long, char*, char*);
-void writeLessEqualSv(char*, long, char*);
+void assembleGreater(char*, char*, char*);
+void assembleGreaterFv(long, char*, char*);
+void assembleGreaterSv(char*, long, char*);
 
-void writeReturn();
-void writeReturnWithValue(char*);
+void assembleReturn();
+void assembleReturnWithValue(char*);
 
 

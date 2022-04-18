@@ -39,13 +39,13 @@ Def         : ID BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 			@{
                 @i @Stats.in@ = merge(3, @Pars.pars@, @Par.pars@, @Stats.out@);
 
-                @codegen @revorder(1) writeEnterFunction(@ID.name@);
+                @codegen @revorder(1) assembleFunctionLevel_1(@ID.name@);
             @}
 	    	| ID CURLY_BRACKET_OPEN Pars Par CURLY_BRACKET_CLOSE BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 	   		@{
                 @i @Stats.in@ = merge(5, @Pars.0.pars@, @Par.0.pars@, @Pars.1.pars@, @Par.1.pars@, @Stats.out@);
 
-                @codegen @revorder(1) writeEnterFunction(@ID.name@);
+                @codegen @revorder(1) assembleFunctionLevel_2(@ID.name@);
 	    	@}
             ;
 
@@ -176,13 +176,13 @@ Expr        : NotOrSub
 			@}
             | Term GREATER Term
             @{
-				@i @Expr.tree@ = newTreeNode(OP_LESS_EQUAL, @Term.0.tree@, @Term.1.tree@);
+				@i @Expr.tree@ = newTreeNode(OP_GREATER, @Term.0.tree@, @Term.1.tree@);
 				@register @Term.0.tree@->regStor = @Expr.tree@->regStor;
 				@register @Term.1.tree@->regStor = getNextRegister(@Expr.tree@->regStor);
 			@}
             | Term EQUAL Term
             @{
-				@i @Expr.tree@ = newTreeNode(OP_LESS_EQUAL, @Term.0.tree@, @Term.1.tree@);
+				@i @Expr.tree@ = newTreeNode(OP_EQUAL, @Term.0.tree@, @Term.1.tree@);
 				@register @Term.0.tree@->regStor = @Expr.tree@->regStor;
 				@register @Term.1.tree@->regStor = getNextRegister(@Expr.tree@->regStor);
 			@}
@@ -199,7 +199,7 @@ NotOrSub    : Term
 			@}
             | SUB NotOrSub
             @{
-				@i @NotOrSub.0.tree@ = newTreeNode(OP_MINUS, @NotOrSub.1.tree@, NULL);
+				@i @NotOrSub.0.tree@ = newTreeNode(OP_SUB, @NotOrSub.1.tree@, NULL);
 				@register @NotOrSub.1.tree@->regStor = @NotOrSub.0.tree@->regStor;
 			@}
             ;
