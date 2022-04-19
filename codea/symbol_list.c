@@ -27,11 +27,11 @@ ListNode *add(ListNode *head, char *name, short type, int line) {
             setTerminalColorDefault();
 
             printf("redefinition of %s '%s' \n "
-                            "%s '%s' redefined at line %d \n "
-                            "%s '%s' previously defined at line %d\n",
-                    identifierTypeToString(type), name,
-                    identifierTypeToString(type), name, line,
-                    identifierTypeToString(nextNode->type), nextNode->name, nextNode->line);
+                   "%s '%s' redefined at line %d \n "
+                   "%s '%s' previously defined at line %d\n",
+                   identifierTypeToString(type), name,
+                   identifierTypeToString(type), name, line,
+                   identifierTypeToString(nextNode->type), nextNode->name, nextNode->line);
             exit(3);
         }
 
@@ -46,14 +46,14 @@ ListNode *add(ListNode *head, char *name, short type, int line) {
     return head;
 }
 
-ListNode *merge(int arg_count,...) {
+ListNode *merge(int arg_count, ...) {
 
     va_list arg;
     va_start(arg, arg_count);
     ListNode *mergedList = newListNode();
 
     for (int i = 0; i < arg_count; i++) {
-        ListNode *nextNode = va_arg(arg, ListNode*);
+        ListNode *nextNode = va_arg(arg, ListNode * );
         while (nextNode != NULL) {
             mergedList = add(mergedList, nextNode->name, nextNode->type, nextNode->line);
             nextNode = nextNode->next;
@@ -68,7 +68,6 @@ void isVisible(ListNode *head, char *name, short type, int line) {
 
     ListNode *nextNode = head;
 
-
     while (nextNode != NULL) {
 
         if (strcmp(nextNode->name, name) == 0) {
@@ -76,13 +75,19 @@ void isVisible(ListNode *head, char *name, short type, int line) {
             switch (type) {
 
                 case VARIABLE:
-                    if (nextNode->type == VARIABLE || nextNode->type == PARAMETER) { return; }
+                    if (nextNode->type == VARIABLE || nextNode->type == PARAMETER ||
+                        nextNode->type == PARAMETER_POINTER) { return; }
                     break;
                 case LABEL:
                     if (nextNode->type == LABEL) { return; }
                     break;
                 case PARAMETER:
-                    if (nextNode->type == VARIABLE || nextNode->type == PARAMETER) { return; }
+                    if (nextNode->type == VARIABLE || nextNode->type == PARAMETER ||
+                        nextNode->type == PARAMETER_POINTER) { return; }
+                    break;
+                case PARAMETER_POINTER:
+                    if (nextNode->type == VARIABLE || nextNode->type == PARAMETER ||
+                        nextNode->type == PARAMETER_POINTER) { return; }
                     break;
 
             }
@@ -96,27 +101,68 @@ void isVisible(ListNode *head, char *name, short type, int line) {
     setTerminalColorDefault();
 
     printf("use of undeclared %s '%s' at line %d\n",
-            identifierTypeToString(type),
-            name,
-            line);
+           identifierTypeToString(type),
+           name,
+           line);
     exit(3);
 }
 
-int getParameterIndex(ListNode * list,  char *name) {
+short getType(ListNode *list, char *name) {
+    ListNode *nextNode = list;
+    while (nextNode != NULL) {
+        if (strcmp(nextNode->name, name) == 0) {
+            if (nextNode->type == PARAMETER) {
+                return PARAMETER;
+            } else if (nextNode->type == PARAMETER_POINTER) {
+                return PARAMETER_POINTER;
+            }
+        }
+        nextNode = nextNode->next;
+    }
+    return -1;
+}
+
+int getOffset(ListNode *list, char *name) {
+    ListNode *nextNode = list;
+    int offset = 8;
+    while (nextNode != NULL) {
+
+        if (strcmp(nextNode->name, name) == 0) {
+            if (nextNode->type == PARAMETER_POINTER) {
+                if (strcmp(nextNode->name, name) == 0) {
+                    return offset;
+                }
+            }
+        }
+
+        if (nextNode->type == PARAMETER_POINTER) {
+            offset += 8;
+        }
+        nextNode = nextNode->next;
+    }
+    return 0;
+}
+
+int getIndex(ListNode *list, char *name) {
 
     ListNode *nextNode = list;
-
     int index = 0;
+    short type = getType(list, name);
 
     while (nextNode != NULL) {
-        if (nextNode->type == PARAMETER) {
 
+        if (type == PARAMETER_POINTER && nextNode->type == PARAMETER_POINTER) {
+            return index;
+        } else if (type == PARAMETER && nextNode->type == PARAMETER) {
             if (strcmp(nextNode->name, name) == 0) {
                 return index;
             }
+        }
 
+        if (nextNode->type == PARAMETER || nextNode->type == PARAMETER_POINTER) {
             index++;
         }
+
 
         nextNode = nextNode->next;
     }

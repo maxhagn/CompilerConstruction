@@ -43,7 +43,7 @@ expr:   OP_EQUAL(expr, const)           # 1 #   assembleEqualv(bnode->kids[1]->v
 
 expr:   OP_NOT(expr)                    # 1 #   assembleNot(bnode->regStor);
 expr:   OP_SUB(expr)                    # 1 #   assembleNeg(bnode->regStor);
-expr:   OP_ID                           # 1 #   if (bnode->parameterIndex != -1) assembleMove(getParameterRegister(bnode->parameterIndex), bnode->regStor);
+expr:   OP_ID                           # 1 #   if (bnode->parameterIndex != -1) assembleMove(getParameterRegister(bnode->parameterIndex, bnode->offset), bnode->regStor);
 
 const:  OP_NUMBER                       # 0 #
 const:  OP_ADD(const, const)            # 0 #   bnode->value = bnode->kids[0]->value + bnode->kids[1]->value;

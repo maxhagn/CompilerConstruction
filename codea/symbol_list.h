@@ -17,4 +17,6 @@ ListNode* newListNode();
 ListNode* add(ListNode*, char*, short, int);
 ListNode* merge(int arg_count,...);
 void      isVisible(ListNode*, char*, short, int);
-int       getParameterIndex(ListNode * list,  char *name);
+short     getType(ListNode* list,  char *name);
+int       getOffset(ListNode* list,  char *name);
+int       getIndex(ListNode* list,  char *name);

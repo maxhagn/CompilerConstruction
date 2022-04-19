@@ -25,6 +25,7 @@ typedef struct TreeNode
     char *identifierName;
     long value;
 
+    int offset;
     int parameterIndex;
     char *regStor;
 } TreeNode;
@@ -38,6 +39,6 @@ typedef TreeNode *NODEPTR_TYPE;
 #define PANIC           printf
 
 TreeNode *newTreeNode(operators_t op, TreeNode *left, TreeNode *right);
-TreeNode *newRegisterTreeNode(char *name, int parameterIndex);
+TreeNode *newRegisterTreeNode(char *name, int parameterIndex, int offset);
 TreeNode *newNumberTreeNode(long value);
 

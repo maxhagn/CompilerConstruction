@@ -10,7 +10,8 @@ enum ErrorType {
 enum IdentifierType {
     VARIABLE  = 0,
     LABEL     = 1,
-    PARAMETER = 2
+    PARAMETER = 2,
+    PARAMETER_POINTER = 3
 };
 
 const char* errorTypeToString(short errorType);

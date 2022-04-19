@@ -1,4 +1,4 @@
-GCC=gcc -g
+CC=gcc -g -w
 BFE=bfe
 BURG=iburg
 OX=ox

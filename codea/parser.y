@@ -19,7 +19,7 @@
 
 @attributes { long value; } NUM
 @attributes { char *name; int line; } ID
-@attributes { ListNode *pars; } Pars Par
+@attributes { ListNode *pars; } Pars Par ParsPointer ParPointer
 @attributes { ListNode *labels; } Labeldef
 @attributes { ListNode *in; ListNode* out; } Stats
 @attributes { ListNode *in; ListNode* out; TreeNode *tree; } Stat
@@ -39,13 +39,13 @@ Def         : ID BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 			@{
                 @i @Stats.in@ = merge(3, @Pars.pars@, @Par.pars@, @Stats.out@);
 
-                @codegen @revorder(1) assembleFunctionLevel_1(@ID.name@);
+                @codegen @revorder(1) assembleFunction(@ID.name@);
             @}
-	    	| ID CURLY_BRACKET_OPEN Pars Par CURLY_BRACKET_CLOSE BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
+	    	| ID CURLY_BRACKET_OPEN ParsPointer ParPointer CURLY_BRACKET_CLOSE BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 	   		@{
-                @i @Stats.in@ = merge(5, @Pars.0.pars@, @Par.0.pars@, @Pars.1.pars@, @Par.1.pars@, @Stats.out@);
+                @i @Stats.in@ = merge(5, @Pars.pars@, @Par.pars@, @ParsPointer.pars@, @ParPointer.pars@, @Stats.out@);
 
-                @codegen @revorder(1) assembleFunctionLevel_2(@ID.name@);
+                @codegen @revorder(1) assembleFunction(@ID.name@);
 	    	@}
             ;
 
@@ -62,6 +62,22 @@ Pars        :
 Par         : ID
             @{
                 @i @Par.pars@ = add(newListNode(), @ID.name@, PARAMETER, @ID.line@);
+	    	@}
+            ;
+
+ParsPointer :
+	    	@{
+                @i @ParsPointer.pars@ = newListNode();
+            @}
+	    	| ParsPointer ID COMMA
+	    	@{
+	        	@i @ParsPointer.pars@ = add(@ParsPointer.1.pars@, @ID.name@, PARAMETER_POINTER, @ID.line@);
+	    	@}
+            ;
+
+ParPointer  : ID
+            @{
+                @i @ParPointer.pars@ = add(newListNode(), @ID.name@, PARAMETER_POINTER, @ID.line@);
 	    	@}
             ;
 
@@ -242,17 +258,17 @@ Term        : BRACKET_OPEN Expr BRACKET_CLOSE
 			@}
             | ID
             @{
-           		@i @Term.tree@ = newRegisterTreeNode(@ID.name@, getParameterIndex(@Term.ids@, @ID.name@));
+           		@i @Term.tree@ = newRegisterTreeNode(@ID.name@, getIndex(@Term.ids@, @ID.name@), getOffset(@Term.ids@, @ID.name@));
 
 				@visibility isVisible(@Term.ids@, @ID.name@, VARIABLE, @ID.line@);
 			@}
             | ID BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
             @{
-				@i @Term.tree@ = newRegisterTreeNode(@ID.name@, getParameterIndex(@Term.ids@, @ID.name@));
+				@i @Term.tree@ = newRegisterTreeNode(@ID.name@, getIndex(@Term.ids@, @ID.name@), getOffset(@Term.ids@, @ID.name@));
 			@}
             | ID CURLY_BRACKET_OPEN RepeatExpr Expr CURLY_BRACKET_CLOSE
             @{
-				@i @Term.tree@ = newRegisterTreeNode(@ID.name@, getParameterIndex(@Term.ids@, @ID.name@));
+				@i @Term.tree@ = newRegisterTreeNode(@ID.name@, getIndex(@Term.ids@, @ID.name@), getOffset(@Term.ids@, @ID.name@));
 			@}
             | Term AT_SIGN BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
             @{

@@ -14,12 +14,13 @@ TreeNode *newTreeNode(operators_t op, TreeNode *left, TreeNode *right) {
     return node;
 }
 
-TreeNode *newRegisterTreeNode(char *name, int parameterIndex) {
+TreeNode *newRegisterTreeNode(char *name, int parameterIndex, int offset) {
     TreeNode *node = (TreeNode *) malloc(sizeof(TreeNode));
 
     node->op = OP_ID;
     node->kids[0] = (TreeNode *) NULL;
     node->kids[1] = (TreeNode *) NULL;
+    node->offset = offset;
     node->identifierName = name;
     node->parameterIndex = parameterIndex;
 

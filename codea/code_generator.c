@@ -1,20 +1,20 @@
 #include "code_generator.h"
 
-char* getFirstRegister() {
+char *getFirstRegister() {
     return "rax";
 }
 
-char* getNextRegister(char* lastRegister) {
+char *getNextRegister(char *lastRegister) {
 
     if (lastRegister == NULL) {
         return "rax";
     }
-    
-    char *registers[] = { "rax", "r11", "r10", "r9", "r8", "rcx", "rdx", "rsi", "rdi" };
+
+    char *registers[] = {"rax", "r11", "r10", "r9", "r8", "rcx", "rdx", "rsi", "rdi"};
 
     for (int i = 0; i < 8; i++) {
         if (strcmp(registers[i], lastRegister) == 0) {
-            return registers[i+1];
+            return registers[i + 1];
         }
     }
 
@@ -22,49 +22,65 @@ char* getNextRegister(char* lastRegister) {
     exit(3);
 }
 
-char* getParameterRegister(int index) {     
-    char *registers[] = { "rdi", "rsi", "rdx", "rcx", "r8", "r9" };
-
-    if (index >= 0 && index <= 5) {
-        return registers[index];
-    }
-
-    fprintf(stderr, "Invalid register index specified for getParameterRegister: %i\n", index);
-    exit(3);
+int get_int_len (int value){
+    int l=1;
+    while(value>9){ l++; value/=10; }
+    return l;
 }
 
-char* getByteRegisterName(char* name) {
-   
+char *getParameterRegister(int index, int offset) {
+    char *registers[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
+    char *registerString;
+    registerString = (char*) malloc(4*sizeof(char));
+
+    if (index < 0 || index > 5) {
+        fprintf(stderr, "Invalid register index specified for getParameterRegister: %i\n", index);
+        exit(3);
+    }
+
+    assert(offset % 8 == 0);
+    if (offset >= 8) {
+        int digits = get_int_len(offset);
+        registerString = (char*) realloc(registerString,(strlen(registerString)+digits+1)*sizeof(char));
+        sprintf(registerString, "%d(", offset);
+    }
+
+    registerString = (char*) realloc(registerString,(strlen(registerString)+4)*sizeof(char));
+    strcat(registerString,"%");
+    strcat(registerString,registers[index]);
+
+    if (offset >= 8) {
+        registerString = (char*) realloc(registerString,(strlen(registerString)+1)*sizeof(char));
+        strcat(registerString,")");
+    }
+
+    return registerString;
+}
+
+char *getByteRegisterName(char *name) {
+
     if (name == NULL) {
         return "al";
     }
-    
-   char *registers[] = { "rax", "r11", "r10", "r9", "r8", "rcx", "rdx", "rsi", "rdi" };
-   char *byteRegisters[] = { "al", "r11b", "r10b", "r9b", "r8b", "cl", "dl", "sil", "dil"  };
+
+    char *registers[] = {"rax", "r11", "r10", "r9", "r8", "rcx", "rdx", "rsi", "rdi"};
+    char *byteRegisters[] = {"al", "r11b", "r10b", "r9b", "r8b", "cl", "dl", "sil", "dil"};
 
 
-   for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 8; i++) {
         if (strcmp(registers[i], name) == 0) {
             return byteRegisters[i];
         }
-   }
+    }
 
-   fprintf(stderr, "Byte register not found for: '%s'", name);
-   exit(3);
+    fprintf(stderr, "Byte register not found for: '%s'", name);
+    exit(3);
 }
 
-void assembleFunctionLevel_1(char *name) {
+void assembleFunction(char *name) {
     fprintf(stdout, "\t.global\t%s\n", name);
     fprintf(stdout, "\t.type\t%s, @function\n", name);
     fprintf(stdout, "%s:\n", name);
-}
-
-void assembleFunctionLevel_2(char *name) {
-    fprintf(stdout, "\t.global\t%s\n", name);
-    fprintf(stdout, "\t.type\t%s, @function\n", name);
-    fprintf(stdout, "%s:\n", name);
-    fprintf(stdout, "\tmovq\t8(%rsi),%r10\n");
-    fprintf(stdout, "\tmovq\t16(%rsi),%r9\n");
 }
 
 void assembleAdd(char *src, char *dst) {
@@ -92,7 +108,7 @@ void assembleMulv(long value, char *dst) {
 }
 
 void assembleMove(char *src, char *dst) {
-    fprintf(stdout, "\tmovq\t%%%s, %%%s\n", src, dst);
+    fprintf(stdout, "\tmovq\t%s, %%%s\n", src, dst);
 }
 
 void assembleMovev(long value, char *dst) {
@@ -102,11 +118,12 @@ void assembleMovev(long value, char *dst) {
 void assembleAnd(char *src, char *dst) {
     fprintf(stdout, "\tand\t%%%s, %%%s\n", src, dst);
 }
+
 void assembleAndv(long value, char *dst) {
     fprintf(stdout, "\tand\t$%ld, %%%s\n", value, dst);
 }
 
-void assembleNeg(char *name){
+void assembleNeg(char *name) {
     fprintf(stdout, "\tnegq\t%%%s\n", name);
 }
 
@@ -115,11 +132,11 @@ void assembleNot(char *name) {
 }
 
 void assembleAddressRead(char *src, char *dst) {
-    fprintf(stdout, "\tmovq\t(%%%s), %%%s\n", src, dst); 
+    fprintf(stdout, "\tmovq\t(%%%s), %%%s\n", src, dst);
 }
 
 void assembleAddressReadv(long value, char *dst) {
-    fprintf(stdout, "\tmovq\t($%ld), %%%s\n", value, dst); 
+    fprintf(stdout, "\tmovq\t($%ld), %%%s\n", value, dst);
 }
 
 void assembleEqual(char *first, char *second, char *dst) {
@@ -162,7 +179,7 @@ void assembleReturn() {
 }
 
 void assembleReturnWithValue(char *retRegister) {
-    
+
     if (retRegister != NULL && strcmp(retRegister, "rax") != 0) {
         assembleMove(retRegister, "rax");
     }

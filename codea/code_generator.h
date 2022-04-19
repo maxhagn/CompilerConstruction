@@ -1,14 +1,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <assert.h>
+#include <math.h>
 
 char* getFirstRegister();
 char* getNextRegister(char*);
-char* getParameterRegister(int);
+char* getParameterRegister(int, int);
 char* getByteRegisterName(char*);
 
-void assembleEnterFunction(char*);
+void assembleFunction(char*);
 
 void assembleAdd(char*, char*);
 void assembleAddv(long, char*);
