@@ -4,16 +4,16 @@ typedef struct burm_state *STATEPTR_TYPE;
 
 typedef enum  {
     OP_RETURN = 0,
-    OP_ADDRESS_READ,
-    OP_ADD,
-    OP_MUL,
-    OP_AND,
-    OP_GREATER,
-    OP_EQUAL,
-    OP_NOT,
-    OP_SUB,
-    OP_NUMBER,
-    OP_ID
+    OP_ADDRESS_READ = 1,
+    OP_ADD = 2,
+    OP_MUL = 3,
+    OP_AND = 4,
+    OP_GREATER = 5,
+    OP_EQUAL = 6,
+    OP_NOT = 7,
+    OP_SUB = 8,
+    OP_NUMBER = 9,
+    OP_ID = 10
 } operators_t;
 
 typedef struct TreeNode
@@ -22,12 +22,13 @@ typedef struct TreeNode
     struct TreeNode *kids[2];
     STATEPTR_TYPE state;
 
-    char *identifierName;
+    char *name;
     long value;
 
     int offset;
-    int parameterIndex;
-    char *regStor;
+    int index;
+
+    char *reg;
 } TreeNode;
 
 typedef TreeNode *NODEPTR_TYPE;
@@ -39,6 +40,5 @@ typedef TreeNode *NODEPTR_TYPE;
 #define PANIC           printf
 
 TreeNode *newTreeNode(operators_t op, TreeNode *left, TreeNode *right);
-TreeNode *newRegisterTreeNode(char *name, int parameterIndex, int offset);
+TreeNode *newRegisterTreeNode(char *name, int index, int offset);
 TreeNode *newNumberTreeNode(long value);
-

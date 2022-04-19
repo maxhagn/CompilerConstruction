@@ -8,21 +8,21 @@ TreeNode *newTreeNode(operators_t op, TreeNode *left, TreeNode *right) {
 
     node->op = op;
     node->kids[0] = left;
-    node->kids[1] = right;    
-    node->identifierName = (char *) NULL;
+    node->kids[1] = right;
+    node->name = (char *) NULL;
 
     return node;
 }
 
-TreeNode *newRegisterTreeNode(char *name, int parameterIndex, int offset) {
+TreeNode *newRegisterTreeNode(char *name, int index, int offset) {
     TreeNode *node = (TreeNode *) malloc(sizeof(TreeNode));
 
     node->op = OP_ID;
     node->kids[0] = (TreeNode *) NULL;
     node->kids[1] = (TreeNode *) NULL;
     node->offset = offset;
-    node->identifierName = name;
-    node->parameterIndex = parameterIndex;
+    node->name = name;
+    node->index = index;
 
     return node;
 }

@@ -111,8 +111,8 @@ Stat        : RETURN Expr
                 @i @Stat.out@ = newListNode();
 
                 @i @Stat.tree@ = newTreeNode(OP_RETURN, @Expr.tree@, NULL);
-				@register @Stat.tree@->regStor = getFirstRegister();
-				@register @Expr.tree@->regStor = @Stat.tree@->regStor;
+				@register @Stat.tree@->reg = getFirstRegister();
+				@register @Expr.tree@->reg = @Stat.tree@->reg;
             @}
 			| GOTO ID
 			@{
@@ -169,54 +169,54 @@ Lexpr       : ID
 
 Expr        : NotOrSub
 			@{
-				@register @NotOrSub.tree@->regStor = @Expr.tree@->regStor;
+				@register @NotOrSub.tree@->reg = @Expr.tree@->reg;
 			@}
             | Term AddTerm
             @{
 				@i @Expr.tree@ = newTreeNode(OP_ADD, @Term.tree@, @AddTerm.tree@);
 
-				@register @Term.tree@->regStor = @Expr.tree@->regStor;
-				@register @AddTerm.tree@->regStor = getNextRegister(@Expr.tree@->regStor);
+				@register @Term.tree@->reg = @Expr.tree@->reg;
+				@register @AddTerm.tree@->reg = getNextRegister(@Expr.tree@->reg);
 			@}
             | Term MulTerm
             @{
 				@i @Expr.tree@ = newTreeNode(OP_MUL, @Term.tree@, @MulTerm.tree@);
-				@register @Term.tree@->regStor = @Expr.tree@->regStor;
-				@register @MulTerm.tree@->regStor = getNextRegister(@Expr.tree@->regStor);
+				@register @Term.tree@->reg = @Expr.tree@->reg;
+				@register @MulTerm.tree@->reg = getNextRegister(@Expr.tree@->reg);
 			@}
             | Term AndTerm
             @{
 				@i @Expr.tree@ = newTreeNode(OP_AND, @Term.tree@, @AndTerm.tree@);
-				@register @Term.tree@->regStor = @Expr.tree@->regStor;
-				@register @AndTerm.tree@->regStor = getNextRegister(@Expr.tree@->regStor);
+				@register @Term.tree@->reg = @Expr.tree@->reg;
+				@register @AndTerm.tree@->reg = getNextRegister(@Expr.tree@->reg);
 			@}
             | Term GREATER Term
             @{
 				@i @Expr.tree@ = newTreeNode(OP_GREATER, @Term.0.tree@, @Term.1.tree@);
-				@register @Term.0.tree@->regStor = @Expr.tree@->regStor;
-				@register @Term.1.tree@->regStor = getNextRegister(@Expr.tree@->regStor);
+				@register @Term.0.tree@->reg = @Expr.tree@->reg;
+				@register @Term.1.tree@->reg = getNextRegister(@Expr.tree@->reg);
 			@}
             | Term EQUAL Term
             @{
 				@i @Expr.tree@ = newTreeNode(OP_EQUAL, @Term.0.tree@, @Term.1.tree@);
-				@register @Term.0.tree@->regStor = @Expr.tree@->regStor;
-				@register @Term.1.tree@->regStor = getNextRegister(@Expr.tree@->regStor);
+				@register @Term.0.tree@->reg = @Expr.tree@->reg;
+				@register @Term.1.tree@->reg = getNextRegister(@Expr.tree@->reg);
 			@}
             ;
 
 NotOrSub    : Term
 			@{
-                @register @Term.tree@->regStor = @NotOrSub.0.tree@->regStor;
+                @register @Term.tree@->reg = @NotOrSub.0.tree@->reg;
             @}
 	    	| NOT NotOrSub
 	    	@{
 				@i @NotOrSub.0.tree@ = newTreeNode(OP_NOT, @NotOrSub.1.tree@, NULL);
-				@register @NotOrSub.1.tree@->regStor = @NotOrSub.0.tree@->regStor;
+				@register @NotOrSub.1.tree@->reg = @NotOrSub.0.tree@->reg;
 			@}
             | SUB NotOrSub
             @{
 				@i @NotOrSub.0.tree@ = newTreeNode(OP_SUB, @NotOrSub.1.tree@, NULL);
-				@register @NotOrSub.1.tree@->regStor = @NotOrSub.0.tree@->regStor;
+				@register @NotOrSub.1.tree@->reg = @NotOrSub.0.tree@->reg;
 			@}
             ;
 
@@ -224,8 +224,8 @@ AddTerm     : ADD Term
             | ADD Term AddTerm
             @{
 				@i @AddTerm.0.tree@ = newTreeNode(OP_ADD, @Term.tree@, @AddTerm.1.tree@);
-				@register @Term.tree@->regStor = @AddTerm.0.tree@->regStor;
-				@register @AddTerm.1.tree@->regStor = getNextRegister(@AddTerm.0.tree@->regStor);
+				@register @Term.tree@->reg = @AddTerm.0.tree@->reg;
+				@register @AddTerm.1.tree@->reg = getNextRegister(@AddTerm.0.tree@->reg);
 			@}
             ;
 
@@ -233,8 +233,8 @@ MulTerm     : MUL Term
             | MUL Term MulTerm
             @{
 				@i @MulTerm.0.tree@ = newTreeNode(OP_MUL, @Term.tree@, @MulTerm.1.tree@);
-				@register @Term.tree@->regStor = @MulTerm.0.tree@->regStor;
-				@register @MulTerm.1.tree@->regStor = getNextRegister(@MulTerm.0.tree@->regStor);
+				@register @Term.tree@->reg = @MulTerm.0.tree@->reg;
+				@register @MulTerm.1.tree@->reg = getNextRegister(@MulTerm.0.tree@->reg);
 			@}
             ;
 
@@ -242,8 +242,8 @@ AndTerm     : AND Term
             | AND Term AndTerm
             @{
 				@i @AndTerm.0.tree@ = newTreeNode(OP_AND, @Term.tree@, @AndTerm.1.tree@);
-				@register @Term.tree@->regStor = @AndTerm.0.tree@->regStor;
-				@register @AndTerm.1.tree@->regStor = getNextRegister(@AndTerm.0.tree@->regStor);
+				@register @Term.tree@->reg = @AndTerm.0.tree@->reg;
+				@register @AndTerm.1.tree@->reg = getNextRegister(@AndTerm.0.tree@->reg);
 			@}
             ;
 
