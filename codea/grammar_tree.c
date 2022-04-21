@@ -37,3 +37,8 @@ TreeNode *newNumberTreeNode(long value) {
 
     return node;
 }
+
+void compileError(char* message,...) {
+    printf("%s", message);
+    exit(3);
+}

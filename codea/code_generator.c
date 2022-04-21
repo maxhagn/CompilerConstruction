@@ -29,7 +29,7 @@ int get_int_len (int value){
 }
 
 char *getParameterRegister(int index, int offset) {
-    char *registers[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
+    char *registers[] = { "rdi", "rsi", "rdx", "rcx", "r8", "r9" };
     char *registerString;
     registerString = (char*) malloc(4*sizeof(char));
 
@@ -57,14 +57,14 @@ char *getParameterRegister(int index, int offset) {
     return registerString;
 }
 
-char *getByteRegisterName(char *name) {
+char* getByteRegisterName(char* name) {
 
     if (name == NULL) {
         return "al";
     }
 
-    char *registers[] = {"rax", "r11", "r10", "r9", "r8", "rcx", "rdx", "rsi", "rdi"};
-    char *byteRegisters[] = {"al", "r11b", "r10b", "r9b", "r8b", "cl", "dl", "sil", "dil"};
+    char *registers[] = { "rax", "r11", "r10", "r9", "r8", "rcx", "rdx", "rsi", "rdi" };
+    char *byteRegisters[] = { "al", "r11b", "r10b", "r9b", "r8b", "cl", "dl", "sil", "dil"  };
 
 
     for (int i = 0; i < 8; i++) {
@@ -108,11 +108,15 @@ void assembleMulv(long value, char *dst) {
 }
 
 void assembleMove(char *src, char *dst) {
-    fprintf(stdout, "\tmovq\t%s, %%%s\n", src, dst);
+    fprintf(stdout, "\tmovq\t%%%s, %%%s\n", src, dst);
 }
 
 void assembleMovev(long value, char *dst) {
     fprintf(stdout, "\tmovq\t$%ld, %%%s\n", value, dst);
+}
+
+void assembleMoveWithOffset(char *src, char *dst) {
+    fprintf(stdout, "\tmovq\t%s, %%%s\n", src, dst);
 }
 
 void assembleAnd(char *src, char *dst) {
@@ -141,37 +145,32 @@ void assembleAddressReadv(long value, char *dst) {
 
 void assembleEqual(char *first, char *second, char *dst) {
     fprintf(stdout, "\tcmp\t%%%s, %%%s\n", first, second);
-    fprintf(stdout, "\tsetne\t%%%s\n", getByteRegisterName(dst));
+    fprintf(stdout, "\tsete\t%%%s\n", getByteRegisterName(dst));
     fprintf(stdout, "\tand\t$1, %%%s\n", dst);
-    assembleNeg(dst);
 }
 
 void assembleEqualv(long value, char *second, char *dst) {
     fprintf(stdout, "\tcmp\t\t$%ld, %%%s\n", value, second);
-    fprintf(stdout, "\tsetne\t%%%s\n", getByteRegisterName(dst));
-    fprintf(stdout, "\tand\t\t$1, %%%s\n", dst);
-    assembleNeg(dst);
+    fprintf(stdout, "\tsete\t%%%s\n", getByteRegisterName(dst));
+    fprintf(stdout, "\tand\t$1, %%%s\n", dst);
 }
 
 void assembleGreater(char *first, char *second, char *dst) {
     fprintf(stdout, "\tcmp\t\t%%%s, %%%s\n", first, second);
-    fprintf(stdout, "\tsetle\t%%%s\n", getByteRegisterName(dst));
+    fprintf(stdout, "\tsetg\t%%%s\n", getByteRegisterName(dst));
     fprintf(stdout, "\tand\t\t$1, %%%s\n", dst);
-    assembleNeg(dst);
 }
 
 void assembleGreaterFv(long value, char *second, char *dst) {
     fprintf(stdout, "\tcmp\t\t$%ld, %%%s\n", value, second);
-    fprintf(stdout, "\tsetle\t%%%s\n", getByteRegisterName(dst));
+    fprintf(stdout, "\tsetg\t%%%s\n", getByteRegisterName(dst));
     fprintf(stdout, "\tand\t\t$1, %%%s\n", dst);
-    assembleNeg(dst);
 }
 
 void assembleGreaterSv(char *first, long value, char *dst) {
     fprintf(stdout, "\tcmp\t\t$%ld, %%%s\n", value, first);
-    fprintf(stdout, "\tsetnle\t%%%s\n", getByteRegisterName(dst));
+    fprintf(stdout, "\tsetg\t%%%s\n", getByteRegisterName(dst));
     fprintf(stdout, "\tand\t\t$1, %%%s\n", dst);
-    assembleNeg(dst);
 }
 
 void assembleReturn() {

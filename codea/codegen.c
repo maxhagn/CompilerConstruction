@@ -709,7 +709,7 @@ void burm_reduce(NODEPTR_TYPE bnode, int goalnt)
    assembleNeg(bnode->reg);
     break;
   case 24:
-   if (bnode->index != -1) assembleMove(getParameterRegister(bnode->index, bnode->offset), bnode->reg);
+   if (bnode->index != -1) assembleMoveWithOffset(getParameterRegister(bnode->index, bnode->offset), bnode->reg);
     break;
   case 25:
 
@@ -724,10 +724,10 @@ void burm_reduce(NODEPTR_TYPE bnode, int goalnt)
    bnode->value = bnode->kids[0]->value & bnode->kids[1]->value;
     break;
   case 29:
-   bnode->value = bnode->kids[0]->value > bnode->kids[1]->value ? 1 : 0;
+   bnode->value = bnode->kids[0]->value >  bnode->kids[1]->value ? 1 : 0;
     break;
   case 30:
-   bnode->value = bnode->kids[0]->value = bnode->kids[1]->value ? 1 : 0;
+   bnode->value = bnode->kids[0]->value == bnode->kids[1]->value ? 1 : 0;
     break;
   case 31:
    bnode->value = ~bnode->kids[0]->value;

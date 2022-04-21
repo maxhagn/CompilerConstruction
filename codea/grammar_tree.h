@@ -33,12 +33,17 @@ typedef struct TreeNode
 
 typedef TreeNode *NODEPTR_TYPE;
 
+
+
+
 #define OP_LABEL(p)     ((p)->op)
 #define LEFT_CHILD(p)   ((p)->kids[0])
 #define RIGHT_CHILD(p)  ((p)->kids[1])
 #define STATE_LABEL(p)  ((p)->state)
-#define PANIC           printf
+#define PANIC           compileError
 
 TreeNode *newTreeNode(operators_t op, TreeNode *left, TreeNode *right);
 TreeNode *newRegisterTreeNode(char *name, int index, int offset);
 TreeNode *newNumberTreeNode(long value);
+void compileError(char* message,...);
+
