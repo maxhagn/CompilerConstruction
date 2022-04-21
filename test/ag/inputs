@@ -1,0 +1,18 @@
+#split.fs gibt's leider nicht oeffentlich verfuegbar, weil es
+#nicht besonders gut in der Fehlerbehandlung ist (und gar nicht dokumentiert)
+
+gforth ~/abgabe/bin/split.fs -e "stdin split a .0 bye" <<EOF
+f(x) return x; end;
+EOF
+
+gforth ~/abgabe/bin/split.fs -e "stdin split x .1 bye" <<EOF
+<
+EOF
+
+gforth ~/abgabe/bin/split.fs -e "stdin split y .2 bye" <<EOF
+f() end;
+EOF
+
+gforth ~/abgabe/bin/split.fs -e "stdin split z .3 bye" <<EOF
+f(x) return y; end;
+EOF

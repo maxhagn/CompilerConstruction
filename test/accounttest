@@ -1,0 +1,8 @@
+#! /bin/bash
+if groups|grep -q maximilian; then
+  exit 0
+else
+  echo "Sie sind nicht in einem UBVL-Account."
+  echo "Ueber diesen Account koennen Sie das Beispiel nicht abgeben!"
+  exit 1
+fi

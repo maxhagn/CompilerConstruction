@@ -1,0 +1,16 @@
+#split.fs gibt's leider nicht oeffentlich verfuegbar, weil es
+#nicht besonders gut in der Fehlerbehandlung ist (und gar nicht dokumentiert)
+
+gforth ~/abgabe/bin/split.fs -e "stdin split2 a .0 .out bye" <<EOF
+39end
+
+num 39
+end
+EOF
+
+echo -n "// Kommentar ohne Newline am Schluss" >az.0
+echo -n "" >az.out
+
+gforth ~/abgabe/bin/split.fs -e "stdin split x .1 bye" <<EOF
+<
+EOF
