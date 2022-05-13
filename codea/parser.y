@@ -39,13 +39,13 @@ Def         : ID BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 			@{
                 @i @Stats.in@ = merge(3, @Pars.pars@, @Par.pars@, @Stats.out@);
 
-                @codegen @revorder(1) assembleFunction(@ID.name@);
+                @codegen @revorder(1) asmFunction(@ID.name@);
             @}
 	    	| ID CURLY_BRACKET_OPEN ParsPointer ParPointer CURLY_BRACKET_CLOSE BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 	   		@{
                 @i @Stats.in@ = merge(5, @Pars.pars@, @Par.pars@, @ParsPointer.pars@, @ParPointer.pars@, @Stats.out@);
 
-                @codegen @revorder(1) assembleFunction(@ID.name@);
+                @codegen @revorder(1) asmFunction(@ID.name@);
 	    	@}
             ;
 
@@ -215,7 +215,7 @@ NotOrSub    : Term
 			@}
             | SUB NotOrSub
             @{
-				@i @NotOrSub.0.tree@ = newTreeNode(OP_SUB, @NotOrSub.1.tree@, NULL);
+				@i @NotOrSub.0.tree@ = newTreeNode(OP_NEG, @NotOrSub.1.tree@, NULL);
 				@register @NotOrSub.1.tree@->reg = @NotOrSub.0.tree@->reg;
 			@}
             ;
@@ -250,11 +250,14 @@ AndTerm     : AND Term
 Term        : BRACKET_OPEN Expr BRACKET_CLOSE
             | NUM
             @{
-				@i @Term.tree@ = newNumberTreeNode(@NUM.value@);
+				@i @Term.tree@ =  newNumberTreeNode(@NUM.value@);
 			@}
             | Term SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
             @{
-				@i @Term.tree@ = newTreeNode(OP_AND, @Term.1.tree@, @Term.1.tree@);
+            	@i @Term.tree@ = newTreeNode(OP_READ_ARRAY, @Term.1.tree@, @Expr.0.tree@);
+
+				@register @Term.1.tree@->reg =  @Term.0.tree@->reg;
+				@register @Expr.0.tree@->reg = getNextRegister(@Term.0.tree@->reg);
 			@}
             | ID
             @{

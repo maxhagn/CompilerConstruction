@@ -5,8 +5,8 @@ OX=ox
 YACC=yacc
 FLEX=flex
 
-codea: helper.o symbol_list.o grammar_tree.o code_generator.o codegen.o y.tab.o lex.yy.o
-	$(CC) helper.o symbol_list.o grammar_tree.o code_generator.o codegen.o y.tab.o lex.yy.o -ly -ll -o codea
+codea: helper.o symbol_list.o grammar_tree.o asm_writer.o matcher.o y.tab.o lex.yy.o
+	$(CC) helper.o symbol_list.o grammar_tree.o asm_writer.o matcher.o y.tab.o lex.yy.o -ly -ll -o codea
 
 helper.o: helper.c helper.h
 	$(CC) -c -pedantic -Wall helper.c
@@ -14,8 +14,8 @@ helper.o: helper.c helper.h
 symbol_list.o: symbol_list.c symbol_list.h
 	$(CC) -c -pedantic -Wall symbol_list.c
 
-code_generator.o: code_generator.c code_generator.h
-	$(CC) -c -pedantic -Wall code_generator.c
+asm_writer.o: asm_writer.c asm_writer.h
+	$(CC) -c -pedantic -Wall asm_writer.c
 
 grammar_tree.o: grammar_tree.c grammar_tree.h
 	$(CC) -c -pedantic -Wall grammar_tree.c
@@ -35,11 +35,11 @@ lex.yy.c: oxout.l
 lex.yy.o: lex.yy.c y.tab.h
 	$(CC) -c lex.yy.c
 
-codegen.o: codegen.c
-	$(CC) -c -pedantic -Wall codegen.c
+matcher.o: matcher.c
+	$(CC) -c -pedantic -Wall matcher.c
 
-codegen.c: codegen.bfe
-	$(BFE) < codegen.bfe | $(BURG) > codegen.c
+matcher.c: matcher.bfe
+	$(BFE) < matcher.bfe | $(BURG) > matcher.c
 
 clean:
-	rm -f code_generator.o codea codegen.c codegen.o grammar_tree.o helper.o lex.yy.c lex.yy.o oxout.l oxout.y symbol_list.o y.tab.c y.tab.h y.tab.o
+	rm -f asm_writer.o codea matcher.c matcher.o grammar_tree.o helper.o lex.yy.c lex.yy.o oxout.l oxout.y symbol_list.o y.tab.c y.tab.h y.tab.o

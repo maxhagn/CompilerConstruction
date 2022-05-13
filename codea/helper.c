@@ -47,3 +47,45 @@ void setTerminalColorGreen() {
 void setTerminalColorDefault() {
     printf("\033[0m");
 }
+
+void printColoredMessage(short errorType) {
+
+    switch (errorType) {
+        case SYNTAX:
+            setTerminalColorRed();
+            printf("syntax error: ");
+            setTerminalColorDefault();
+            break;
+        case PARSING:
+            setTerminalColorRed();
+            printf("parsing error: ");
+            setTerminalColorDefault();
+            break;
+        case UNDECLARED:
+            setTerminalColorRed();
+            printf("undeclared error: ");
+            setTerminalColorDefault();
+            break;
+        case REDEFINITION:
+            setTerminalColorRed();
+            printf("redefinition error: ");
+            setTerminalColorDefault();
+            break;
+        case HINT:
+            setTerminalColorGreen();
+            printf("hint: ");
+            setTerminalColorDefault();
+            break;
+        case COMPILE:
+            setTerminalColorRed();
+            printf("compilation error: ");
+            setTerminalColorDefault();
+            break;
+        default:
+            setTerminalColorRed();
+            printf("undefined error: ");
+            setTerminalColorDefault();
+            break;
+    }
+
+}

@@ -52,32 +52,22 @@ int yywrap(void) {
 }
 
 void yyerror (char const *message) {
-    setTerminalColorRed();
-    printf("\n%s: ", errorTypeToString(PARSING));
-    setTerminalColorDefault();
-
+    printf("\n");
+    printColoredMessage(PARSING);
     printf("use of undefined instruction sequence at line %d.\n", yylineno);
     exit(2);
 }
 
 void syntaxError(void) {
-    setTerminalColorRed();
-    printf("\n%s: ", errorTypeToString(SYNTAX));
-    setTerminalColorDefault();
-
+    printf("\n");
+    printColoredMessage(SYNTAX);
 	printf("use of undefined token '%s' at line %d.\n", yytext, yylineno);
-
-    setTerminalColorGreen();
-    printf("hint: ");
-    setTerminalColorDefault();
-
+    printColoredMessage(HINT);
     printf("token '%s' is not defined in this language. \n possible tokens are: \n", yytext);
     printf("\tinstructions: end, return, goto, if, var, not, and. \n");
     printf("\tdelimiter: ';', ':', ',', '@'. \n");
     printf("\tbrackets: '(', ')', '{', '}', '[', ']'. \n");
     printf("\toperators: '=', '>', '+', '-', '*' \n");
-
-
 
 	exit(1);
 }

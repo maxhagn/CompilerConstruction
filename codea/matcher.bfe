@@ -1,0 +1,73 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+
+#include "grammar_tree.h"
+#include "asm_writer.h"
+%}
+
+%start program
+%term OP_RETURN=0 OP_READ_ARRAY=1 OP_NOT=2 OP_NEG=3 OP_ADD=4 OP_MUL=5 OP_AND=6 OP_GREATER=7 OP_EQUAL=8 OP_NUMBER=9 OP_ID=10
+
+%%
+
+program: def                             # 0 #
+
+def:     stats                           # 0 #
+
+stats:   stat                            # 0 #
+
+stat:    ret                             # 0 #
+
+ret:     OP_RETURN(expr)                 # 1 #   asmReturnValue(bnode->reg);
+
+expr:    const                           # 1 #   asmMoveValue(bnode->value, bnode->reg);
+
+expr:    OP_READ_ARRAY(expr, expr)       # 1 #   asmReadArrayRegister(bnode->kids[0]->reg, bnode->kids[1]->reg, bnode->reg);
+expr:    OP_READ_ARRAY(const, expr)      # 1 #   asmReadArrayValue(bnode->kids[1]->reg, bnode->kids[0]->value, bnode->reg);
+expr:    OP_READ_ARRAY(expr, const)      # 1 #   asmReadArrayValue(bnode->kids[0]->reg, bnode->kids[1]->value, bnode->reg);
+
+expr:    OP_NOT(expr)                    # 1 #   asmNotRegister(bnode->reg);
+expr:    OP_NEG(expr)                    # 1 #   asmNegateRegister(bnode->reg);
+
+expr:    OP_ADD(expr, expr)              # 1 #   asmAddRegister(bnode->kids[1]->reg, bnode->kids[0]->reg);
+expr:    OP_ADD(const, expr)             # 1 #   asmAddValue(bnode->kids[0]->value, bnode->kids[1]->reg); asmMoveRegister(bnode->kids[1]->reg, bnode->reg);
+expr:    OP_ADD(expr, const)             # 1 #   asmAddValue(bnode->kids[1]->value, bnode->kids[0]->reg);
+
+expr:    OP_MUL(expr, expr)              # 1 #   asmMulRegister(bnode->kids[1]->reg, bnode->kids[0]->reg);
+expr:    OP_MUL(const, expr)             # 1 #   asmMulValue(bnode->kids[0]->value, bnode->kids[1]->reg); asmMoveRegister(bnode->kids[1]->reg, bnode->reg);
+expr:    OP_MUL(expr, const)             # 1 #   asmMulValue(bnode->kids[1]->value, bnode->kids[0]->reg);
+
+expr:    OP_AND(expr, expr)              # 1 #   asmAndRegister(bnode->kids[1]->reg, bnode->kids[0]->reg);
+expr:    OP_AND(const, expr)             # 1 #   asmAndValue(bnode->kids[0]->value, bnode->kids[1]->reg); asmMoveRegister(bnode->kids[1]->reg, bnode->reg);
+expr:    OP_AND(expr, const)             # 1 #   asmAndValue(bnode->kids[1]->value, bnode->kids[0]->reg);
+
+expr:    OP_GREATER(expr, expr)          # 1 #   asmGreaterRegister(bnode->kids[0]->reg, bnode->kids[1]->reg, bnode->reg);
+expr:    OP_GREATER(const, expr)         # 1 #   asmGreaterValueRegister(bnode->kids[0]->value, bnode->kids[1]->reg, bnode->reg);
+expr:    OP_GREATER(expr, const)         # 1 #   asmGreaterRegisterValue(bnode->kids[0]->reg, bnode->kids[1]->value, bnode->reg);
+
+expr:    OP_EQUAL(expr, expr)            # 1 #   asmEqualRegister(bnode->kids[0]->reg, bnode->kids[1]->reg, bnode->reg);
+expr:    OP_EQUAL(const, expr)           # 1 #   asmEqualValue(bnode->kids[0]->value, bnode->kids[1]->reg, bnode->reg);
+expr:    OP_EQUAL(expr, const)           # 1 #   asmEqualValue(bnode->kids[1]->value, bnode->kids[0]->reg, bnode->reg);
+
+expr:    OP_ID                           # 1 #   asmMoveRegisterOffset(getParameterRegister(bnode->index, bnode->offset), bnode->reg);
+
+const:   OP_NUMBER                       # 0 #
+const:   OP_ADD(const, const)            # 0 #   bnode->value =  bnode->kids[0]->value  + bnode->kids[1]->value;
+const:   OP_MUL(const, const)            # 0 #   bnode->value =  bnode->kids[0]->value  * bnode->kids[1]->value;
+const:   OP_AND(const, const)            # 0 #   bnode->value =  bnode->kids[0]->value  & bnode->kids[1]->value;
+const:   OP_GREATER(const, const)        # 0 #   bnode->value =  bnode->kids[0]->value  > bnode->kids[1]->value ? 1 : 0;
+const:   OP_EQUAL(const, const)          # 0 #   bnode->value =  bnode->kids[0]->value == bnode->kids[1]->value ? 1 : 0;
+const:   OP_NOT(const)                   # 0 #   bnode->value = ~bnode->kids[0]->value;
+const:   OP_NEG(const)                   # 0 #   bnode->value = -bnode->kids[0]->value;
+
+%%
+
+extern TreeNode *root;
+void burm_reduce(NODEPTR_TYPE bnode, int goalnt);
+
+void invoke_burm(NODEPTR_TYPE root) {
+    burm_label(root);
+    burm_reduce(root, 1);
+}

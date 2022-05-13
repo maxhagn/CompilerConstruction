@@ -22,10 +22,7 @@ ListNode *add(ListNode *head, char *name, short type, int line) {
 
         if (strcmp(nextNode->name, name) == 0) {
 
-            setTerminalColorRed();
-            printf("%s: ", errorTypeToString(REDEFINITION));
-            setTerminalColorDefault();
-
+            printColoredMessage(REDEFINITION);
             printf("redefinition of %s '%s' \n "
                    "%s '%s' redefined at line %d \n "
                    "%s '%s' previously defined at line %d\n",
@@ -96,10 +93,7 @@ void isVisible(ListNode *head, char *name, short type, int line) {
         nextNode = nextNode->next;
     }
 
-    setTerminalColorRed();
-    printf("%s: ", errorTypeToString(UNDECLARED));
-    setTerminalColorDefault();
-
+    printColoredMessage(UNDECLARED);
     printf("use of undeclared %s '%s' at line %d\n",
            identifierTypeToString(type),
            name,

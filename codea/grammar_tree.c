@@ -1,6 +1,3 @@
-#include <stdlib.h>
-#include <stdio.h>
-
 #include "grammar_tree.h"
 
 TreeNode *newTreeNode(operators_t op, TreeNode *left, TreeNode *right) {
@@ -39,6 +36,7 @@ TreeNode *newNumberTreeNode(long value) {
 }
 
 void compileError(char* message,...) {
+    printColoredMessage(COMPILE);
     printf("%s", message);
     exit(3);
 }

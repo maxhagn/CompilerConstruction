@@ -1,3 +1,6 @@
+#ifndef __SYMBOL_LIST_H__
+#define __SYMBOL_LIST_H__
+
 #include <stdbool.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -20,3 +23,5 @@ void      isVisible(ListNode*, char*, short, int);
 short     getType(ListNode* list,  char *name);
 int       getOffset(ListNode* list,  char *name);
 int       getIndex(ListNode* list,  char *name);
+
+#endif

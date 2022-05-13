@@ -1,4 +1,4 @@
-#include "code_generator.h"
+#include "asm_writer.h"
 
 char *getFirstRegister() {
     return "rax";
@@ -77,111 +77,112 @@ char* getByteRegisterName(char* name) {
     exit(3);
 }
 
-void assembleFunction(char *name) {
+void asmFunction(char *name) {
     fprintf(stdout, "\t.global\t%s\n", name);
     fprintf(stdout, "\t.type\t%s, @function\n", name);
     fprintf(stdout, "%s:\n", name);
 }
 
-void assembleAdd(char *src, char *dst) {
+void asmAddRegister(char *src, char *dst) {
     fprintf(stdout, "\taddq\t%%%s, %%%s\n", src, dst);
 }
 
-void assembleAddv(long value, char *dst) {
+void asmAddValue(long value, char *dst) {
     fprintf(stdout, "\taddq\t$%ld, %%%s\n", value, dst);
 }
 
-void assembleSub(char *src, char *dst) {
+void asmSubRegister(char *src, char *dst) {
     fprintf(stdout, "\tsubq\t%%%s, %%%s\n", src, dst);
 }
 
-void assembleSubv(long value, char *dst) {
+void asmSubValue(long value, char *dst) {
     fprintf(stdout, "\tsubq\t$%ld, %%%s\n", value, dst);
 }
 
-void assembleMul(char *src, char *dst) {
+void asmMulRegister(char *src, char *dst) {
     fprintf(stdout, "\timulq\t%%%s, %%%s\n", src, dst);
 }
 
-void assembleMulv(long value, char *dst) {
+void asmMulValue(long value, char *dst) {
     fprintf(stdout, "\timulq\t$%ld, %%%s\n", value, dst);
 }
 
-void assembleMove(char *src, char *dst) {
+void asmMoveRegister(char *src, char *dst) {
     fprintf(stdout, "\tmovq\t%%%s, %%%s\n", src, dst);
 }
 
-void assembleMovev(long value, char *dst) {
+void asmMoveValue(long value, char *dst) {
     fprintf(stdout, "\tmovq\t$%ld, %%%s\n", value, dst);
 }
 
-void assembleMoveWithOffset(char *src, char *dst) {
+void asmMoveRegisterOffset(char *src, char *dst) {
     fprintf(stdout, "\tmovq\t%s, %%%s\n", src, dst);
 }
 
-void assembleAnd(char *src, char *dst) {
+void asmAndRegister(char *src, char *dst) {
     fprintf(stdout, "\tand\t%%%s, %%%s\n", src, dst);
 }
 
-void assembleAndv(long value, char *dst) {
+void asmAndValue(long value, char *dst) {
     fprintf(stdout, "\tand\t$%ld, %%%s\n", value, dst);
 }
 
-void assembleNeg(char *name) {
+void asmNegateRegister(char *name) {
     fprintf(stdout, "\tnegq\t%%%s\n", name);
 }
 
-void assembleNot(char *name) {
+void asmNotRegister(char *name) {
     fprintf(stdout, "\tnotq\t%%%s\n", name);
 }
 
-void assembleAddressRead(char *src, char *dst) {
-    fprintf(stdout, "\tmovq\t(%%%s), %%%s\n", src, dst);
+void asmReadArrayRegister(char *src, char *offset, char *dst) {
+    fprintf(stdout, "\tmovq\t(%%%s, %%%s, 8), %%%s\n", src, offset, dst);
 }
 
-void assembleAddressReadv(long value, char *dst) {
-    fprintf(stdout, "\tmovq\t($%ld), %%%s\n", value, dst);
+void asmReadArrayValue(char *src, int offset, char *dst) {
+    offset = offset * 8;
+    fprintf(stdout, "\tmovq\t%d(%%%s), %%%s\n", offset, src, dst);
 }
 
-void assembleEqual(char *first, char *second, char *dst) {
+void asmEqualRegister(char *first, char *second, char *dst) {
     fprintf(stdout, "\tcmp\t%%%s, %%%s\n", first, second);
     fprintf(stdout, "\tsete\t%%%s\n", getByteRegisterName(dst));
     fprintf(stdout, "\tand\t$1, %%%s\n", dst);
 }
 
-void assembleEqualv(long value, char *second, char *dst) {
+void asmEqualValue(long value, char *second, char *dst) {
     fprintf(stdout, "\tcmp\t\t$%ld, %%%s\n", value, second);
     fprintf(stdout, "\tsete\t%%%s\n", getByteRegisterName(dst));
     fprintf(stdout, "\tand\t$1, %%%s\n", dst);
 }
 
-void assembleGreater(char *first, char *second, char *dst) {
-    fprintf(stdout, "\tcmp\t\t%%%s, %%%s\n", first, second);
+void asmGreaterRegister(char *first, char *second, char *dst) {
+    fprintf(stdout, "\tcmp\t\t%%%s, %%%s\n", second, first);
     fprintf(stdout, "\tsetg\t%%%s\n", getByteRegisterName(dst));
     fprintf(stdout, "\tand\t\t$1, %%%s\n", dst);
 }
 
-void assembleGreaterFv(long value, char *second, char *dst) {
-    fprintf(stdout, "\tcmp\t\t$%ld, %%%s\n", value, second);
+void asmGreaterValueRegister(long value, char *second, char *dst) {
+    fprintf(stdout, "\tcmp\t\t%%%s, $%ld\n", second, value);
     fprintf(stdout, "\tsetg\t%%%s\n", getByteRegisterName(dst));
     fprintf(stdout, "\tand\t\t$1, %%%s\n", dst);
 }
 
-void assembleGreaterSv(char *first, long value, char *dst) {
+void asmGreaterRegisterValue(char *first, long value, char *dst) {
     fprintf(stdout, "\tcmp\t\t$%ld, %%%s\n", value, first);
     fprintf(stdout, "\tsetg\t%%%s\n", getByteRegisterName(dst));
     fprintf(stdout, "\tand\t\t$1, %%%s\n", dst);
 }
 
-void assembleReturn() {
+void asmReturn() {
     fprintf(stdout, "\tret\n");
 }
 
-void assembleReturnWithValue(char *retRegister) {
+void asmReturnValue(char *retRegister) {
 
     if (retRegister != NULL && strcmp(retRegister, "rax") != 0) {
-        assembleMove(retRegister, "rax");
+        asmMoveRegister(retRegister, "rax");
     }
 
-    assembleReturn();
+    asmReturn();
 }
