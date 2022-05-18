@@ -11,6 +11,17 @@ TreeNode *newTreeNode(operators_t op, TreeNode *left, TreeNode *right) {
     return node;
 }
 
+TreeNode *newNamedTreeNode(operators_t op, char *name, TreeNode *left, TreeNode *right) {
+    TreeNode *node = (TreeNode *) malloc(sizeof(TreeNode));
+
+    node->op = op;
+    node->kids[0] = left;
+    node->kids[1] = right;
+    node->name = name;
+
+    return node;
+}
+
 TreeNode *newRegisterTreeNode(char *name, int index, int offset) {
     TreeNode *node = (TreeNode *) malloc(sizeof(TreeNode));
 
@@ -31,6 +42,31 @@ TreeNode *newNumberTreeNode(long value) {
     node->kids[0] = (TreeNode *) NULL;
     node->kids[1] = (TreeNode *) NULL;
     node->value = value;
+
+    return node;
+}
+
+TreeNode *newLabelNode(char *name) {
+    TreeNode *node = (TreeNode *) malloc(sizeof(TreeNode));
+
+    node->op = OP_ID;
+    node->kids[0] = (TreeNode *) NULL;
+    node->kids[1] = (TreeNode *) NULL;
+    node->name = name;
+    node->index = -1;
+
+    return node;
+}
+
+TreeNode *newVariableNode(char *name, int offset) {
+    TreeNode *node = (TreeNode *) malloc(sizeof(TreeNode));
+
+    node->op = OP_ID;
+    node->kids[0] = (TreeNode *) NULL;
+    node->kids[1] = (TreeNode *) NULL;
+    node->name = name;
+    node->index = -1;
+    node->offset = offset;
 
     return node;
 }

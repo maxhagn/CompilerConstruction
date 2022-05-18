@@ -55,6 +55,10 @@ void asmReadArrayRegister(char *, char *, char *);
 
 void asmReadArrayValue(char *, int, char *);
 
+void asmGoto(char *);
+
+void asmLabelDef(char *);
+
 void asmReturn();
 
 void asmReturnValue(char *);

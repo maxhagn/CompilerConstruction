@@ -13,15 +13,18 @@ typedef struct burm_state *STATEPTR_TYPE;
 typedef enum {
     OP_RETURN = 0,
     OP_READ_ARRAY = 1,
-    OP_NOT = 2,
-    OP_NEG = 3,
-    OP_ADD = 4,
-    OP_MUL = 5,
-    OP_AND = 6,
-    OP_GREATER = 7,
-    OP_EQUAL = 8,
-    OP_NUMBER = 9,
-    OP_ID = 10
+    OP_WRITE_ARRAY = 2,
+    OP_NOT = 3,
+    OP_NEG = 4,
+    OP_ADD = 5,
+    OP_MUL = 6,
+    OP_AND = 7,
+    OP_GREATER = 8,
+    OP_EQUAL = 9,
+    OP_NUMBER = 10,
+    OP_ID = 11,
+    OP_IF = 12,
+    OP_GOTO = 13
 } operators_t;
 
 typedef struct TreeNode {
@@ -48,9 +51,15 @@ typedef TreeNode *NODEPTR_TYPE;
 
 TreeNode *newTreeNode(operators_t, TreeNode *, TreeNode *);
 
+TreeNode *newNamedTreeNode(operators_t, char *, TreeNode *, TreeNode *);
+
 TreeNode *newRegisterTreeNode(char *, int, int);
 
 TreeNode *newNumberTreeNode(long);
+
+TreeNode *newLabelNode(char *);
+
+TreeNode *newVariableNode(char *, int);
 
 void compileError(char *, ...);
 

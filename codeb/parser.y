@@ -102,6 +102,8 @@ Labeldef    :
 	    	| Labeldef ID COLON
 	    	@{
 				@i @Labeldef.labels@ = add(@Labeldef.1.labels@, @ID.name@, LABEL, @ID.line@);
+
+				@codegen @revorder(1) asmLabelDef(@ID.name@);
 			@}
 	    	;
 
@@ -119,7 +121,7 @@ Stat        : RETURN Expr
 			@{
 				@i @Stat.out@ = newListNode();
 
-				@i @Stat.tree@ = NULL;
+				@i @Stat.tree@ = newNamedTreeNode(OP_GOTO, @ID.name@, NULL, NULL);
 
 				@visibility isVisible(@Stat.in@, @ID.name@, LABEL, @ID.line@);
 			@}
@@ -128,7 +130,9 @@ Stat        : RETURN Expr
 				@i @Expr.ids@ = @Stat.in@;
 				@i @Stat.out@ = newListNode();
 
-				@i @Stat.tree@ = NULL;
+				@i @Stat.tree@ = newTreeNode(OP_IF, newLabelNode(@ID.name@), @Expr.tree@);
+                @register @Stat.tree@->reg = getRegister(NULL);
+                @register @Expr.tree@->reg = @Stat.tree@->reg;
 
 				@visibility isVisible(@Stat.in@, @ID.name@, LABEL, @ID.line@);
 			@}
@@ -136,7 +140,11 @@ Stat        : RETURN Expr
 			@{
 				@i @Expr.ids@ = @Stat.in@;
 				@i @Stat.out@ = add(newListNode(), @ID.name@, VARIABLE, @ID.line@);
-				@i @Stat.tree@ = NULL;
+
+				@i @Stat.tree@ = newTreeNode(OP_EQUAL, newVariableNode(@ID.name@, 0), @Expr.tree@);
+
+				@register @Stat.tree@->reg = getRegister(NULL);
+				@register @Expr.tree@->reg = @Stat.tree@->reg;
 			@}
 			| Lexpr EQUAL Expr
 			@{

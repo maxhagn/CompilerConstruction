@@ -188,8 +188,23 @@ void asmReadArrayValue(char *sourceRegister, int arrayOffset, char *destRegister
     fprintf(stdout, "\tmovq\t%d(%%%s), %%%s\n", arrayOffset, sourceRegister, destRegister);
 }
 
+void asmIf(char *src, char *jumpName)
+{
+    fprintf(stdout, "\tand \t$1, %%%s\n", getByteRegister(src));
+    fprintf(stdout, "\tjz  \t%s\n", jumpName);
+}
+
+void asmGoto(char *jumpName)
+{
+    fprintf(stdout, "\tjmp\t%s\n", jumpName);
+}
+
 void asmReturn() {
     fprintf(stdout, "\tret\n");
+}
+
+void asmLabelDef(char *name) {
+    fprintf(stdout, "%s:\n", name);
 }
 
 void asmReturnValue(char *returnRegister) {

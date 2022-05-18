@@ -8,7 +8,7 @@
 %}
 
 %start program
-%term OP_RETURN=0 OP_READ_ARRAY=1 OP_NOT=2 OP_NEG=3 OP_ADD=4 OP_MUL=5 OP_AND=6 OP_GREATER=7 OP_EQUAL=8 OP_NUMBER=9 OP_ID=10
+%term OP_RETURN=0 OP_READ_ARRAY=1 OP_WRITE_ARRAY=2 OP_NOT=3 OP_NEG=4 OP_ADD=5 OP_MUL=6 OP_AND=7 OP_GREATER=8 OP_EQUAL=9 OP_NUMBER=10 OP_ID=11 OP_IF=12 OP_GOTO=13
 
 %%
 
@@ -19,6 +19,17 @@ def:     stats                           # 0 #
 stats:   stat                            # 0 #
 
 stat:    ret                             # 0 #
+stat:    assign                          # 0 #
+stat:    goto                            # 0 #
+stat:    if                              # 0 #
+
+goto:    OP_GOTO                         # 1 #   asmGoto(bnode->name);
+
+assign:  OP_EQUAL(OP_ID, const)          # 1 #   bnode->kids[0]->index == -1 ? printf("\tmovq\t$%ld, %ld(%%rsp)\n", bnode->kids[1]->value, bnode->kids[0]->value * 8) : printf("\tmovq\t$%ld, %%%s\n", bnode->kids[1]->value, getParameterRegister(bnode->kids[0]->index, bnode->kids[0]->offset));
+assign:  OP_EQUAL(OP_ID, expr)           # 1 #   bnode->kids[0]->index == -1 ? printf("\tmovq\t%%%s, %ld(%%rsp)\n", bnode->kids[1]->reg, bnode->kids[0]->value * 8) : printf("\tmovq\t%%%s, %%%s\n", bnode->kids[1]->reg, getParameterRegister(bnode->kids[0]->index, bnode->kids[0]->offset));
+assign:  OP_EQUAL(expr, expr)            # 1 #   printf("\tmovq\t%%%s, (%%%s)\n", bnode->kids[1]->reg, bnode->kids[0]->reg);
+
+if:      OP_IF(OP_ID, expr)              # 1 #   asmIf(bnode->reg, bnode->kids[0]->name);
 
 ret:     OP_RETURN(expr)                 # 1 #   asmReturnValue(bnode->reg);
 
