@@ -10,18 +10,24 @@
 #include "helper.h"
 
 typedef struct ListNode {
-    char  *name;
-    short  type;
-    int    line;
+    char *name;
+    short type;
+    int line;
     struct ListNode *next;
 } ListNode;
 
-ListNode* newListNode();
-ListNode* add(ListNode*, char*, short, int);
-ListNode* merge(int arg_count,...);
-void      isVisible(ListNode*, char*, short, int);
-short     getType(ListNode* list,  char *name);
-int       getOffset(ListNode* list,  char *name);
-int       getIndex(ListNode* list,  char *name);
+ListNode *newListNode();
+
+ListNode *add(ListNode *, char *, short, int);
+
+ListNode *merge(int arg_count, ...);
+
+void isVisible(ListNode *, char *, short, int);
+
+short getType(ListNode *list, char *name);
+
+int getOffset(ListNode *list, char *name);
+
+int getIndex(ListNode *list, char *name);
 
 #endif

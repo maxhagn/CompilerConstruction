@@ -9,8 +9,10 @@
 #include "grammar_tree.h"
 #include "asm_writer.h"
 
-void yyerror(char const*);
+void yyerror(char const *);
+
 extern int yylex();
+
 extern void invoke_burm(NODEPTR_TYPE root);
 
 #endif

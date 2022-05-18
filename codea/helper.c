@@ -1,24 +1,6 @@
 #include "helper.h"
 
-const char* errorTypeToString(short errorType) {
-
-    switch (errorType) {
-        case SYNTAX:
-            return "syntax error";
-        case PARSING:
-            return "parsing error";
-        case UNDECLARED:
-            return "undeclared error";
-        case REDEFINITION:
-            return "redefinition error";
-        default:
-            return "undefined error";
-    }
-
-}
-
-const char* identifierTypeToString(short identifierType) {
-
+const char *identifierTypeToString(short identifierType) {
     switch (identifierType) {
         case VARIABLE:
             return "variable";
@@ -29,7 +11,6 @@ const char* identifierTypeToString(short identifierType) {
         default:
             return "undefined identifier";
     }
-
 }
 
 void setTerminalColorRed() {
@@ -49,7 +30,6 @@ void setTerminalColorDefault() {
 }
 
 void printColoredMessage(short errorType) {
-
     switch (errorType) {
         case SYNTAX:
             setTerminalColorRed();
@@ -81,11 +61,15 @@ void printColoredMessage(short errorType) {
             printf("compilation error: ");
             setTerminalColorDefault();
             break;
+        case REGISTER:
+            setTerminalColorRed();
+            printf("register error: ");
+            setTerminalColorDefault();
+            break;
         default:
             setTerminalColorRed();
             printf("undefined error: ");
             setTerminalColorDefault();
             break;
     }
-
 }

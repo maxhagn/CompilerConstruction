@@ -10,22 +10,21 @@ typedef struct burm_state *STATEPTR_TYPE;
 
 #include "helper.h"
 
-typedef enum  {
-    OP_RETURN     = 0,
+typedef enum {
+    OP_RETURN = 0,
     OP_READ_ARRAY = 1,
-    OP_NOT        = 2,
-    OP_NEG        = 3,
-    OP_ADD        = 4,
-    OP_MUL        = 5,
-    OP_AND        = 6,
-    OP_GREATER    = 7,
-    OP_EQUAL      = 8,
-    OP_NUMBER     = 9,
-    OP_ID         = 10
+    OP_NOT = 2,
+    OP_NEG = 3,
+    OP_ADD = 4,
+    OP_MUL = 5,
+    OP_AND = 6,
+    OP_GREATER = 7,
+    OP_EQUAL = 8,
+    OP_NUMBER = 9,
+    OP_ID = 10
 } operators_t;
 
-typedef struct TreeNode
-{
+typedef struct TreeNode {
     int op;
     struct TreeNode *kids[2];
     STATEPTR_TYPE state;
@@ -48,8 +47,11 @@ typedef TreeNode *NODEPTR_TYPE;
 #define PANIC           compileError
 
 TreeNode *newTreeNode(operators_t op, TreeNode *left, TreeNode *right);
+
 TreeNode *newRegisterTreeNode(char *name, int index, int offset);
+
 TreeNode *newNumberTreeNode(long value);
-void compileError(char* message,...);
+
+void compileError(char *message, ...);
 
 #endif

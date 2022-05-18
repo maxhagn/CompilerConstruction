@@ -35,7 +35,7 @@ TreeNode *newNumberTreeNode(long value) {
     return node;
 }
 
-void compileError(char* message,...) {
+void compileError(char *message, ...) {
     printColoredMessage(COMPILE);
     printf("%s", message);
     exit(3);

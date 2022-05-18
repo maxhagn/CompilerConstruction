@@ -9,42 +9,54 @@
 
 #include "helper.h"
 
-char* getFirstRegister();
-char* getNextRegister(char*);
-char* getParameterRegister(int, int);
-char* getByteRegisterName(char*);
+char *getParameterRegister(int, int);
 
-void asmFunction(char*);
+char *getRegister(char *);
 
-void asmAddRegister(char*, char*);
-void asmAddValue(long, char*);
+char *getByteRegister(char *);
 
-void asmSubRegister(char*, char*);
-void asmSubValue(long, char*);
+void asmFunction(char *);
 
-void asmMulRegister(char*, char*);
-void asmMulValue(long, char*);
+void asmAddRegister(char *, char *);
 
-void asmMoveRegister(char*, char*);
-void asmMoveValue(long, char*);
+void asmAddValue(long, char *);
 
-void asmAndRegister(char*, char*);
-void asmAndValue(long, char*);
+void asmSubRegister(char *, char *);
 
-void asmNegateRegister(char*);
-void asmNotRegister(char*);
+void asmSubValue(long, char *);
 
-void asmReadArrayRegister(char*, char*, char*);
-void asmReadArrayValue(char*, int, char*);
+void asmMulRegister(char *, char *);
 
-void asmEqualRegister(char*, char*, char*);
-void asmEqualValue(long, char*, char*);
+void asmMulValue(long, char *);
 
-void asmGreaterRegister(char*, char*, char*);
-void asmGreaterValueRegister(long, char*, char*);
-void asmGreaterRegisterValue(char*, long, char*);
+void asmMoveRegister(char *, char *);
+
+void asmMoveValue(long, char *);
+
+void asmAndRegister(char *, char *);
+
+void asmAndValue(long, char *);
+
+void asmEqualRegister(char *, char *, char *);
+
+void asmEqualValue(long, char *, char *);
+
+void asmGreaterRegister(char *, char *, char *);
+
+void asmGreaterValueRegister(long, char *, char *);
+
+void asmGreaterRegisterValue(char *, long, char *);
+
+void asmNegateRegister(char *);
+
+void asmNotRegister(char *);
+
+void asmReadArrayRegister(char *, char *, char *);
+
+void asmReadArrayValue(char *, int, char *);
 
 void asmReturn();
-void asmReturnValue(char*);
+
+void asmReturnValue(char *);
 
 #endif
