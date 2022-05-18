@@ -20,14 +20,14 @@ ListNode *newListNode();
 
 ListNode *add(ListNode *, char *, short, int);
 
-ListNode *merge(int arg_count, ...);
+ListNode *merge(int, ...);
 
 void isVisible(ListNode *, char *, short, int);
 
-short getType(ListNode *list, char *name);
+short getType(ListNode *, char *);
 
-int getOffset(ListNode *list, char *name);
+int getOffset(ListNode *, char *);
 
-int getIndex(ListNode *list, char *name);
+int getIndex(ListNode *, char *);
 
 #endif

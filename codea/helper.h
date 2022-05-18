@@ -27,7 +27,7 @@ enum Color {
     DEFAULT = 3
 };
 
-const char *identifierTypeToString(short identifierType);
+const char *identifierTypeToString(short);
 
 void setTerminalColorRed();
 
@@ -37,6 +37,6 @@ void setTerminalColorGreen();
 
 void setTerminalColorDefault();
 
-void printColoredMessage(short errorType);
+void printColoredMessage(short);
 
 #endif

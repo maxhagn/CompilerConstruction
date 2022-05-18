@@ -9,36 +9,36 @@ int getIntegerLength(int value) {
     return l;
 }
 
-char *getParameterRegister(int index, int offset) {
+char *getParameterRegister(int paramIndex, int paramOffset) {
     char *registers[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
     char *registerString;
     registerString = (char *) malloc(4 * sizeof(char));
 
-    if (index < 0 || index > 5) {
+    if (paramIndex < 0 || paramIndex > 5) {
         printColoredMessage(REGISTER);
         printf("invalid register index specified \n "
-               "index must be greater or equal 0 or smaller than 6, but was %i \n", index);
+               "index must be greater or equal 0 or smaller than 6, but was %i \n", paramIndex);
         exit(3);
     }
 
-    if (offset % 8 != 0) {
+    if (paramOffset % 8 != 0) {
         printColoredMessage(REGISTER);
         printf("invalid register offset specified \n "
-               "offset must be a multiple of 8 but was %i \n", offset);
+               "offset must be a multiple of 8 but was %i \n", paramOffset);
         exit(3);
     }
 
-    if (offset >= 8) {
-        int digits = getIntegerLength(offset);
+    if (paramOffset >= 8) {
+        int digits = getIntegerLength(paramOffset);
         registerString = (char *) realloc(registerString, (strlen(registerString) + digits + 1) * sizeof(char));
-        sprintf(registerString, "%d(", offset);
+        sprintf(registerString, "%d(", paramOffset);
     }
 
     registerString = (char *) realloc(registerString, (strlen(registerString) + 4) * sizeof(char));
     strcat(registerString, "%");
-    strcat(registerString, registers[index]);
+    strcat(registerString, registers[paramIndex]);
 
-    if (offset >= 8) {
+    if (paramOffset >= 8) {
         registerString = (char *) realloc(registerString, (strlen(registerString) + 1) * sizeof(char));
         strcat(registerString, ")");
     }
@@ -71,8 +71,8 @@ char *getRegister(char *lastRegister) {
     exit(3);
 }
 
-char *getByteRegister(char *name) {
-    if (name == NULL) {
+char *getByteRegister(char *registerName) {
+    if (registerName == NULL) {
         return "al";
     }
 
@@ -80,123 +80,121 @@ char *getByteRegister(char *name) {
     char *byteRegisters[] = {"r11b", "r10b", "r9b", "r8b", "cl", "dl", "sil", "dil"};
 
     for (int i = 0; i < 7; i++) {
-        if (strcmp(registers[i], name) == 0) {
+        if (strcmp(registers[i], registerName) == 0) {
             return byteRegisters[i];
         }
     }
 
     printColoredMessage(REGISTER);
     printf("no corresponding byte register found \n "
-           "could not find a corresponding byte register for %s \n", name);
-
-
+           "could not find a corresponding byte register for %s \n", registerName);
     exit(3);
 }
 
-void asmFunction(char *name) {
-    fprintf(stdout, "\t.global\t%s\n", name);
-    fprintf(stdout, "\t.type\t%s, @function\n", name);
-    fprintf(stdout, "%s:\n", name);
+void asmFunction(char *functionName) {
+    fprintf(stdout, "\t.global\t%s\n", functionName);
+    fprintf(stdout, "\t.type\t%s, @function\n", functionName);
+    fprintf(stdout, "%s:\n", functionName);
 }
 
-void asmAddRegister(char *src, char *dst) {
-    fprintf(stdout, "\taddq\t%%%s, %%%s\n", src, dst);
+void asmAddRegister(char *sourceRegister, char *destRegister) {
+    fprintf(stdout, "\taddq\t%%%s, %%%s\n", sourceRegister, destRegister);
 }
 
-void asmAddValue(long value, char *dst) {
-    fprintf(stdout, "\taddq\t$%ld, %%%s\n", value, dst);
+void asmAddValue(long numValue, char *destRegister) {
+    fprintf(stdout, "\taddq\t$%ld, %%%s\n", numValue, destRegister);
 }
 
-void asmSubRegister(char *src, char *dst) {
-    fprintf(stdout, "\tsubq\t%%%s, %%%s\n", src, dst);
+void asmSubRegister(char *sourceRegister, char *destRegister) {
+    fprintf(stdout, "\tsubq\t%%%s, %%%s\n", sourceRegister, destRegister);
 }
 
-void asmSubValue(long value, char *dst) {
-    fprintf(stdout, "\tsubq\t$%ld, %%%s\n", value, dst);
+void asmSubValue(long numValue, char *destRegister) {
+    fprintf(stdout, "\tsubq\t$%ld, %%%s\n", numValue, destRegister);
 }
 
-void asmMulRegister(char *src, char *dst) {
-    fprintf(stdout, "\timulq\t%%%s, %%%s\n", src, dst);
+void asmMulRegister(char *sourceRegister, char *destRegister) {
+    fprintf(stdout, "\timulq\t%%%s, %%%s\n", sourceRegister, destRegister);
 }
 
-void asmMulValue(long value, char *dst) {
-    fprintf(stdout, "\timulq\t$%ld, %%%s\n", value, dst);
+void asmMulValue(long numValue, char *destRegister) {
+    fprintf(stdout, "\timulq\t$%ld, %%%s\n", numValue, destRegister);
 }
 
-void asmMoveRegister(char *src, char *dst) {
-    fprintf(stdout, "\tmovq\t%%%s, %%%s\n", src, dst);
+void asmMoveRegister(char *sourceRegister, char *destRegister) {
+    fprintf(stdout, "\tmovq\t%%%s, %%%s\n", sourceRegister, destRegister);
 }
 
-void asmMoveValue(long value, char *dst) {
-    fprintf(stdout, "\tmovq\t$%ld, %%%s\n", value, dst);
+void asmMoveValue(long numValue, char *destRegister) {
+    fprintf(stdout, "\tmovq\t$%ld, %%%s\n", numValue, destRegister);
 }
 
-void asmMoveRegisterOffset(char *src, char *dst) {
-    fprintf(stdout, "\tmovq\t%s, %%%s\n", src, dst);
+void asmMoveRegisterOffset(char *sourceRegister, char *destRegister) {
+    fprintf(stdout, "\tmovq\t%s, %%%s\n", sourceRegister, destRegister);
 }
 
-void asmAndRegister(char *src, char *dst) {
-    fprintf(stdout, "\tand\t%%%s, %%%s\n", src, dst);
+void asmAndRegister(char *sourceRegister, char *destRegister) {
+    fprintf(stdout, "\tand\t%%%s, %%%s\n", sourceRegister, destRegister);
 }
 
-void asmAndValue(long value, char *dst) {
-    fprintf(stdout, "\tand\t$%ld, %%%s\n", value, dst);
+void asmAndValue(long numValue, char *destRegister) {
+    fprintf(stdout, "\tand\t$%ld, %%%s\n", numValue, destRegister);
 }
 
-void asmEqualRegister(char *first, char *second, char *dst) {
-    fprintf(stdout, "\tcmp\t%%%s, %%%s\n", first, second);
-    fprintf(stdout, "\tsete\t%%%s\n", getByteRegister(dst));
-    fprintf(stdout, "\tand\t$1, %%%s\n", dst);
+void asmEqualRegister(char *registerA, char *registerB, char *destRegister) {
+    fprintf(stdout, "\tcmp\t%%%s, %%%s\n", registerA, registerB);
+    fprintf(stdout, "\tsete\t%%%s\n", getByteRegister(destRegister));
+    fprintf(stdout, "\tand\t$1, %%%s\n", destRegister);
 }
 
-void asmEqualValue(long value, char *second, char *dst) {
-    fprintf(stdout, "\tcmp\t\t$%ld, %%%s\n", value, second);
-    fprintf(stdout, "\tsete\t%%%s\n", getByteRegister(dst));
-    fprintf(stdout, "\tand\t$1, %%%s\n", dst);
+void asmEqualValue(long numValue, char *sourceRegister, char *destRegister) {
+    fprintf(stdout, "\tcmp\t\t$%ld, %%%s\n", numValue, sourceRegister);
+    fprintf(stdout, "\tsete\t%%%s\n", getByteRegister(destRegister));
+    fprintf(stdout, "\tand\t$1, %%%s\n", destRegister);
 }
 
-void asmGreaterRegister(char *first, char *second, char *dst) {
-    fprintf(stdout, "\tcmp\t\t%%%s, %%%s\n", second, first);
-    fprintf(stdout, "\tsetg\t%%%s\n", getByteRegister(dst));
-    fprintf(stdout, "\tand\t\t$1, %%%s\n", dst);
+void asmGreaterRegister(char *registerA, char *registerB, char *destRegister) {
+    fprintf(stdout, "\tcmp\t\t%%%s, %%%s\n", registerB, registerA);
+    fprintf(stdout, "\tsetg\t%%%s\n", getByteRegister(destRegister));
+    fprintf(stdout, "\tand\t\t$1, %%%s\n", destRegister);
 }
 
-void asmGreaterValueRegister(long value, char *second, char *dst) {
-    fprintf(stdout, "\tcmp\t\t%%%s, $%ld\n", second, value);
-    fprintf(stdout, "\tsetg\t%%%s\n", getByteRegister(dst));
-    fprintf(stdout, "\tand\t\t$1, %%%s\n", dst);
+void asmGreaterValueRegister(long numValue, char *sourceRegister, char *destRegister) {
+    fprintf(stdout, "\tcmp\t\t$%ld, %%%s\n", numValue, sourceRegister);
+    fprintf(stdout, "\tsetle\t%%%s\n", getByteRegister(destRegister));
+    fprintf(stdout, "\tand\t\t$1, %%%s\n", destRegister);
 }
 
-void asmGreaterRegisterValue(char *first, long value, char *dst) {
-    fprintf(stdout, "\tcmp\t\t$%ld, %%%s\n", value, first);
-    fprintf(stdout, "\tsetg\t%%%s\n", getByteRegister(dst));
-    fprintf(stdout, "\tand\t\t$1, %%%s\n", dst);
+void asmGreaterRegisterValue(char *registerA, long numValue, char *destRegister) {
+    fprintf(stdout, "\tcmp\t\t$%ld, %%%s\n", numValue, registerA);
+    fprintf(stdout, "\tsetg\t%%%s\n", getByteRegister(destRegister));
+    fprintf(stdout, "\tand\t\t$1, %%%s\n", destRegister);
 }
 
-void asmNegateRegister(char *name) {
-    fprintf(stdout, "\tnegq\t%%%s\n", name);
+void asmNegateRegister(char *sourceRegister) {
+    fprintf(stdout, "\tnegq\t%%%s\n", sourceRegister);
 }
 
-void asmNotRegister(char *name) {
-    fprintf(stdout, "\tnotq\t%%%s\n", name);
+void asmNotRegister(char *sourceRegister) {
+    fprintf(stdout, "\tnotq\t%%%s\n", sourceRegister);
 }
 
-void asmReadArrayRegister(char *src, char *offset, char *dst) {
-    fprintf(stdout, "\tmovq\t(%%%s, %%%s, 8), %%%s\n", src, offset, dst);
+void asmReadArrayRegister(char *sourceRegister, char *arrayOffset, char *destRegister) {
+    fprintf(stdout, "\tmovq\t(%%%s, %%%s, 8), %%%s\n", sourceRegister, arrayOffset, destRegister);
 }
 
-void asmReadArrayValue(char *src, int offset, char *dst) {
-    offset = offset * 8;
-    fprintf(stdout, "\tmovq\t%d(%%%s), %%%s\n", offset, src, dst);
+void asmReadArrayValue(char *sourceRegister, int arrayOffset, char *destRegister) {
+    arrayOffset = arrayOffset * 8;
+    fprintf(stdout, "\tmovq\t%d(%%%s), %%%s\n", arrayOffset, sourceRegister, destRegister);
 }
 
 void asmReturn() {
     fprintf(stdout, "\tret\n");
 }
 
-void asmReturnValue(char *retRegister) {
-    if (retRegister != NULL && strcmp(retRegister, "rax") != 0) {
-        asmMoveRegister(retRegister, "rax");
+void asmReturnValue(char *returnRegister) {
+    if (returnRegister != NULL && strcmp("rax", returnRegister) != 0) {
+        asmMoveRegister(returnRegister, "rax");
     }
 
     asmReturn();

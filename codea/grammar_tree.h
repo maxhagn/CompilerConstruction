@@ -46,12 +46,12 @@ typedef TreeNode *NODEPTR_TYPE;
 #define STATE_LABEL(p)  ((p)->state)
 #define PANIC           compileError
 
-TreeNode *newTreeNode(operators_t op, TreeNode *left, TreeNode *right);
+TreeNode *newTreeNode(operators_t, TreeNode *, TreeNode *);
 
-TreeNode *newRegisterTreeNode(char *name, int index, int offset);
+TreeNode *newRegisterTreeNode(char *, int, int);
 
-TreeNode *newNumberTreeNode(long value);
+TreeNode *newNumberTreeNode(long);
 
-void compileError(char *message, ...);
+void compileError(char *, ...);
 
 #endif
