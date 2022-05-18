@@ -7,105 +7,52 @@ PROGRAM=./$beispiel
 errnum=0
 prgnum=0
 
-LOC=/usr/ftp/pub/ublu/test/$beispiel
-LOC2=~/test/$beispiel
+LOC=/home/maximilian/Projects/CompilerConstruction/test/$beispiel
+LOC2=/home/maximilian/Projects/CompilerConstruction/test/$beispiel/cases
 
-/usr/ftp/pub/ublu/test/accounttest || exit 1
-if [ ! -d ~/abgabe/$beispiel ]; then
+if [ ! -d /home/maximilian/Projects/CompilerConstruction/$beispiel ]; then
   echo "[Error] directory ~/abgabe/$beispiel does not exist."
   exit 1
 else
-  cd ~/abgabe/$beispiel
+  cd /home/maximilian/Projects/CompilerConstruction/$beispiel
   echo 'Testing "make clean"'
   make clean
-  /usr/ftp/pub/ublu/test/cleantest
+  /home/maximilian/Projects/CompilerConstruction/test/cleantest
   echo 'Testing "make"'
   make
 fi
-  
+
 if test ! -x $PROGRAM
 then
   echo "[Error] executable $PROGRAM not generated! ('make')"
   exit 1
 fi
-for i in $LOC/*.0 $LOC2/*.0
-do
-    echo "---------------------------------------------------------------------"
-    echo "Test file: $i"
-    echo "Input:"
-    echo "======"
-    cat $i
-    echo
-    let prgnum=prgnum+1
-    $PROGRAM <$i >/dev/null
-    retval=$?
-    if test $retval -eq 0
-    then
-	OUTFILE=`dirname $i`/`basename $i .0`.out
-	($PROGRAM <$i | diff -w -c -s - $OUTFILE) >/dev/null
-	retval=$?
-	if test $retval -eq 0
-	then
-	    echo "Correct output."
-        else
-	    echo "[Error] incorrect output"
-	    let errnum=errnum+1   
-	    echo   
-	    echo "Expected output:"
-	    echo "================"
-	    cat $OUTFILE
-	    echo 
-	    echo "Difference:"
-	    echo "==========="
-	    $PROGRAM <$i | diff -w -c -s - $OUTFILE
-            echo
-	fi
-	else
-	    echo "[Error] Status is $retval but 0 was expected!"
-            echo   
-            let errnum=errnum+1   
-	fi
-done
-for i in $LOC/*.1 $LOC2/*.1
+for i in $LOC/*.[0123] $LOC2/*.[0123]
 do
         echo "---------------------------------------------------------------------"
 	echo "Test file: $i"
-        let prgnum=prgnum+1
+        echo "Input:"
+        echo "======"
         echo
-	$PROGRAM <$i >/dev/null
+        cat $i
+        echo
+        let prgnum=prgnum+1
+	$PROGRAM <$i >/dev/null 2>/dev/null
 	retval=$?
-	if test $retval -eq 1
+	if test $retval -eq ${i##*.}
 	then
-		echo "Correct output."
+		echo "Correct exit status."
 	else
-                echo "Input:"
-                echo "======"
-                cat $i
+                echo "[Error] Status is $retval but ${i##*.} was expected!"
                 echo
-		echo "[Error] Status is $retval but 1 was expected!"
-                echo
-                let errnum=errnum+1   
+                let errnum=errnum+1
 	fi
 done
 echo "---------------------------------------------------------------------"
 echo
 let corrnum=prgnum-errnum
-echo "Statistics:"
+echo "Statistics: "
 echo "==========="
 echo "           $prgnum Tests total"
 echo "           $corrnum Tests passed"
 echo "           $errnum Tests failed"
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -7,18 +7,17 @@ PROGRAM=./$beispiel
 errnum=0
 prgnum=0
 
-LOC=/usr/ftp/pub/ublu/test/$beispiel
-LOC2=~/test/$beispiel
+LOC=/home/maximilian/Projects/CompilerConstruction/test/$beispiel
+LOC2=/home/maximilian/Projects/CompilerConstruction/test/$beispiel/cases
 
-/usr/ftp/pub/ublu/test/accounttest || exit 1
-if [ ! -d ~/abgabe/$beispiel ]; then
+if [ ! -d /home/maximilian/Projects/CompilerConstruction/$beispiel ]; then
   echo "[Error] directory ~/abgabe/$beispiel does not exist."
   exit 1
 else
-  cd ~/abgabe/$beispiel
+  cd /home/maximilian/Projects/CompilerConstruction/$beispiel
   echo 'Testing "make clean"'
   make clean
-  /usr/ftp/pub/ublu/test/cleantest
+  /home/maximilian/Projects/CompilerConstruction/test/cleantest
   echo 'Testing "make"'
   make
 fi

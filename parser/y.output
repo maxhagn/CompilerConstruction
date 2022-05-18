@@ -1,0 +1,1086 @@
+Grammatik
+
+    0 $accept: Program $end
+
+    1 Program: %empty
+    2        | Program Def SEMICOLON
+
+    3 Def: ID BRACKET_OPEN Pars BRACKET_CLOSE Stats END
+    4    | ID CURLY_BRACKET_OPEN Pars CURLY_BRACKET_CLOSE BRACKET_OPEN Pars BRACKET_CLOSE Stats END
+
+    5 Pars: Par ID
+
+    6 Par: %empty
+    7    | Par ID COMMA
+
+    8 Stats: %empty
+    9      | Stats Labeldef Stat SEMICOLON
+
+   10 Labeldef: %empty
+   11         | Labeldef ID COLON
+
+   12 Stat: RETURN Expr
+   13     | GOTO ID
+   14     | IF Expr GOTO ID
+   15     | VAR ID EQUAL Expr
+   16     | Lexpr EQUAL Expr
+   17     | Term
+
+   18 Lexpr: ID
+   19      | Term SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
+
+   20 Expr: NotOrSub
+   21     | Term ADD Term AddTerm
+   22     | Term MUL Term MulTerm
+   23     | Term AND Term AndTerm
+   24     | Term GREATER Term
+   25     | Term EQUAL Term
+
+   26 NotOrSub: Term
+   27         | NOT NotOrSub
+   28         | SUB NotOrSub
+
+   29 AddTerm: %empty
+   30        | AddTerm ADD Term
+
+   31 MulTerm: %empty
+   32        | MulTerm MUL Term
+
+   33 AndTerm: %empty
+   34        | AndTerm AND Term
+
+   35 Term: BRACKET_OPEN Expr BRACKET_CLOSE
+   36     | NUM
+   37     | Term SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
+   38     | ID
+   39     | ID BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
+   40     | ID CURLY_BRACKET_OPEN RepeatExpr Expr CURLY_BRACKET_CLOSE
+   41     | Term AT_SIGN BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
+
+   42 RepeatExpr: %empty
+   43           | RepeatExpr Expr COMMA
+
+
+Terminale und die Regeln, in denen sie verwendet werden
+
+    $end (0) 0
+    error (256)
+    END (258) 3 4
+    RETURN (259) 12
+    GOTO (260) 13 14
+    IF (261) 14
+    VAR (262) 15
+    NOT (263) 27
+    AND (264) 23 34
+    SEMICOLON (265) 2 9
+    COLON (266) 11
+    COMMA (267) 7 43
+    BRACKET_OPEN (268) 3 4 35 39 41
+    BRACKET_CLOSE (269) 3 4 35 39 41
+    CURLY_BRACKET_OPEN (270) 4 40
+    CURLY_BRACKET_CLOSE (271) 4 40
+    SQUARED_BRACKET_OPEN (272) 19 37
+    SQUARED_BRACKET_CLOSE (273) 19 37
+    EQUAL (274) 15 16 25
+    ADD (275) 21 30
+    MUL (276) 22 32
+    GREATER (277) 24
+    SUB (278) 28
+    AT_SIGN (279) 41
+    ID <id> (280) 3 4 5 7 11 13 14 15 18 38 39 40
+    NUM <number> (281) 36
+
+
+Nicht-Terminal und die Regeln, in denen sie verwendet werden
+
+    $accept (27)
+        auf der linken Seite: 0
+    Program (28)
+        auf der linken Seite: 1 2
+        auf der rechten Seite: 0 2
+    Def (29)
+        auf der linken Seite: 3 4
+        auf der rechten Seite: 2
+    Pars (30)
+        auf der linken Seite: 5
+        auf der rechten Seite: 3 4
+    Par (31)
+        auf der linken Seite: 6 7
+        auf der rechten Seite: 5 7
+    Stats (32)
+        auf der linken Seite: 8 9
+        auf der rechten Seite: 3 4 9
+    Labeldef (33)
+        auf der linken Seite: 10 11
+        auf der rechten Seite: 9 11
+    Stat (34)
+        auf der linken Seite: 12 13 14 15 16 17
+        auf der rechten Seite: 9
+    Lexpr (35)
+        auf der linken Seite: 18 19
+        auf der rechten Seite: 16
+    Expr (36)
+        auf der linken Seite: 20 21 22 23 24 25
+        auf der rechten Seite: 12 14 15 16 19 35 37 39 40 41 43
+    NotOrSub (37)
+        auf der linken Seite: 26 27 28
+        auf der rechten Seite: 20 27 28
+    AddTerm (38)
+        auf der linken Seite: 29 30
+        auf der rechten Seite: 21 30
+    MulTerm (39)
+        auf der linken Seite: 31 32
+        auf der rechten Seite: 22 32
+    AndTerm (40)
+        auf der linken Seite: 33 34
+        auf der rechten Seite: 23 34
+    Term (41)
+        auf der linken Seite: 35 36 37 38 39 40 41
+        auf der rechten Seite: 17 19 21 22 23 24 25 26 30 32 34 37 41
+    RepeatExpr (42)
+        auf der linken Seite: 42 43
+        auf der rechten Seite: 39 40 41 43
+
+
+Zustand 0
+
+    0 $accept: . Program $end
+
+    $default  reduziere mit Regel 1 (Program)
+
+    Program  gehe zu Zustand 1 über
+
+
+Zustand 1
+
+    0 $accept: Program . $end
+    2 Program: Program . Def SEMICOLON
+
+    $end  schiebe und gehe zu Zustand 2 über
+    ID    schiebe und gehe zu Zustand 3 über
+
+    Def  gehe zu Zustand 4 über
+
+
+Zustand 2
+
+    0 $accept: Program $end .
+
+    $default  annehmen
+
+
+Zustand 3
+
+    3 Def: ID . BRACKET_OPEN Pars BRACKET_CLOSE Stats END
+    4    | ID . CURLY_BRACKET_OPEN Pars CURLY_BRACKET_CLOSE BRACKET_OPEN Pars BRACKET_CLOSE Stats END
+
+    BRACKET_OPEN        schiebe und gehe zu Zustand 5 über
+    CURLY_BRACKET_OPEN  schiebe und gehe zu Zustand 6 über
+
+
+Zustand 4
+
+    2 Program: Program Def . SEMICOLON
+
+    SEMICOLON  schiebe und gehe zu Zustand 7 über
+
+
+Zustand 5
+
+    3 Def: ID BRACKET_OPEN . Pars BRACKET_CLOSE Stats END
+
+    $default  reduziere mit Regel 6 (Par)
+
+    Pars  gehe zu Zustand 8 über
+    Par   gehe zu Zustand 9 über
+
+
+Zustand 6
+
+    4 Def: ID CURLY_BRACKET_OPEN . Pars CURLY_BRACKET_CLOSE BRACKET_OPEN Pars BRACKET_CLOSE Stats END
+
+    $default  reduziere mit Regel 6 (Par)
+
+    Pars  gehe zu Zustand 10 über
+    Par   gehe zu Zustand 9 über
+
+
+Zustand 7
+
+    2 Program: Program Def SEMICOLON .
+
+    $default  reduziere mit Regel 2 (Program)
+
+
+Zustand 8
+
+    3 Def: ID BRACKET_OPEN Pars . BRACKET_CLOSE Stats END
+
+    BRACKET_CLOSE  schiebe und gehe zu Zustand 11 über
+
+
+Zustand 9
+
+    5 Pars: Par . ID
+    7 Par: Par . ID COMMA
+
+    ID  schiebe und gehe zu Zustand 12 über
+
+
+Zustand 10
+
+    4 Def: ID CURLY_BRACKET_OPEN Pars . CURLY_BRACKET_CLOSE BRACKET_OPEN Pars BRACKET_CLOSE Stats END
+
+    CURLY_BRACKET_CLOSE  schiebe und gehe zu Zustand 13 über
+
+
+Zustand 11
+
+    3 Def: ID BRACKET_OPEN Pars BRACKET_CLOSE . Stats END
+
+    $default  reduziere mit Regel 8 (Stats)
+
+    Stats  gehe zu Zustand 14 über
+
+
+Zustand 12
+
+    5 Pars: Par ID .
+    7 Par: Par ID . COMMA
+
+    COMMA  schiebe und gehe zu Zustand 15 über
+
+    $default  reduziere mit Regel 5 (Pars)
+
+
+Zustand 13
+
+    4 Def: ID CURLY_BRACKET_OPEN Pars CURLY_BRACKET_CLOSE . BRACKET_OPEN Pars BRACKET_CLOSE Stats END
+
+    BRACKET_OPEN  schiebe und gehe zu Zustand 16 über
+
+
+Zustand 14
+
+    3 Def: ID BRACKET_OPEN Pars BRACKET_CLOSE Stats . END
+    9 Stats: Stats . Labeldef Stat SEMICOLON
+
+    END  schiebe und gehe zu Zustand 17 über
+
+    $default  reduziere mit Regel 10 (Labeldef)
+
+    Labeldef  gehe zu Zustand 18 über
+
+
+Zustand 15
+
+    7 Par: Par ID COMMA .
+
+    $default  reduziere mit Regel 7 (Par)
+
+
+Zustand 16
+
+    4 Def: ID CURLY_BRACKET_OPEN Pars CURLY_BRACKET_CLOSE BRACKET_OPEN . Pars BRACKET_CLOSE Stats END
+
+    $default  reduziere mit Regel 6 (Par)
+
+    Pars  gehe zu Zustand 19 über
+    Par   gehe zu Zustand 9 über
+
+
+Zustand 17
+
+    3 Def: ID BRACKET_OPEN Pars BRACKET_CLOSE Stats END .
+
+    $default  reduziere mit Regel 3 (Def)
+
+
+Zustand 18
+
+    9 Stats: Stats Labeldef . Stat SEMICOLON
+   11 Labeldef: Labeldef . ID COLON
+
+    RETURN        schiebe und gehe zu Zustand 20 über
+    GOTO          schiebe und gehe zu Zustand 21 über
+    IF            schiebe und gehe zu Zustand 22 über
+    VAR           schiebe und gehe zu Zustand 23 über
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    ID            schiebe und gehe zu Zustand 25 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    Stat   gehe zu Zustand 27 über
+    Lexpr  gehe zu Zustand 28 über
+    Term   gehe zu Zustand 29 über
+
+
+Zustand 19
+
+    4 Def: ID CURLY_BRACKET_OPEN Pars CURLY_BRACKET_CLOSE BRACKET_OPEN Pars . BRACKET_CLOSE Stats END
+
+    BRACKET_CLOSE  schiebe und gehe zu Zustand 30 über
+
+
+Zustand 20
+
+   12 Stat: RETURN . Expr
+
+    NOT           schiebe und gehe zu Zustand 31 über
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    SUB           schiebe und gehe zu Zustand 32 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    Expr      gehe zu Zustand 34 über
+    NotOrSub  gehe zu Zustand 35 über
+    Term      gehe zu Zustand 36 über
+
+
+Zustand 21
+
+   13 Stat: GOTO . ID
+
+    ID  schiebe und gehe zu Zustand 37 über
+
+
+Zustand 22
+
+   14 Stat: IF . Expr GOTO ID
+
+    NOT           schiebe und gehe zu Zustand 31 über
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    SUB           schiebe und gehe zu Zustand 32 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    Expr      gehe zu Zustand 38 über
+    NotOrSub  gehe zu Zustand 35 über
+    Term      gehe zu Zustand 36 über
+
+
+Zustand 23
+
+   15 Stat: VAR . ID EQUAL Expr
+
+    ID  schiebe und gehe zu Zustand 39 über
+
+
+Zustand 24
+
+   35 Term: BRACKET_OPEN . Expr BRACKET_CLOSE
+
+    NOT           schiebe und gehe zu Zustand 31 über
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    SUB           schiebe und gehe zu Zustand 32 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    Expr      gehe zu Zustand 40 über
+    NotOrSub  gehe zu Zustand 35 über
+    Term      gehe zu Zustand 36 über
+
+
+Zustand 25
+
+   11 Labeldef: Labeldef ID . COLON
+   18 Lexpr: ID .
+   38 Term: ID .
+   39     | ID . BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
+   40     | ID . CURLY_BRACKET_OPEN RepeatExpr Expr CURLY_BRACKET_CLOSE
+
+    COLON               schiebe und gehe zu Zustand 41 über
+    BRACKET_OPEN        schiebe und gehe zu Zustand 42 über
+    CURLY_BRACKET_OPEN  schiebe und gehe zu Zustand 43 über
+
+    EQUAL     reduziere mit Regel 18 (Lexpr)
+    $default  reduziere mit Regel 38 (Term)
+
+
+Zustand 26
+
+   36 Term: NUM .
+
+    $default  reduziere mit Regel 36 (Term)
+
+
+Zustand 27
+
+    9 Stats: Stats Labeldef Stat . SEMICOLON
+
+    SEMICOLON  schiebe und gehe zu Zustand 44 über
+
+
+Zustand 28
+
+   16 Stat: Lexpr . EQUAL Expr
+
+    EQUAL  schiebe und gehe zu Zustand 45 über
+
+
+Zustand 29
+
+   17 Stat: Term .
+   19 Lexpr: Term . SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
+   37 Term: Term . SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
+   41     | Term . AT_SIGN BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
+
+    SQUARED_BRACKET_OPEN  schiebe und gehe zu Zustand 46 über
+    AT_SIGN               schiebe und gehe zu Zustand 47 über
+
+    $default  reduziere mit Regel 17 (Stat)
+
+
+Zustand 30
+
+    4 Def: ID CURLY_BRACKET_OPEN Pars CURLY_BRACKET_CLOSE BRACKET_OPEN Pars BRACKET_CLOSE . Stats END
+
+    $default  reduziere mit Regel 8 (Stats)
+
+    Stats  gehe zu Zustand 48 über
+
+
+Zustand 31
+
+   27 NotOrSub: NOT . NotOrSub
+
+    NOT           schiebe und gehe zu Zustand 31 über
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    SUB           schiebe und gehe zu Zustand 32 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    NotOrSub  gehe zu Zustand 49 über
+    Term      gehe zu Zustand 50 über
+
+
+Zustand 32
+
+   28 NotOrSub: SUB . NotOrSub
+
+    NOT           schiebe und gehe zu Zustand 31 über
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    SUB           schiebe und gehe zu Zustand 32 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    NotOrSub  gehe zu Zustand 51 über
+    Term      gehe zu Zustand 50 über
+
+
+Zustand 33
+
+   38 Term: ID .
+   39     | ID . BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
+   40     | ID . CURLY_BRACKET_OPEN RepeatExpr Expr CURLY_BRACKET_CLOSE
+
+    BRACKET_OPEN        schiebe und gehe zu Zustand 42 über
+    CURLY_BRACKET_OPEN  schiebe und gehe zu Zustand 43 über
+
+    $default  reduziere mit Regel 38 (Term)
+
+
+Zustand 34
+
+   12 Stat: RETURN Expr .
+
+    $default  reduziere mit Regel 12 (Stat)
+
+
+Zustand 35
+
+   20 Expr: NotOrSub .
+
+    $default  reduziere mit Regel 20 (Expr)
+
+
+Zustand 36
+
+   21 Expr: Term . ADD Term AddTerm
+   22     | Term . MUL Term MulTerm
+   23     | Term . AND Term AndTerm
+   24     | Term . GREATER Term
+   25     | Term . EQUAL Term
+   26 NotOrSub: Term .
+   37 Term: Term . SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
+   41     | Term . AT_SIGN BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
+
+    AND                   schiebe und gehe zu Zustand 52 über
+    SQUARED_BRACKET_OPEN  schiebe und gehe zu Zustand 53 über
+    EQUAL                 schiebe und gehe zu Zustand 54 über
+    ADD                   schiebe und gehe zu Zustand 55 über
+    MUL                   schiebe und gehe zu Zustand 56 über
+    GREATER               schiebe und gehe zu Zustand 57 über
+    AT_SIGN               schiebe und gehe zu Zustand 47 über
+
+    $default  reduziere mit Regel 26 (NotOrSub)
+
+
+Zustand 37
+
+   13 Stat: GOTO ID .
+
+    $default  reduziere mit Regel 13 (Stat)
+
+
+Zustand 38
+
+   14 Stat: IF Expr . GOTO ID
+
+    GOTO  schiebe und gehe zu Zustand 58 über
+
+
+Zustand 39
+
+   15 Stat: VAR ID . EQUAL Expr
+
+    EQUAL  schiebe und gehe zu Zustand 59 über
+
+
+Zustand 40
+
+   35 Term: BRACKET_OPEN Expr . BRACKET_CLOSE
+
+    BRACKET_CLOSE  schiebe und gehe zu Zustand 60 über
+
+
+Zustand 41
+
+   11 Labeldef: Labeldef ID COLON .
+
+    $default  reduziere mit Regel 11 (Labeldef)
+
+
+Zustand 42
+
+   39 Term: ID BRACKET_OPEN . RepeatExpr Expr BRACKET_CLOSE
+
+    $default  reduziere mit Regel 42 (RepeatExpr)
+
+    RepeatExpr  gehe zu Zustand 61 über
+
+
+Zustand 43
+
+   40 Term: ID CURLY_BRACKET_OPEN . RepeatExpr Expr CURLY_BRACKET_CLOSE
+
+    $default  reduziere mit Regel 42 (RepeatExpr)
+
+    RepeatExpr  gehe zu Zustand 62 über
+
+
+Zustand 44
+
+    9 Stats: Stats Labeldef Stat SEMICOLON .
+
+    $default  reduziere mit Regel 9 (Stats)
+
+
+Zustand 45
+
+   16 Stat: Lexpr EQUAL . Expr
+
+    NOT           schiebe und gehe zu Zustand 31 über
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    SUB           schiebe und gehe zu Zustand 32 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    Expr      gehe zu Zustand 63 über
+    NotOrSub  gehe zu Zustand 35 über
+    Term      gehe zu Zustand 36 über
+
+
+Zustand 46
+
+   19 Lexpr: Term SQUARED_BRACKET_OPEN . Expr SQUARED_BRACKET_CLOSE
+   37 Term: Term SQUARED_BRACKET_OPEN . Expr SQUARED_BRACKET_CLOSE
+
+    NOT           schiebe und gehe zu Zustand 31 über
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    SUB           schiebe und gehe zu Zustand 32 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    Expr      gehe zu Zustand 64 über
+    NotOrSub  gehe zu Zustand 35 über
+    Term      gehe zu Zustand 36 über
+
+
+Zustand 47
+
+   41 Term: Term AT_SIGN . BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
+
+    BRACKET_OPEN  schiebe und gehe zu Zustand 65 über
+
+
+Zustand 48
+
+    4 Def: ID CURLY_BRACKET_OPEN Pars CURLY_BRACKET_CLOSE BRACKET_OPEN Pars BRACKET_CLOSE Stats . END
+    9 Stats: Stats . Labeldef Stat SEMICOLON
+
+    END  schiebe und gehe zu Zustand 66 über
+
+    $default  reduziere mit Regel 10 (Labeldef)
+
+    Labeldef  gehe zu Zustand 18 über
+
+
+Zustand 49
+
+   27 NotOrSub: NOT NotOrSub .
+
+    $default  reduziere mit Regel 27 (NotOrSub)
+
+
+Zustand 50
+
+   26 NotOrSub: Term .
+   37 Term: Term . SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
+   41     | Term . AT_SIGN BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
+
+    SQUARED_BRACKET_OPEN  schiebe und gehe zu Zustand 53 über
+    AT_SIGN               schiebe und gehe zu Zustand 47 über
+
+    $default  reduziere mit Regel 26 (NotOrSub)
+
+
+Zustand 51
+
+   28 NotOrSub: SUB NotOrSub .
+
+    $default  reduziere mit Regel 28 (NotOrSub)
+
+
+Zustand 52
+
+   23 Expr: Term AND . Term AndTerm
+
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    Term  gehe zu Zustand 67 über
+
+
+Zustand 53
+
+   37 Term: Term SQUARED_BRACKET_OPEN . Expr SQUARED_BRACKET_CLOSE
+
+    NOT           schiebe und gehe zu Zustand 31 über
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    SUB           schiebe und gehe zu Zustand 32 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    Expr      gehe zu Zustand 68 über
+    NotOrSub  gehe zu Zustand 35 über
+    Term      gehe zu Zustand 36 über
+
+
+Zustand 54
+
+   25 Expr: Term EQUAL . Term
+
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    Term  gehe zu Zustand 69 über
+
+
+Zustand 55
+
+   21 Expr: Term ADD . Term AddTerm
+
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    Term  gehe zu Zustand 70 über
+
+
+Zustand 56
+
+   22 Expr: Term MUL . Term MulTerm
+
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    Term  gehe zu Zustand 71 über
+
+
+Zustand 57
+
+   24 Expr: Term GREATER . Term
+
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    Term  gehe zu Zustand 72 über
+
+
+Zustand 58
+
+   14 Stat: IF Expr GOTO . ID
+
+    ID  schiebe und gehe zu Zustand 73 über
+
+
+Zustand 59
+
+   15 Stat: VAR ID EQUAL . Expr
+
+    NOT           schiebe und gehe zu Zustand 31 über
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    SUB           schiebe und gehe zu Zustand 32 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    Expr      gehe zu Zustand 74 über
+    NotOrSub  gehe zu Zustand 35 über
+    Term      gehe zu Zustand 36 über
+
+
+Zustand 60
+
+   35 Term: BRACKET_OPEN Expr BRACKET_CLOSE .
+
+    $default  reduziere mit Regel 35 (Term)
+
+
+Zustand 61
+
+   39 Term: ID BRACKET_OPEN RepeatExpr . Expr BRACKET_CLOSE
+   43 RepeatExpr: RepeatExpr . Expr COMMA
+
+    NOT           schiebe und gehe zu Zustand 31 über
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    SUB           schiebe und gehe zu Zustand 32 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    Expr      gehe zu Zustand 75 über
+    NotOrSub  gehe zu Zustand 35 über
+    Term      gehe zu Zustand 36 über
+
+
+Zustand 62
+
+   40 Term: ID CURLY_BRACKET_OPEN RepeatExpr . Expr CURLY_BRACKET_CLOSE
+   43 RepeatExpr: RepeatExpr . Expr COMMA
+
+    NOT           schiebe und gehe zu Zustand 31 über
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    SUB           schiebe und gehe zu Zustand 32 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    Expr      gehe zu Zustand 76 über
+    NotOrSub  gehe zu Zustand 35 über
+    Term      gehe zu Zustand 36 über
+
+
+Zustand 63
+
+   16 Stat: Lexpr EQUAL Expr .
+
+    $default  reduziere mit Regel 16 (Stat)
+
+
+Zustand 64
+
+   19 Lexpr: Term SQUARED_BRACKET_OPEN Expr . SQUARED_BRACKET_CLOSE
+   37 Term: Term SQUARED_BRACKET_OPEN Expr . SQUARED_BRACKET_CLOSE
+
+    SQUARED_BRACKET_CLOSE  schiebe und gehe zu Zustand 77 über
+
+
+Zustand 65
+
+   41 Term: Term AT_SIGN BRACKET_OPEN . RepeatExpr Expr BRACKET_CLOSE
+
+    $default  reduziere mit Regel 42 (RepeatExpr)
+
+    RepeatExpr  gehe zu Zustand 78 über
+
+
+Zustand 66
+
+    4 Def: ID CURLY_BRACKET_OPEN Pars CURLY_BRACKET_CLOSE BRACKET_OPEN Pars BRACKET_CLOSE Stats END .
+
+    $default  reduziere mit Regel 4 (Def)
+
+
+Zustand 67
+
+   23 Expr: Term AND Term . AndTerm
+   37 Term: Term . SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
+   41     | Term . AT_SIGN BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
+
+    SQUARED_BRACKET_OPEN  schiebe und gehe zu Zustand 53 über
+    AT_SIGN               schiebe und gehe zu Zustand 47 über
+
+    $default  reduziere mit Regel 33 (AndTerm)
+
+    AndTerm  gehe zu Zustand 79 über
+
+
+Zustand 68
+
+   37 Term: Term SQUARED_BRACKET_OPEN Expr . SQUARED_BRACKET_CLOSE
+
+    SQUARED_BRACKET_CLOSE  schiebe und gehe zu Zustand 80 über
+
+
+Zustand 69
+
+   25 Expr: Term EQUAL Term .
+   37 Term: Term . SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
+   41     | Term . AT_SIGN BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
+
+    SQUARED_BRACKET_OPEN  schiebe und gehe zu Zustand 53 über
+    AT_SIGN               schiebe und gehe zu Zustand 47 über
+
+    $default  reduziere mit Regel 25 (Expr)
+
+
+Zustand 70
+
+   21 Expr: Term ADD Term . AddTerm
+   37 Term: Term . SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
+   41     | Term . AT_SIGN BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
+
+    SQUARED_BRACKET_OPEN  schiebe und gehe zu Zustand 53 über
+    AT_SIGN               schiebe und gehe zu Zustand 47 über
+
+    $default  reduziere mit Regel 29 (AddTerm)
+
+    AddTerm  gehe zu Zustand 81 über
+
+
+Zustand 71
+
+   22 Expr: Term MUL Term . MulTerm
+   37 Term: Term . SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
+   41     | Term . AT_SIGN BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
+
+    SQUARED_BRACKET_OPEN  schiebe und gehe zu Zustand 53 über
+    AT_SIGN               schiebe und gehe zu Zustand 47 über
+
+    $default  reduziere mit Regel 31 (MulTerm)
+
+    MulTerm  gehe zu Zustand 82 über
+
+
+Zustand 72
+
+   24 Expr: Term GREATER Term .
+   37 Term: Term . SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
+   41     | Term . AT_SIGN BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
+
+    SQUARED_BRACKET_OPEN  schiebe und gehe zu Zustand 53 über
+    AT_SIGN               schiebe und gehe zu Zustand 47 über
+
+    $default  reduziere mit Regel 24 (Expr)
+
+
+Zustand 73
+
+   14 Stat: IF Expr GOTO ID .
+
+    $default  reduziere mit Regel 14 (Stat)
+
+
+Zustand 74
+
+   15 Stat: VAR ID EQUAL Expr .
+
+    $default  reduziere mit Regel 15 (Stat)
+
+
+Zustand 75
+
+   39 Term: ID BRACKET_OPEN RepeatExpr Expr . BRACKET_CLOSE
+   43 RepeatExpr: RepeatExpr Expr . COMMA
+
+    COMMA          schiebe und gehe zu Zustand 83 über
+    BRACKET_CLOSE  schiebe und gehe zu Zustand 84 über
+
+
+Zustand 76
+
+   40 Term: ID CURLY_BRACKET_OPEN RepeatExpr Expr . CURLY_BRACKET_CLOSE
+   43 RepeatExpr: RepeatExpr Expr . COMMA
+
+    COMMA                schiebe und gehe zu Zustand 83 über
+    CURLY_BRACKET_CLOSE  schiebe und gehe zu Zustand 85 über
+
+
+Zustand 77
+
+   19 Lexpr: Term SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE .
+   37 Term: Term SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE .
+
+    EQUAL     reduziere mit Regel 19 (Lexpr)
+    $default  reduziere mit Regel 37 (Term)
+
+
+Zustand 78
+
+   41 Term: Term AT_SIGN BRACKET_OPEN RepeatExpr . Expr BRACKET_CLOSE
+   43 RepeatExpr: RepeatExpr . Expr COMMA
+
+    NOT           schiebe und gehe zu Zustand 31 über
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    SUB           schiebe und gehe zu Zustand 32 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    Expr      gehe zu Zustand 86 über
+    NotOrSub  gehe zu Zustand 35 über
+    Term      gehe zu Zustand 36 über
+
+
+Zustand 79
+
+   23 Expr: Term AND Term AndTerm .
+   34 AndTerm: AndTerm . AND Term
+
+    AND  schiebe und gehe zu Zustand 87 über
+
+    $default  reduziere mit Regel 23 (Expr)
+
+
+Zustand 80
+
+   37 Term: Term SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE .
+
+    $default  reduziere mit Regel 37 (Term)
+
+
+Zustand 81
+
+   21 Expr: Term ADD Term AddTerm .
+   30 AddTerm: AddTerm . ADD Term
+
+    ADD  schiebe und gehe zu Zustand 88 über
+
+    $default  reduziere mit Regel 21 (Expr)
+
+
+Zustand 82
+
+   22 Expr: Term MUL Term MulTerm .
+   32 MulTerm: MulTerm . MUL Term
+
+    MUL  schiebe und gehe zu Zustand 89 über
+
+    $default  reduziere mit Regel 22 (Expr)
+
+
+Zustand 83
+
+   43 RepeatExpr: RepeatExpr Expr COMMA .
+
+    $default  reduziere mit Regel 43 (RepeatExpr)
+
+
+Zustand 84
+
+   39 Term: ID BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE .
+
+    $default  reduziere mit Regel 39 (Term)
+
+
+Zustand 85
+
+   40 Term: ID CURLY_BRACKET_OPEN RepeatExpr Expr CURLY_BRACKET_CLOSE .
+
+    $default  reduziere mit Regel 40 (Term)
+
+
+Zustand 86
+
+   41 Term: Term AT_SIGN BRACKET_OPEN RepeatExpr Expr . BRACKET_CLOSE
+   43 RepeatExpr: RepeatExpr Expr . COMMA
+
+    COMMA          schiebe und gehe zu Zustand 83 über
+    BRACKET_CLOSE  schiebe und gehe zu Zustand 90 über
+
+
+Zustand 87
+
+   34 AndTerm: AndTerm AND . Term
+
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    Term  gehe zu Zustand 91 über
+
+
+Zustand 88
+
+   30 AddTerm: AddTerm ADD . Term
+
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    Term  gehe zu Zustand 92 über
+
+
+Zustand 89
+
+   32 MulTerm: MulTerm MUL . Term
+
+    BRACKET_OPEN  schiebe und gehe zu Zustand 24 über
+    ID            schiebe und gehe zu Zustand 33 über
+    NUM           schiebe und gehe zu Zustand 26 über
+
+    Term  gehe zu Zustand 93 über
+
+
+Zustand 90
+
+   41 Term: Term AT_SIGN BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE .
+
+    $default  reduziere mit Regel 41 (Term)
+
+
+Zustand 91
+
+   34 AndTerm: AndTerm AND Term .
+   37 Term: Term . SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
+   41     | Term . AT_SIGN BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
+
+    SQUARED_BRACKET_OPEN  schiebe und gehe zu Zustand 53 über
+    AT_SIGN               schiebe und gehe zu Zustand 47 über
+
+    $default  reduziere mit Regel 34 (AndTerm)
+
+
+Zustand 92
+
+   30 AddTerm: AddTerm ADD Term .
+   37 Term: Term . SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
+   41     | Term . AT_SIGN BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
+
+    SQUARED_BRACKET_OPEN  schiebe und gehe zu Zustand 53 über
+    AT_SIGN               schiebe und gehe zu Zustand 47 über
+
+    $default  reduziere mit Regel 30 (AddTerm)
+
+
+Zustand 93
+
+   32 MulTerm: MulTerm MUL Term .
+   37 Term: Term . SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
+   41     | Term . AT_SIGN BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
+
+    SQUARED_BRACKET_OPEN  schiebe und gehe zu Zustand 53 über
+    AT_SIGN               schiebe und gehe zu Zustand 47 über
+
+    $default  reduziere mit Regel 32 (MulTerm)

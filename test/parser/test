@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/bash
 
 beispiel=parser
 allow_null_glob_expansion=1
@@ -7,18 +7,17 @@ PROGRAM=./$beispiel
 errnum=0
 prgnum=0
 
-LOC=/usr/ftp/pub/ublu/test/$beispiel
-LOC2=~/test/$beispiel
+LOC=/home/maximilian/Projects/CompilerConstruction/test/$beispiel
+LOC2=/home/maximilian/Projects/CompilerConstruction/test/$beispiel/cases
 
-/usr/ftp/pub/ublu/test/accounttest || exit 1
-if [ ! -d ~/abgabe/$beispiel ]; then
+if [ ! -d /home/maximilian/Projects/CompilerConstruction/$beispiel ]; then
   echo "[Error] directory ~/abgabe/$beispiel does not exist."
   exit 1
 else
-  cd ~/abgabe/$beispiel
+  cd /home/maximilian/Projects/CompilerConstruction/$beispiel
   echo 'Testing "make clean"'
   make clean
-  /usr/ftp/pub/ublu/test/cleantest
+  /home/maximilian/Projects/CompilerConstruction/test/cleantest
   echo 'Testing "make"'
   make
 fi
@@ -28,7 +27,7 @@ then
   echo "[Error] executable $PROGRAM not generated! ('make')"
   exit 1
 fi
-for i in $LOC/*.[012] $LOC2/*.[012]
+for i in $LOC/*.[0123] $LOC2/*.[0123]
 do
         echo "---------------------------------------------------------------------"
 	echo "Test file: $i"
@@ -45,14 +44,14 @@ do
 		echo "Correct exit status."
 	else
                 echo "[Error] Status is $retval but ${i##*.} was expected!"
-                echo   
-                let errnum=errnum+1   
+                echo
+                let errnum=errnum+1
 	fi
 done
 echo "---------------------------------------------------------------------"
 echo
 let corrnum=prgnum-errnum
-echo "Statistics:"
+echo "Statistics: "
 echo "==========="
 echo "           $prgnum Tests total"
 echo "           $corrnum Tests passed"

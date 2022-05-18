@@ -7,20 +7,25 @@ errnum=0
 prgnum=0
 
 #LOC=.
-LOC=/usr/ftp/pub/ubvl/test/$beispiel
-LOC2=~/test/$beispiel
+LOC=/home/maximilian/Projects/CompilerConstruction/test/$beispiel
+LOC2=/home/maximilian/Projects/CompilerConstruction/test/$beispiel/cases
 
-/usr/ftp/pub/ublu/test/accounttest || exit 1
+# colors
+RED_COLOR='\033[0;31m'
+GREEN_COLOR='\033[0;32m'
+PURPLE_COLOR='\033[0;35m'
+NO_COLOR='\033[0m'
+
 allow_null_glob_expansion=1
 
-if [ ! -d ~/abgabe/$beispiel ]; then
+if [ ! -d /home/maximilian/Projects/CompilerConstruction/$beispiel ]; then
   echo "Fehler: Verzeichnis ~/abgabe/$beispiel existiert nicht."
   exit 1
 else
-  cd ~/abgabe/$beispiel
+  cd /home/maximilian/Projects/CompilerConstruction/$beispiel
   echo 'Teste "make clean"'
   make clean
-  /usr/ftp/pub/ubvl/test/cleantest
+  /home/maximilian/Projects/CompilerConstruction/test/cleantest
   echo 'Teste "make"'
   make
 fi
@@ -46,8 +51,10 @@ do
 	    if test $retval -eq 0
 	    then
 		    echo "Status korrekt"
+		    echo -e "${GREEN_COLOR}----------------------------------------------------------------------------------TEST PASSED${NO_COLOR}"
 	    else
 		    echo "[Errot] Status=$retval. Erwartet: 0"
+		    echo -e "${RED_COLOR}----------------------------------------------------------------------------------TEST FAILED${NO_COLOR}"
 		    let errorfound=1
 	    fi
 	    echo
@@ -66,7 +73,7 @@ do
 		    echo "Rufe folgendes Codefragment auf:"
 		    cat $CALLFILE
 		    echo
-		    ./a.out 
+		    ./a.out
 		    retval=$?
 		    # test callee saved registers
 		    if [ "$retval" -ge 12 ] && [ "$retval" -le 15 ]; then
@@ -82,7 +89,7 @@ do
 			echo "[Error] Stack pointer %rsp modified."
                         let errorfound=1
                     else
-                        # test signals  
+                        # test signals
 			test $retval -gt 127
 			retsig=$?
 			test ${i##*.} = xin
@@ -91,19 +98,23 @@ do
                             echo "Erzeugter Code verhaelt sich bezueglich Signal-Erzeugung wie erwartet"
 			    if test $retval -eq 1; then
 				echo "[Error] aber das Ergebnis des Aufrufs ist falsch."
+				echo -e "${RED_COLOR}----------------------------------------------------------------------------------TEST FAILED${NO_COLOR}"
 				let errorfound=1
 			    else
 				echo "und das Ergebnis des Ausdrucks ist korrekt."
+				echo -e "${GREEN_COLOR}----------------------------------------------------------------------------------TEST PASSED${NO_COLOR}"
 			    fi
 			else
 			    echo "[Error] Erzeugter Code verhaelt sich bezueglich Signalerzeugung anders als erwartet."
 			    let errorfound=1
 			    echo "Rueckgabewert = $retval";
+			    echo -e "${RED_COLOR}----------------------------------------------------------------------------------TEST FAILED${NO_COLOR}"
 			fi
 		    fi
 		    echo
 		else
 		    echo "[Error] Erzeugter Code konnte nicht assembliert und gelinkt werden."
+        echo -e "${RED_COLOR}----------------------------------------------------------------------------------TEST FAILED${NO_COLOR}"
 		    let errorfound=1
 		fi
 	    fi
@@ -125,8 +136,10 @@ do
 	if test $retval -eq ${i#*.}
 	then
 		echo "Status: korrekt"
+		echo -e "${GREEN_COLOR}----------------------------------------------------------------------------------TEST PASSED${NO_COLOR}"
 	else
 		echo "[Error] Status: $retval. Erwartet: ${i#*.}"
+		echo -e "${RED_COLOR}----------------------------------------------------------------------------------TEST FAILED${NO_COLOR}"
 		let errnum=errnum+1
 	fi
 	echo
@@ -138,3 +151,6 @@ echo "==========="
 echo "           $prgnum Tests total"
 echo "           $corrnum Tests passed"
 echo "           $errnum Tests failed"
+
+
+make clean

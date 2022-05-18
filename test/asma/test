@@ -1,18 +1,18 @@
 #! /bin/bash
 
+beispiel=asma
 OBJ=./asma.o
-LOC=/usr/ftp/pub/ubvl/test/asma
+LOC=/home/maximilian/Projects/CompilerConstruction/test/$beispiel
 DIR=~/abgabe/asma
 
-/usr/ftp/pub/ublu/test/accounttest || exit 1
-if [ ! -d ~/abgabe/asma ]; then
+if [ ! -d /home/maximilian/Projects/CompilerConstruction/asma ]; then
   echo "Error: Directory  ~/abgabe/asma does not exist."
   exit 1
 fi
-cd ~/abgabe/asma
+cd /home/maximilian/Projects/CompilerConstruction/asma
 echo 'Testing "make clean"'
 make clean
-/usr/ftp/pub/ublu/test/cleantest
+/home/maximilian/Projects/CompilerConstruction/test/cleantest
 echo
 echo 'Testing "make"'
 make
