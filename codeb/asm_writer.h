@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <math.h>
 
+#include "symbol_list.h"
 #include "helper.h"
 
 char *getParameterRegister(int, int);
@@ -57,7 +58,7 @@ void asmReadArrayValue(char *, int, char *);
 
 void asmGoto(char *);
 
-void asmLabelDef(char *);
+void asmLabelDef(ListNode*);
 
 void asmReturn();
 

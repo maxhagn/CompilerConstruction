@@ -26,7 +26,7 @@
 @attributes { ListNode *ids; TreeNode *tree; } Expr RepeatExpr Term AndTerm MulTerm AddTerm NotOrSub Lexpr
 
 @traversal @preorder register
-@traversal @postorder codegen
+@traversal @preorder codegen
 @traversal @postorder visibility
 
 %%
@@ -39,13 +39,13 @@ Def         : ID BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 			@{
                 @i @Stats.in@ = merge(3, @Pars.pars@, @Par.pars@, @Stats.out@);
 
-                @codegen @revorder(1) asmFunction(@ID.name@);
+                @codegen asmFunction(@ID.name@);
             @}
 	    	| ID CURLY_BRACKET_OPEN ParsPointer ParPointer CURLY_BRACKET_CLOSE BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 	   		@{
                 @i @Stats.in@ = merge(5, @Pars.pars@, @Par.pars@, @ParsPointer.pars@, @ParPointer.pars@, @Stats.out@);
 
-                @codegen @revorder(1) asmFunction(@ID.name@);
+                @codegen asmFunction(@ID.name@);
 	    	@}
             ;
 
@@ -91,6 +91,7 @@ Stats       :
             	@i @Stats.0.out@ = merge(2, @Labeldef.labels@, @Stats.1.out@);
             	@i @Stats.1.in@  = merge(2, @Stats.0.in@, @Stat.out@);
 
+				@codegen if(@Labeldef.labels@ != NULL) { asmLabelDef(@Labeldef.labels@); }
             	@codegen invoke_burm(@Stat.tree@);
 	    	@}
             ;
@@ -102,8 +103,6 @@ Labeldef    :
 	    	| Labeldef ID COLON
 	    	@{
 				@i @Labeldef.labels@ = add(@Labeldef.1.labels@, @ID.name@, LABEL, @ID.line@);
-
-				@codegen @revorder(1) asmLabelDef(@ID.name@);
 			@}
 	    	;
 
@@ -152,7 +151,11 @@ Stat        : RETURN Expr
 				@i @Lexpr.ids@ = @Stat.in@;
 				@i @Stat.out@ = newListNode();
 
-				@i @Stat.tree@ = NULL;
+				@i @Stat.tree@ = newTreeNode(OP_EQUAL, @Lexpr.tree@, @Expr.tree@);
+
+				@register @Stat.tree@->reg = getRegister(NULL);
+				@register @Lexpr.tree@->reg = @Stat.tree@->reg;
+				@register @Expr.tree@->reg = getRegister(@Stat.tree@->reg);
 			@}
 			| Term
 			@{
@@ -165,13 +168,13 @@ Stat        : RETURN Expr
 
 Lexpr       : ID
 			@{
-                @i @Lexpr.tree@ = NULL;
+				@i @Lexpr.tree@ = getIndex(@Lexpr.ids@, @ID.name@) != -1 ? newRegisterTreeNode(@ID.name@, getIndex(@Lexpr.ids@, @ID.name@), getOffset(@Lexpr.ids@, @ID.name@)) : newVariableNode(@ID.name@, getOffset(@Lexpr.ids@, @ID.name@));
 
                 @visibility isVisible(@Lexpr.ids@, @ID.name@, VARIABLE, @ID.line@);
             @}
             | Term SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
             @{
-				@i @Lexpr.tree@ = newTreeNode(OP_AND, @Term.tree@, @Term.tree@);
+            	@i @Lexpr.tree@ = newTreeNode(OP_WRITE_ARRAY, @Term.0.tree@, @Expr.0.tree@);
 			@}
             ;
 

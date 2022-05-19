@@ -1,5 +1,5 @@
-fun(i)
-var abc = 1;
-if 1 = 2 goto stuhl;
-stuhl: return i;
+fun(array)
+    array[0] = 10;
+    array[1] = 10;
+    return array;
 end;

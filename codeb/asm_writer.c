@@ -203,8 +203,13 @@ void asmReturn() {
     fprintf(stdout, "\tret\n");
 }
 
-void asmLabelDef(char *name) {
-    fprintf(stdout, "%s:\n", name);
+void asmLabelDef(ListNode *head) {
+    ListNode *nextNode = head;
+    while (nextNode != NULL) {
+        fprintf(stdout, "%s: ", nextNode->name);
+        nextNode = nextNode->next;
+    }
+    fprintf(stdout, "\n");
 }
 
 void asmReturnValue(char *returnRegister) {

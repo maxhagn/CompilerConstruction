@@ -11,20 +11,20 @@ typedef struct burm_state *STATEPTR_TYPE;
 #include "helper.h"
 
 typedef enum {
-    OP_RETURN = 0,
-    OP_READ_ARRAY = 1,
-    OP_WRITE_ARRAY = 2,
-    OP_NOT = 3,
-    OP_NEG = 4,
-    OP_ADD = 5,
-    OP_MUL = 6,
-    OP_AND = 7,
-    OP_GREATER = 8,
-    OP_EQUAL = 9,
-    OP_NUMBER = 10,
-    OP_ID = 11,
-    OP_IF = 12,
-    OP_GOTO = 13
+    OP_IF = 0,
+    OP_GOTO = 1,
+    OP_RETURN = 2,
+    OP_READ_ARRAY = 3,
+    OP_WRITE_ARRAY = 4,
+    OP_NOT = 5,
+    OP_NEG = 6,
+    OP_ADD = 7,
+    OP_MUL = 8,
+    OP_AND = 9,
+    OP_GREATER = 10,
+    OP_EQUAL = 11,
+    OP_NUMBER = 12,
+    OP_ID = 13
 } operators_t;
 
 typedef struct TreeNode {
