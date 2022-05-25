@@ -27,10 +27,11 @@ ret:     OP_RETURN(expr)                 # 1 #   asmReturnValue(bnode->reg);
 
 goto:    OP_GOTO                         # 1 #   asmGoto(bnode->name);
 
-assign:  OP_EQUAL(OP_ID, const)          # 1 #   bnode->kids[0]->index == -1 ? printf("\tmovq\t$%ld, %ld(%%rsp)\n", bnode->kids[1]->value, bnode->kids[0]->value * 8) : printf("\tmovq\t$%ld, %%%s\n", bnode->kids[1]->value, getParameterRegister(bnode->kids[0]->index, bnode->kids[0]->offset));
-assign:  OP_EQUAL(OP_ID, expr)           # 1 #   bnode->kids[0]->index == -1 ? printf("\tmovq\t%%%s, %ld(%%rsp)\n", bnode->kids[1]->reg, bnode->kids[0]->value * 8) : printf("\tmovq\t%%%s, %%%s\n", bnode->kids[1]->reg, getParameterRegister(bnode->kids[0]->index, bnode->kids[0]->offset));
-assign:  OP_EQUAL(OP_WRITE_ARRAY, expr)  # 1 #   bnode->kids[0]->index == -1 ? printf("\tmovq\t%%%s, %ld(%%rsp)\n", bnode->kids[1]->reg, bnode->kids[0]->value * 8) : printf("\tmovq\t%%%s, %%%s\n", bnode->kids[1]->reg, getParameterRegister(bnode->kids[0]->index, bnode->kids[0]->offset));
-assign:  OP_EQUAL(expr, expr)            # 1 #   printf("\tmovq\t%%%s, (%%%s)\n", bnode->kids[1]->reg, bnode->kids[0]->reg);
+assign:  OP_EQUAL(OP_ID, const)          # 1 #   bnode->kids[0]->index == -1 ? asmMoveValueStack(bnode->kids[1]->value, bnode->kids[0]->offset) : asmMoveValueParameter(bnode->kids[1]->value, getParameterRegister(bnode->kids[0]->index, bnode->kids[0]->offset));
+assign:  OP_EQUAL(OP_ID, expr)           # 1 #   bnode->kids[0]->index == -1 ? asmMoveRegisterStack(bnode->kids[1]->reg, bnode->kids[0]->offset) : asmMoveRegisterParameter(bnode->kids[1]->reg, getParameterRegister(bnode->kids[0]->index, bnode->kids[0]->offset));
+
+assign:  OP_EQUAL(OP_WRITE_ARRAY, const) # 1 #   bnode->kids[0]->index == -1 ? asmMoveRegisterStack(bnode->kids[1]->reg, bnode->kids[0]->offset) : asmWriteArrayValue(bnode->kids[1]->value, bnode->kids[0]->kids[1]->value, getParameterRegister(bnode->kids[0]->kids[0]->index, bnode->kids[0]->kids[0]->offset));
+assign:  OP_EQUAL(OP_WRITE_ARRAY, expr)  # 1 #   bnode->kids[0]->index == -1 ? asmMoveRegisterStack(bnode->kids[1]->reg, bnode->kids[0]->offset) : asmWriteArrayRegister(bnode->kids[1]->reg, bnode->kids[0]->kids[1]->value, getParameterRegister(bnode->kids[0]->kids[0]->index, bnode->kids[0]->kids[0]->offset));
 
 if:      OP_IF(OP_ID, expr)              # 1 #   asmIf(bnode->reg, bnode->kids[0]->name);
 
@@ -63,7 +64,7 @@ expr:    OP_EQUAL(expr, expr)            # 1 #   asmEqualRegister(bnode->kids[0]
 expr:    OP_EQUAL(const, expr)           # 1 #   asmEqualValue(bnode->kids[0]->value, bnode->kids[1]->reg, bnode->reg);
 expr:    OP_EQUAL(expr, const)           # 1 #   asmEqualValue(bnode->kids[1]->value, bnode->kids[0]->reg, bnode->reg);
 
-expr:    OP_ID                           # 1 #   asmMoveRegisterOffset(getParameterRegister(bnode->index, bnode->offset), bnode->reg);
+expr:    OP_ID                           # 1 #   bnode->index != -1 ? asmMoveParameter(getParameterRegister(bnode->index, bnode->offset), bnode->reg) : asmMoveStackVariable(bnode->value * 8, bnode->reg);
 
 const:   OP_NUMBER                       # 0 #
 const:   OP_ADD(const, const)            # 0 #   bnode->value =  bnode->kids[0]->value  + bnode->kids[1]->value;

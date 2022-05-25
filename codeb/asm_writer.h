@@ -6,6 +6,7 @@
 #include <string.h>
 #include <assert.h>
 #include <math.h>
+#include <stdbool.h>
 
 #include "symbol_list.h"
 #include "helper.h"
@@ -16,7 +17,7 @@ char *getRegister(char *);
 
 char *getByteRegister(char *);
 
-void asmFunction(char *);
+void asmFunction(char *, long);
 
 void asmAddRegister(char *, char *);
 

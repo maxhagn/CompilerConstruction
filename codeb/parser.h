@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "symbol_list.h"
+#include "helper.h"
 #include "grammar_tree.h"
 #include "asm_writer.h"
 

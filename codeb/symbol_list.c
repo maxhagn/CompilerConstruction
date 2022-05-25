@@ -61,7 +61,7 @@ ListNode *merge(int arg_count, ...) {
     return mergedList;
 }
 
-void isVisible(ListNode *head, char *name, short type, int line) {
+void isVisible(ListNode *head, char *name, char *functionName, short type, int line) {
 
     ListNode *nextNode = head;
 

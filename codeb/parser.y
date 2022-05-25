@@ -14,16 +14,17 @@
 
 %start Program
 
-@autoinh ids
-@autosyn tree
+@autoinh ids variableOffset functionName
+@autosyn tree variableCount
 
 @attributes { long value; } NUM
 @attributes { char *name; int line; } ID
+@attributes { long variableCount; } Def
 @attributes { ListNode *pars; } Pars Par ParsPointer ParPointer
-@attributes { ListNode *labels; } Labeldef
-@attributes { ListNode *in; ListNode* out; } Stats
-@attributes { ListNode *in; ListNode* out; TreeNode *tree; } Stat
-@attributes { ListNode *ids; TreeNode *tree; } Expr RepeatExpr Term AndTerm MulTerm AddTerm NotOrSub Lexpr
+@attributes { ListNode *labels; char *functionName; } Labeldef
+@attributes { ListNode *in; ListNode* out; long variableCount; long variableOffset; char *functionName; } Stats
+@attributes { ListNode *in; ListNode* out; TreeNode *tree; long variableCount; long variableOffset; char *functionName; } Stat
+@attributes { ListNode *ids; TreeNode *tree; char *functionName; } Expr RepeatExpr Term AndTerm MulTerm AddTerm NotOrSub Lexpr
 
 @traversal @preorder register
 @traversal @preorder codegen
@@ -39,13 +40,19 @@ Def         : ID BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 			@{
                 @i @Stats.in@ = merge(3, @Pars.pars@, @Par.pars@, @Stats.out@);
 
-                @codegen asmFunction(@ID.name@);
+				@i @Stats.variableOffset@ = 0;
+				@i @Stats.functionName@ = @ID.name@;
+
+                @codegen asmFunction(@ID.name@, @Def.variableCount@);
             @}
 	    	| ID CURLY_BRACKET_OPEN ParsPointer ParPointer CURLY_BRACKET_CLOSE BRACKET_OPEN Pars Par BRACKET_CLOSE Stats END
 	   		@{
                 @i @Stats.in@ = merge(5, @Pars.pars@, @Par.pars@, @ParsPointer.pars@, @ParPointer.pars@, @Stats.out@);
 
-                @codegen asmFunction(@ID.name@);
+                @i @Stats.variableOffset@ = 0;
+                @i @Stats.functionName@ = @ID.name@;
+
+                @codegen asmFunction(@ID.name@, @Def.variableCount@);
 	    	@}
             ;
 
@@ -83,6 +90,7 @@ ParPointer  : ID
 
 Stats       :
 			@{
+				@i @Stats.0.variableCount@ = 0;
             	@i @Stats.out@ = newListNode();
 	    	@}
             | Labeldef Stat SEMICOLON Stats
@@ -90,6 +98,10 @@ Stats       :
             	@i @Stat.0.in@   = @Stats.0.in@;
             	@i @Stats.0.out@ = merge(2, @Labeldef.labels@, @Stats.1.out@);
             	@i @Stats.1.in@  = merge(2, @Stats.0.in@, @Stat.out@);
+
+            	@i @Stat.variableOffset@ = @Stats.0.variableOffset@;
+				@i @Stats.1.variableOffset@ = @Stat.variableCount@ + @Stats.0.variableOffset@;
+            	@i @Stats.0.variableCount@ = @Stat.variableCount@ + @Stats.1.variableCount@;
 
 				@codegen if(@Labeldef.labels@ != NULL) { asmLabelDef(@Labeldef.labels@); }
             	@codegen invoke_burm(@Stat.tree@);
@@ -102,7 +114,7 @@ Labeldef    :
 			@}
 	    	| Labeldef ID COLON
 	    	@{
-				@i @Labeldef.labels@ = add(@Labeldef.1.labels@, @ID.name@, LABEL, @ID.line@);
+				@i @Labeldef.labels@ = add(@Labeldef.1.labels@, getLabelName(@Labeldef.functionName@, @ID.name@), LABEL, @ID.line@);
 			@}
 	    	;
 
@@ -110,6 +122,8 @@ Stat        : RETURN Expr
 	    	@{
                 @i @Expr.ids@ = @Stat.in@;
                 @i @Stat.out@ = newListNode();
+
+                @i @Stat.variableCount@ = 0;
 
                 @i @Stat.tree@ = newTreeNode(OP_RETURN, @Expr.tree@, NULL);
 
@@ -120,27 +134,33 @@ Stat        : RETURN Expr
 			@{
 				@i @Stat.out@ = newListNode();
 
-				@i @Stat.tree@ = newNamedTreeNode(OP_GOTO, @ID.name@, NULL, NULL);
+				@i @Stat.variableCount@ = 0;
 
-				@visibility isVisible(@Stat.in@, @ID.name@, LABEL, @ID.line@);
+				@i @Stat.tree@ = newNamedTreeNode(OP_GOTO, getLabelName(@Stat.functionName@, @ID.name@), NULL, NULL);
+
+				@visibility isVisible(@Stat.in@, @ID.name@, @Stat.functionName@, LABEL, @ID.line@);
 			@}
 			| IF Expr GOTO ID
 			@{
 				@i @Expr.ids@ = @Stat.in@;
 				@i @Stat.out@ = newListNode();
 
-				@i @Stat.tree@ = newTreeNode(OP_IF, newLabelNode(@ID.name@), @Expr.tree@);
+				@i @Stat.variableCount@ = 0;
+
+				@i @Stat.tree@ = newTreeNode(OP_IF, newLabelNode(getLabelName(@Stat.functionName@, @ID.name@)), @Expr.tree@);
                 @register @Stat.tree@->reg = getRegister(NULL);
                 @register @Expr.tree@->reg = @Stat.tree@->reg;
 
-				@visibility isVisible(@Stat.in@, @ID.name@, LABEL, @ID.line@);
+				@visibility isVisible(@Stat.in@, @ID.name@, @Stat.functionName@, LABEL, @ID.line@);
 			@}
 			| VAR ID EQUAL Expr
 			@{
 				@i @Expr.ids@ = @Stat.in@;
 				@i @Stat.out@ = add(newListNode(), @ID.name@, VARIABLE, @ID.line@);
 
-				@i @Stat.tree@ = newTreeNode(OP_EQUAL, newVariableNode(@ID.name@, 0), @Expr.tree@);
+				@i @Stat.variableCount@ = 1;
+
+				@i @Stat.tree@ = newTreeNode(OP_EQUAL, newVariableNode(@ID.name@, @Stat.variableOffset@), @Expr.tree@);
 
 				@register @Stat.tree@->reg = getRegister(NULL);
 				@register @Expr.tree@->reg = @Stat.tree@->reg;
@@ -150,6 +170,8 @@ Stat        : RETURN Expr
 				@i @Expr.ids@ = @Stat.in@;
 				@i @Lexpr.ids@ = @Stat.in@;
 				@i @Stat.out@ = newListNode();
+
+				@i @Stat.variableCount@ = 0;
 
 				@i @Stat.tree@ = newTreeNode(OP_EQUAL, @Lexpr.tree@, @Expr.tree@);
 
@@ -162,6 +184,8 @@ Stat        : RETURN Expr
 				@i @Term.ids@ = @Stat.in@;
 				@i @Stat.out@ = newListNode();
 
+				@i @Stat.variableCount@ = 0;
+
 				@i @Stat.tree@ = NULL;
 			@}
             ;
@@ -170,11 +194,14 @@ Lexpr       : ID
 			@{
 				@i @Lexpr.tree@ = getIndex(@Lexpr.ids@, @ID.name@) != -1 ? newRegisterTreeNode(@ID.name@, getIndex(@Lexpr.ids@, @ID.name@), getOffset(@Lexpr.ids@, @ID.name@)) : newVariableNode(@ID.name@, getOffset(@Lexpr.ids@, @ID.name@));
 
-                @visibility isVisible(@Lexpr.ids@, @ID.name@, VARIABLE, @ID.line@);
+                @visibility isVisible(@Lexpr.ids@, @ID.name@, @Lexpr.functionName@, VARIABLE, @ID.line@);
             @}
             | Term SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
             @{
             	@i @Lexpr.tree@ = newTreeNode(OP_WRITE_ARRAY, @Term.0.tree@, @Expr.0.tree@);
+
+				@register @Term.0.tree@->reg =  @Lexpr.0.tree@->reg;
+				@register @Expr.0.tree@->reg = getRegister(@Lexpr.0.tree@->reg);
 			@}
             ;
 
@@ -283,7 +310,7 @@ Term        : BRACKET_OPEN Expr BRACKET_CLOSE
             @{
            		@i @Term.tree@ = newRegisterTreeNode(@ID.name@, getIndex(@Term.ids@, @ID.name@), getOffset(@Term.ids@, @ID.name@));
 
-				@visibility isVisible(@Term.ids@, @ID.name@, VARIABLE, @ID.line@);
+				@visibility isVisible(@Term.ids@, @ID.name@, @Term.functionName@, VARIABLE, @ID.line@);
 			@}
             | ID BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
             @{

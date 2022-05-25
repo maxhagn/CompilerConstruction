@@ -73,3 +73,11 @@ void printColoredMessage(short errorType) {
             break;
     }
 }
+
+char *getLabelName(char *functionName, char *labelName) {
+    int stringLength = strlen(functionName) + strlen(labelName) + 1;
+    char *labelNameString;
+    labelNameString = (char *) malloc(stringLength * sizeof(char));
+    sprintf(labelNameString, "%s_%s", functionName, labelName);
+    return labelNameString;
+}

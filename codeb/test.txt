@@ -1,5 +1,4 @@
-fun(array)
-    array[0] = 10;
-    array[1] = 10;
-    return array;
+f(a, b)
+    hallooo: a = 1;
+    return a;
 end;

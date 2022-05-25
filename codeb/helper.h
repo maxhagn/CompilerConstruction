@@ -2,6 +2,8 @@
 #define __HELPER_H__
 
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 enum ErrorType {
     SYNTAX = 0,
@@ -38,5 +40,7 @@ void setTerminalColorGreen();
 void setTerminalColorDefault();
 
 void printColoredMessage(short);
+
+char *getLabelName(char *, char *);
 
 #endif
