@@ -24,7 +24,10 @@ typedef enum {
     OP_GREATER = 10,
     OP_EQUAL = 11,
     OP_NUMBER = 12,
-    OP_ID = 13
+    OP_ID = 13,
+    OP_TERM = 14,
+    OP_NEW_OBJ=15,
+    OP_JUMP_BURM=16
 } operators_t;
 
 typedef struct TreeNode {
@@ -57,9 +60,11 @@ TreeNode *newRegisterTreeNode(char *, int, int);
 
 TreeNode *newNumberTreeNode(long);
 
-TreeNode *newLabelNode(char *);
+TreeNode *newLabelTreeNode(char *);
 
-TreeNode *newVariableNode(char *, int);
+TreeNode *newVariableTreeNode(char *, int);
+
+TreeNode *newFlatClosureTreeNode(char *);
 
 void compileError(char *, ...);
 

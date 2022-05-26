@@ -161,7 +161,7 @@ void asmMoveRegisterStack(char *sourceRegister, long offset)
 
 void asmMoveRegisterParameter(char *sourceRegister, char *destRegister)
 {
-    fprintf(stdout, "\tmovq\t%%%s, %%%s\n", sourceRegister, destRegister);
+    fprintf(stdout, "\tmovq\t%%%s, %s\n", sourceRegister, destRegister);
 }
 
 void asmMoveValueParameter(long numValue, char *destRegister) {
@@ -170,11 +170,13 @@ void asmMoveValueParameter(long numValue, char *destRegister) {
 
 void asmMoveStackVariable(long offset, char *dst)
 {
+    offset = offset * 8;
     fprintf(stdout, "\tmovq\t%ld(%%rsp), %%%s\n", offset, dst);
 }
 
 void asmMoveFromStack(long offset, char *dst)
 {
+    offset = offset * 8;
     fprintf(stdout, "\tmovq\t%ld(%%rsp), %%%s\n", offset, dst);
 }
 
@@ -245,8 +247,10 @@ void asmWriteArrayRegister(char *sourceRegister, int arrayOffset, char *destRegi
 
 void asmIf(char *src, char *jumpName)
 {
+
     fprintf(stdout, "\tand \t$1, %%%s\n", getByteRegister(src));
-    fprintf(stdout, "\tjz  \t%s\n", jumpName);
+    fprintf(stdout, "\tand \t$1, %%%s\n", getByteRegister(src));
+    fprintf(stdout, "\tjnz  \t%s\n", jumpName);
 }
 
 void asmGoto(char *jumpName)
@@ -264,10 +268,10 @@ void asmReturn()
     fprintf(stdout, "\tret\n");
 }
 
-void asmLabelDef(ListNode *head) {
+void asmLabelDef(ListNode *head, char * functionName) {
     ListNode *nextNode = head;
     while (nextNode != NULL) {
-        fprintf(stdout, "%s: ", nextNode->name);
+        fprintf(stdout, "%s_%s: ", functionName, nextNode->name);
         nextNode = nextNode->next;
     }
     fprintf(stdout, "\n");
@@ -279,4 +283,23 @@ void asmReturnValue(char *returnRegister) {
     }
 
     asmReturn();
+}
+
+char *getHeapPointer()
+{
+    return "r15";
+}
+
+void generateNewObjekt(char *className, char *dst)
+{
+    // shieben von label in addresse
+    fprintf(stdout, "\tleaq\t%s(%%rip), %%%s\n", className, dst);
+
+    // updating the heap pointer
+    fprintf(stdout, "\tmovq\t%%%s, (%%%s)\n", dst, getHeapPointer());
+
+    // storing the right mem into the rax
+    fprintf(stdout, "\tleaq\t(%%%s), %%%s\n", getHeapPointer(), dst);
+
+    fprintf(stdout, "\tmovq\t%%rdi,8(%%r15)\n");
 }

@@ -1,4 +1,7 @@
-f(a, b)
-    hallooo: a = 1;
-    return a;
+g(x)
+    return x;
+end;
+
+f(x)
+    return g{x};
 end;

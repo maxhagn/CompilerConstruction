@@ -46,7 +46,7 @@ TreeNode *newNumberTreeNode(long value) {
     return node;
 }
 
-TreeNode *newLabelNode(char *name) {
+TreeNode *newLabelTreeNode(char *name) {
     TreeNode *node = (TreeNode *) malloc(sizeof(TreeNode));
 
     node->op = OP_ID;
@@ -58,7 +58,7 @@ TreeNode *newLabelNode(char *name) {
     return node;
 }
 
-TreeNode *newVariableNode(char *name, int offset) {
+TreeNode *newVariableTreeNode(char *name, int offset) {
     TreeNode *node = (TreeNode *) malloc(sizeof(TreeNode));
 
     node->op = OP_ID;

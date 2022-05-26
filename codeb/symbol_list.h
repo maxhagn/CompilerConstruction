@@ -22,7 +22,7 @@ ListNode *add(ListNode *, char *, short, int);
 
 ListNode *merge(int, ...);
 
-void isVisible(ListNode *, char *, char *, short, int);
+void isVisible(ListNode *, char *, short, int);
 
 short getType(ListNode *, char *);
 

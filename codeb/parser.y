@@ -24,7 +24,7 @@
 @attributes { ListNode *labels; char *functionName; } Labeldef
 @attributes { ListNode *in; ListNode* out; long variableCount; long variableOffset; char *functionName; } Stats
 @attributes { ListNode *in; ListNode* out; TreeNode *tree; long variableCount; long variableOffset; char *functionName; } Stat
-@attributes { ListNode *ids; TreeNode *tree; char *functionName; } Expr RepeatExpr Term AndTerm MulTerm AddTerm NotOrSub Lexpr
+@attributes { ListNode *ids; TreeNode *tree; char *functionName; } Expr ParamsExpr ExprLoop Term AndTerm MulTerm AddTerm NotOrSub Lexpr
 
 @traversal @preorder register
 @traversal @preorder codegen
@@ -103,7 +103,7 @@ Stats       :
 				@i @Stats.1.variableOffset@ = @Stat.variableCount@ + @Stats.0.variableOffset@;
             	@i @Stats.0.variableCount@ = @Stat.variableCount@ + @Stats.1.variableCount@;
 
-				@codegen if(@Labeldef.labels@ != NULL) { asmLabelDef(@Labeldef.labels@); }
+				@codegen if(@Labeldef.labels@ != NULL) { asmLabelDef(@Labeldef.labels@, @Labeldef.functionName@); }
             	@codegen invoke_burm(@Stat.tree@);
 	    	@}
             ;
@@ -114,7 +114,7 @@ Labeldef    :
 			@}
 	    	| Labeldef ID COLON
 	    	@{
-				@i @Labeldef.labels@ = add(@Labeldef.1.labels@, getLabelName(@Labeldef.functionName@, @ID.name@), LABEL, @ID.line@);
+				@i @Labeldef.labels@ = add(@Labeldef.1.labels@, @ID.name@, LABEL, @ID.line@);
 			@}
 	    	;
 
@@ -138,7 +138,7 @@ Stat        : RETURN Expr
 
 				@i @Stat.tree@ = newNamedTreeNode(OP_GOTO, getLabelName(@Stat.functionName@, @ID.name@), NULL, NULL);
 
-				@visibility isVisible(@Stat.in@, @ID.name@, @Stat.functionName@, LABEL, @ID.line@);
+				@visibility isVisible(@Stat.in@, @ID.name@, LABEL, @ID.line@);
 			@}
 			| IF Expr GOTO ID
 			@{
@@ -147,11 +147,11 @@ Stat        : RETURN Expr
 
 				@i @Stat.variableCount@ = 0;
 
-				@i @Stat.tree@ = newTreeNode(OP_IF, newLabelNode(getLabelName(@Stat.functionName@, @ID.name@)), @Expr.tree@);
+				@i @Stat.tree@ = newTreeNode(OP_IF, newLabelTreeNode(getLabelName(@Stat.functionName@, @ID.name@)), @Expr.tree@);
                 @register @Stat.tree@->reg = getRegister(NULL);
                 @register @Expr.tree@->reg = @Stat.tree@->reg;
 
-				@visibility isVisible(@Stat.in@, @ID.name@, @Stat.functionName@, LABEL, @ID.line@);
+				@visibility isVisible(@Stat.in@, @ID.name@, LABEL, @ID.line@);
 			@}
 			| VAR ID EQUAL Expr
 			@{
@@ -160,7 +160,7 @@ Stat        : RETURN Expr
 
 				@i @Stat.variableCount@ = 1;
 
-				@i @Stat.tree@ = newTreeNode(OP_EQUAL, newVariableNode(@ID.name@, @Stat.variableOffset@), @Expr.tree@);
+				@i @Stat.tree@ = newTreeNode(OP_EQUAL, newVariableTreeNode(@ID.name@, @Stat.variableOffset@), @Expr.tree@);
 
 				@register @Stat.tree@->reg = getRegister(NULL);
 				@register @Expr.tree@->reg = @Stat.tree@->reg;
@@ -186,15 +186,15 @@ Stat        : RETURN Expr
 
 				@i @Stat.variableCount@ = 0;
 
-				@i @Stat.tree@ = NULL;
+				@i @Stat.tree@ = newTreeNode(OP_TERM, NULL, NULL);
 			@}
             ;
 
 Lexpr       : ID
 			@{
-				@i @Lexpr.tree@ = getIndex(@Lexpr.ids@, @ID.name@) != -1 ? newRegisterTreeNode(@ID.name@, getIndex(@Lexpr.ids@, @ID.name@), getOffset(@Lexpr.ids@, @ID.name@)) : newVariableNode(@ID.name@, getOffset(@Lexpr.ids@, @ID.name@));
+				@i @Lexpr.tree@ = getIndex(@Lexpr.ids@, @ID.name@) != -1 ? newRegisterTreeNode(@ID.name@, getIndex(@Lexpr.ids@, @ID.name@), getOffset(@Lexpr.ids@, @ID.name@)) : newVariableTreeNode(@ID.name@, getVariableOffset(@Lexpr.ids@, @ID.name@));
 
-                @visibility isVisible(@Lexpr.ids@, @ID.name@, @Lexpr.functionName@, VARIABLE, @ID.line@);
+                @visibility isVisible(@Lexpr.ids@, @ID.name@, VARIABLE, @ID.line@);
             @}
             | Term SQUARED_BRACKET_OPEN Expr SQUARED_BRACKET_CLOSE
             @{
@@ -308,31 +308,53 @@ Term        : BRACKET_OPEN Expr BRACKET_CLOSE
 			@}
             | ID
             @{
-           		@i @Term.tree@ = newRegisterTreeNode(@ID.name@, getIndex(@Term.ids@, @ID.name@), getOffset(@Term.ids@, @ID.name@));
+            	@i @Term.tree@ = getIndex(@Term.ids@, @ID.name@) != -1 ? newRegisterTreeNode(@ID.name@, getIndex(@Term.ids@, @ID.name@), getOffset(@Term.ids@, @ID.name@)) : newVariableTreeNode(@ID.name@, getVariableOffset(@Term.ids@, @ID.name@));
 
-				@visibility isVisible(@Term.ids@, @ID.name@, @Term.functionName@, VARIABLE, @ID.line@);
+				@visibility isVisible(@Term.ids@, @ID.name@, VARIABLE, @ID.line@);
 			@}
-            | ID BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
+            | ID BRACKET_OPEN ParamsExpr BRACKET_CLOSE
             @{
 				@i @Term.tree@ = newRegisterTreeNode(@ID.name@, getIndex(@Term.ids@, @ID.name@), getOffset(@Term.ids@, @ID.name@));
 			@}
-            | ID CURLY_BRACKET_OPEN RepeatExpr Expr CURLY_BRACKET_CLOSE
+            | ID CURLY_BRACKET_OPEN ParamsExpr CURLY_BRACKET_CLOSE
             @{
-				@i @Term.tree@ = newRegisterTreeNode(@ID.name@, getIndex(@Term.ids@, @ID.name@), getOffset(@Term.ids@, @ID.name@));
+				@i @Term.tree@ = newNamedTreeNode(OP_NEW_OBJ, @ID.name@, @ParamsExpr.tree@, NULL);
+
 			@}
-            | Term AT_SIGN BRACKET_OPEN RepeatExpr Expr BRACKET_CLOSE
+            | Term AT_SIGN BRACKET_OPEN ParamsExpr BRACKET_CLOSE
             @{
 				@i @Term.tree@ = newTreeNode(OP_AND, @Term.1.tree@, @Term.1.tree@);
 			@}
             ;
 
-RepeatExpr  :
+ParamsExpr  : Expr
 			@{
-				@i @RepeatExpr.tree@ = NULL;
+				@i @ParamsExpr.tree@ = @Expr.tree@;
+
+				@register @Expr.tree@->reg = getRegister(NULL);
+				@register @ParamsExpr.tree@->reg = getRegister(@ParamsExpr.0.tree@->reg);
 			@}
-            | RepeatExpr Expr COMMA
+            | ExprLoop Expr
             @{
-            	@i @RepeatExpr.tree@ = NULL;
+            	@i @ParamsExpr.tree@ = @Expr.tree@;
+
+            	@register @Expr.tree@->reg = getRegister(NULL);
+            	@register @ParamsExpr.tree@->reg = getRegister(@ParamsExpr.0.tree@->reg);
+
+			@}
+            ;
+
+ExprLoop    : Expr COMMA
+			@{
+				@i @ExprLoop.tree@ = @Expr.tree@;
+			@}
+            | ExprLoop Expr COMMA
+            @{
+            	@i @ExprLoop.tree@ = newTreeNode(OP_ADD, @ExprLoop.1.tree@, @Expr.tree@);
+
+            	@register @Expr.tree@->reg = getRegister(NULL);
+            	@register @ExprLoop.tree@->reg = getRegister(@ExprLoop.0.tree@->reg);
+
 			@}
             ;
 

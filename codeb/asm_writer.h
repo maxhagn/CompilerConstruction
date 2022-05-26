@@ -59,7 +59,7 @@ void asmReadArrayValue(char *, int, char *);
 
 void asmGoto(char *);
 
-void asmLabelDef(ListNode*);
+void asmLabelDef(ListNode*, char*);
 
 void asmReturn();
 
