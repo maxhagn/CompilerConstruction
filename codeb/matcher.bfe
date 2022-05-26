@@ -69,7 +69,7 @@ expr:    OP_EQUAL(expr, const)           # 1 #   asmEqualValue(bnode->kids[1]->v
 
 expr:    OP_ID                           # 1 #   bnode->index == -1 ? asmMoveStackVariable(bnode->offset, bnode->reg) : asmMoveParameter(getParameterRegister(bnode->index, bnode->offset), bnode->reg);
 
-expr:    OP_NEW_OBJ(expr)                # 1 #   generateNewObjekt(bnode->name, bnode->reg);
+expr:    OP_NEW_OBJ                      # 1 #   generateNewObjekt(bnode->name, bnode->reg);
 
 const:   OP_NUMBER                       # 0 #
 const:   OP_ADD(const, const)            # 0 #   bnode->value =  bnode->kids[0]->value  + bnode->kids[1]->value;

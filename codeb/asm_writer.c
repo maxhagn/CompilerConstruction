@@ -292,14 +292,15 @@ char *getHeapPointer()
 
 void generateNewObjekt(char *className, char *dst)
 {
-    // shieben von label in addresse
+
+    fprintf(stdout, "\taddq\t$16, %%r15\n");
+
     fprintf(stdout, "\tleaq\t%s(%%rip), %%%s\n", className, dst);
 
-    // updating the heap pointer
-    fprintf(stdout, "\tmovq\t%%%s, (%%%s)\n", dst, getHeapPointer());
+    fprintf(stdout, "\tmovq\t%%%s, 0(%%%s)\n", dst, getHeapPointer());
 
-    // storing the right mem into the rax
-    fprintf(stdout, "\tleaq\t(%%%s), %%%s\n", getHeapPointer(), dst);
+    fprintf(stdout, "\tmovq\t%%rdi, 8(%%r15)\n");
 
-    fprintf(stdout, "\tmovq\t%%rdi,8(%%r15)\n");
+    fprintf(stdout, "\tleaq\t0(%%%s), %%%s\n", getHeapPointer(), dst);
+
 }
