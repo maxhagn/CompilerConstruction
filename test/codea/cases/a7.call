@@ -1,0 +1,2 @@
+extern long f(long,long);
+RET(f(4,3) == 36 && f(2,5)==30);

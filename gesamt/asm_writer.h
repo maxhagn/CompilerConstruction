@@ -6,7 +6,6 @@
 #include <string.h>
 #include <assert.h>
 #include <math.h>
-#include <stdbool.h>
 
 #include "symbol_list.h"
 #include "helper.h"
@@ -31,10 +30,6 @@ void asmMulRegister(char *, char *);
 
 void asmMulValue(long, char *);
 
-void asmMoveRegister(char *, char *);
-
-void asmMoveValue(long, char *);
-
 void asmAndRegister(char *, char *);
 
 void asmAndValue(long, char *);
@@ -53,13 +48,43 @@ void asmNegateRegister(char *);
 
 void asmNotRegister(char *);
 
-void asmReadArrayRegister(char *, char *, char *);
+void asmLabelDef(ListNode *, char *);
 
-void asmReadArrayValue(char *, int, char *);
+void asmIf(char *, char *);
 
 void asmGoto(char *);
 
-void asmLabelDef(ListNode*, char*);
+void asmReadArrayValue(char *, int, char *);
+
+void asmReadArrayRegister(char *, char *, char *);
+
+void asmWriteArrayValue(long, int, char *);
+
+void asmWriteArrayRegister(char *, int, char *);
+
+void asmMoveRegister(char *, char *);
+
+void asmMoveValue(long, char *);
+
+void asmMoveParameter(char *, char *);
+
+void asmMoveValueStack(long, long);
+
+void asmMoveRegisterStack(char *, long);
+
+void asmMoveRegisterParameter(char *, char *);
+
+void asmMoveValueParameter(long, char *);
+
+void asmMoveStackVariable(long, char *);
+
+void asmMoveValueHeap(long, long);
+
+void asmMoveRegisterHeap(char *, long);
+
+void asmMoveAddressHeap(char *, char *);
+
+void asmClearHeap(long);
 
 void asmReturn();
 

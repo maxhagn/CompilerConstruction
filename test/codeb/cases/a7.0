@@ -1,0 +1,1 @@
+f(x,y) return y*x*3; end;

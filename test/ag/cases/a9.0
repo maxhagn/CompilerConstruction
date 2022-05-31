@@ -1,0 +1,2 @@
+f(x) goto l; l: return x; end;
+f(x) goto l; l: return x; end;

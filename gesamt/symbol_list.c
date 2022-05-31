@@ -116,7 +116,7 @@ short getType(ListNode *list, char *name) {
     return -1;
 }
 
-int getOffset(ListNode *list, char *name) {
+int getParameterOffset(ListNode *list, char *name) {
     ListNode *nextNode = list;
     int offset = 8;
     while (nextNode != NULL) {
@@ -137,28 +137,7 @@ int getOffset(ListNode *list, char *name) {
     return 0;
 }
 
-int getVariableOffset(ListNode *list, char *name) {
-    ListNode *nextNode = list;
-    int offset = 0;
-    while (nextNode != NULL) {
-
-        if (strcmp(nextNode->name, name) == 0) {
-            if (nextNode->type == VARIABLE) {
-                if (strcmp(nextNode->name, name) == 0) {
-                    return offset;
-                }
-            }
-        }
-
-        if (nextNode->type == VARIABLE) {
-            offset += 1;
-        }
-        nextNode = nextNode->next;
-    }
-    return 0;
-}
-
-int getIndex(ListNode *list, char *name) {
+int getParameterIndex(ListNode *list, char *name) {
 
     ListNode *nextNode = list;
     int index = 0;
@@ -183,4 +162,25 @@ int getIndex(ListNode *list, char *name) {
     }
 
     return -1;
+}
+
+int getVariableOffset(ListNode *list, char *name) {
+    ListNode *nextNode = list;
+    int offset = 0;
+    while (nextNode != NULL) {
+
+        if (strcmp(nextNode->name, name) == 0) {
+            if (nextNode->type == VARIABLE) {
+                if (strcmp(nextNode->name, name) == 0) {
+                    return offset;
+                }
+            }
+        }
+
+        if (nextNode->type == VARIABLE) {
+            offset += 1;
+        }
+        nextNode = nextNode->next;
+    }
+    return 0;
 }

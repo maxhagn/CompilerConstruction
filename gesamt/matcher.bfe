@@ -71,8 +71,10 @@ expr:    OP_ID                           # 1 #   bnode->index == -1 ? asmMoveSta
 
 expr:    OP_LEVEL_ONE(expr)              # 1 #   asmMoveAddressHeap(bnode->name, bnode->reg);
 
-expr:    OP_WRITE_HEAP(expr, expr)       # 1 #   asmMoveRegisterHeap(bnode->kids[0]->reg, bnode->kids[0]->offset); asmMoveRegisterHeap(bnode->kids[1]->reg, bnode->kids[1]->offset);
-expr:    OP_WRITE_HEAP(expr, OP_EMPTY)   # 1 #   asmMoveRegisterHeap(bnode->kids[0]->reg, bnode->kids[0]->offset);
+expr:    OP_WRITE_HEAP(expr, expr)       # 1 #   asmMoveRegisterHeap(bnode->reg, bnode->offset);
+expr:    OP_WRITE_HEAP(const, expr)      # 1 #   asmMoveValueHeap(bnode->kids[0]->value, bnode->offset);
+expr:    OP_WRITE_HEAP(expr, OP_EMPTY)   # 1 #   asmMoveRegisterHeap(bnode->reg, bnode->offset);
+expr:    OP_WRITE_HEAP(const, OP_EMPTY)  # 1 #   asmMoveValueHeap(bnode->kids[0]->value, bnode->offset);
 
 const:   OP_NUMBER                       # 0 #
 const:   OP_ADD(const, const)            # 0 #   bnode->value =  bnode->kids[0]->value  + bnode->kids[1]->value;
