@@ -82,6 +82,31 @@ TreeNode *newLevelOneTreeNode(char *name, TreeNode *left, long offset) {
     return node;
 }
 
+TreeNode *newFunctionCallTreeNode(char *name, TreeNode *left, long offset) {
+    TreeNode *node = (TreeNode *) malloc(sizeof(TreeNode));
+
+    node->op = OP_FUNCTION_CALL;
+    node->kids[0] = left;
+    node->kids[1] = (TreeNode *) NULL;
+    node->name = name;
+    node->index = -1;
+    node->offset = offset;
+
+    return node;
+}
+
+TreeNode *newWriteParamTreeNode(TreeNode *left, TreeNode *right, char * name) {
+    TreeNode *node = (TreeNode *) malloc(sizeof(TreeNode));
+
+    node->op = OP_WRITE_PARAM;
+    node->kids[0] = left;
+    node->kids[1] = right;
+    node->name = name;
+    node->index = -1;
+
+    return node;
+}
+
 TreeNode *newWriteHeapTreeNode(TreeNode *left, TreeNode *right, long offset) {
     TreeNode *node = (TreeNode *) malloc(sizeof(TreeNode));
 

@@ -1,7 +1,7 @@
-g{x}(y)
-  return x + y;
+f(a, b, c)
+    return g(b, c, a);
 end;
 
-f(a,b,c,d,e,f)
-  return g{a,b,c,d,e,f};
+g(x, y, z)
+    return y;
 end;

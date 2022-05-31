@@ -197,6 +197,52 @@ void asmGoto(char *labelName) {
     fprintf(stdout, "\tjmp\t%s\n", labelName);
 }
 
+void asmFunctionCall(char *functionName)
+{
+    fprintf(stdout, "\tcall\t%s\n", functionName);
+}
+
+void asmSaveRegister(int paramIndex, int registerIndex)
+{
+    char *paramRegisters[] = { "rdi", "rsi", "rdx", "rcx", "r8", "r9" };
+    char *registers[] = {"r11", "r10", "r9", "r8", "rcx", "rdx", "rsi", "rdi"};
+
+    for (int i = 0; i <= paramIndex; i++)
+    {
+        fprintf(stdout, "\tpushq\t%%%s\n", paramRegisters[i]);
+    }
+
+    if (registerIndex > 0)
+    {
+        for (int i = 0; i < registerIndex; i++)
+        {
+            fprintf(stdout, "\tpushq\t%%%s\n", registers[i]);
+        }
+    }
+
+}
+
+void asmRestoreRegisters(int paramIndex, int registerIndex)
+{
+    char *paramRegisters[] = { "rdi", "rsi", "rdx", "rcx", "r8", "r9" };
+    char *registers[] = {"r11", "r10", "r9", "r8", "rcx", "rdx", "rsi", "rdi"};
+
+    if (registerIndex > 0)
+    {
+        for (int i = registerIndex - 1; i >= 0; i--)
+        {
+            fprintf(stdout, "\tpopq\t%%%s\n", registers[i]);
+        }
+    }
+
+    for (int i = paramIndex; i >= 0; i--)
+    {
+        fprintf(stdout, "\tpopq\t%%%s\n", paramRegisters[i]);
+    }
+
+
+}
+
 void asmReadArrayValue(char *sourceRegister, int arrayOffset, char *destRegister) {
     arrayOffset = arrayOffset * 8;
     fprintf(stdout, "\tmovq\t%d(%%%s), %%%s\n", arrayOffset, sourceRegister, destRegister);

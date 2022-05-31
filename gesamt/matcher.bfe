@@ -8,7 +8,8 @@
 %}
 
 %start program
-%term OP_IF=0 OP_GOTO=1 OP_RETURN=2 OP_READ_ARRAY=3 OP_WRITE_ARRAY=4 OP_NOT=5 OP_NEG=6 OP_ADD=7 OP_MUL=8 OP_AND=9 OP_GREATER=10 OP_EQUAL=11 OP_NUMBER=12 OP_ID=13 OP_TERM=14 OP_LEVEL_ONE=15 OP_WRITE_HEAP=16 OP_EMPTY=17
+%term OP_IF=0 OP_GOTO=1 OP_RETURN=2 OP_READ_ARRAY=3 OP_WRITE_ARRAY=4 OP_NOT=5 OP_NEG=6 OP_ADD=7 OP_MUL=8 OP_AND=9 OP_GREATER=10
+%term OP_EQUAL=11 OP_NUMBER=12 OP_ID=13 OP_TERM=14 OP_LEVEL_ONE=15 OP_WRITE_HEAP=16 OP_EMPTY=17 OP_FUNCTION_CALL=18 OP_WRITE_PARAM=19
 
 %%
 
@@ -23,6 +24,7 @@ stat:    assign                          # 0 #
 stat:    goto                            # 0 #
 stat:    if                              # 0 #
 stat:    term                            # 0 #
+stat:    param                           # 0 #
 
 term:    OP_TERM                         # 0 #
 
@@ -75,6 +77,12 @@ expr:    OP_WRITE_HEAP(expr, expr)       # 1 #   asmMoveRegisterHeap(bnode->reg,
 expr:    OP_WRITE_HEAP(const, expr)      # 1 #   asmMoveValueHeap(bnode->kids[0]->value, bnode->offset);
 expr:    OP_WRITE_HEAP(expr, OP_EMPTY)   # 1 #   asmMoveRegisterHeap(bnode->reg, bnode->offset);
 expr:    OP_WRITE_HEAP(const, OP_EMPTY)  # 1 #   asmMoveValueHeap(bnode->kids[0]->value, bnode->offset);
+
+expr:    OP_FUNCTION_CALL(param)         # 1 #   asmSaveRegister(6,0); burm_label(bnode->kids[0]); burm_reduce(bnode->kids[0], 1); asmFunctionCall(bnode->name); asmRestoreRegisters(6,0); asmMoveRegister("rax", bnode->reg);
+param:   OP_WRITE_PARAM(expr, param)     # 1 #   fprintf(stdout, "\tmovq\t%%r10, %%rdi\n"); fprintf(stdout, "\tmovq\t%%r11, %%rsi\n");
+param:   OP_WRITE_PARAM(const, param)    # 1 #   printf("%s", "hi2");
+param:   OP_WRITE_PARAM(expr, OP_EMPTY)  # 1 #   fprintf(stdout, "\tmovq\t%%r11, %%rdi\n");
+param:   OP_WRITE_PARAM(const, OP_EMPTY) # 1 #   fprintf(stdout, "\tmovq\t%%r11, %%rdi\n");
 
 const:   OP_NUMBER                       # 0 #
 const:   OP_ADD(const, const)            # 0 #   bnode->value =  bnode->kids[0]->value  + bnode->kids[1]->value;
