@@ -1,6 +1,6 @@
 #include "asm_writer.h"
 
-bool withVariables = false;
+int withVariables = 0;
 
 int getIntegerLength(int value) {
     int l = 1;
@@ -101,9 +101,9 @@ void asmFunction(char *functionName, long variableCount) {
     if (variableCount > 0) {
         fprintf(stdout, "\tenter\t$%li, $0\n", variableCount * 8);
 
-        withVariables = true;
+        withVariables = 1;
     } else {
-        withVariables = false;
+        withVariables = 0;
     }
 }
 
@@ -129,41 +129,6 @@ void asmMulRegister(char *sourceRegister, char *destRegister) {
 
 void asmMulValue(long numValue, char *destRegister) {
     fprintf(stdout, "\timulq\t$%ld, %%%s\n", numValue, destRegister);
-}
-
-void asmMoveRegister(char *sourceRegister, char *destRegister) {
-    fprintf(stdout, "\tmovq\t%%%s, %%%s\n", sourceRegister, destRegister);
-}
-
-void asmMoveValue(long numValue, char *destRegister) {
-    fprintf(stdout, "\tmovq\t$%ld, %%%s\n", numValue, destRegister);
-}
-
-void asmMoveParameter(char *sourceRegister, char *destRegister) {
-    fprintf(stdout, "\tmovq\t%s, %%%s\n", sourceRegister, destRegister);
-}
-
-void asmMoveValueStack(long numValue, long offset) {
-    offset = offset * 8;
-    fprintf(stdout, "\tmovq\t$%ld, %ld(%%rsp)\n", numValue, offset);
-}
-
-void asmMoveRegisterStack(char *sourceRegister, long offset) {
-    offset = offset * 8;
-    fprintf(stdout, "\tmovq\t%%%s, %ld(%%rsp)\n", sourceRegister, offset);
-}
-
-void asmMoveRegisterParameter(char *sourceRegister, char *destRegister) {
-    fprintf(stdout, "\tmovq\t%%%s, %s\n", sourceRegister, destRegister);
-}
-
-void asmMoveValueParameter(long numValue, char *destRegister) {
-    fprintf(stdout, "\tmovq\t$%ld, %s\n", numValue, destRegister);
-}
-
-void asmMoveStackVariable(long offset, char *dst) {
-    offset = offset * 8;
-    fprintf(stdout, "\tmovq\t%ld(%%rsp), %%%s\n", offset, dst);
 }
 
 void asmAndRegister(char *sourceRegister, char *destRegister) {
@@ -212,13 +177,33 @@ void asmNotRegister(char *sourceRegister) {
     fprintf(stdout, "\tnotq\t%%%s\n", sourceRegister);
 }
 
-void asmReadArrayRegister(char *sourceRegister, char *arrayOffset, char *destRegister) {
-    fprintf(stdout, "\tmovq\t(%%%s, %%%s, 8), %%%s\n", sourceRegister, arrayOffset, destRegister);
+void asmLabelDef(ListNode *head, char *functionName) {
+    ListNode *nextNode = head;
+    while (nextNode != NULL) {
+        fprintf(stdout, "%s_%s: ", functionName, nextNode->name);
+        nextNode = nextNode->next;
+    }
+    fprintf(stdout, "\n");
+}
+
+void asmIf(char *src, char *labelName) {
+
+    fprintf(stdout, "\tand \t$1, %%%s\n", getByteRegister(src));
+    fprintf(stdout, "\tand \t$1, %%%s\n", getByteRegister(src));
+    fprintf(stdout, "\tjnz  \t%s\n", labelName);
+}
+
+void asmGoto(char *labelName) {
+    fprintf(stdout, "\tjmp\t%s\n", labelName);
 }
 
 void asmReadArrayValue(char *sourceRegister, int arrayOffset, char *destRegister) {
     arrayOffset = arrayOffset * 8;
     fprintf(stdout, "\tmovq\t%d(%%%s), %%%s\n", arrayOffset, sourceRegister, destRegister);
+}
+
+void asmReadArrayRegister(char *sourceRegister, char *arrayOffset, char *destRegister) {
+    fprintf(stdout, "\tmovq\t(%%%s, %%%s, 8), %%%s\n", sourceRegister, arrayOffset, destRegister);
 }
 
 void asmWriteArrayValue(long numValue, int arrayOffset, char *destRegister) {
@@ -231,48 +216,43 @@ void asmWriteArrayRegister(char *sourceRegister, int arrayOffset, char *destRegi
     fprintf(stdout, "\tmovq\t%%%s, %d(%s)\n", sourceRegister, arrayOffset, destRegister);
 }
 
-void asmIf(char *src, char *jumpName) {
-
-    fprintf(stdout, "\tand \t$1, %%%s\n", getByteRegister(src));
-    fprintf(stdout, "\tand \t$1, %%%s\n", getByteRegister(src));
-    fprintf(stdout, "\tjnz  \t%s\n", jumpName);
+void asmMoveRegister(char *sourceRegister, char *destRegister) {
+    fprintf(stdout, "\tmovq\t%%%s, %%%s\n", sourceRegister, destRegister);
 }
 
-void asmGoto(char *jumpName) {
-    fprintf(stdout, "\tjmp\t%s\n", jumpName);
+void asmMoveValue(long numValue, char *destRegister) {
+    fprintf(stdout, "\tmovq\t$%ld, %%%s\n", numValue, destRegister);
 }
 
-void asmReturn() {
-    if (withVariables) {
-        fprintf(stdout, "\tleave\n");
-    }
-
-    fprintf(stdout, "\tret\n");
+void asmMoveParameter(char *sourceRegister, char *destRegister) {
+    fprintf(stdout, "\tmovq\t%s, %%%s\n", sourceRegister, destRegister);
 }
 
-void asmLabelDef(ListNode *head, char *functionName) {
-    ListNode *nextNode = head;
-    while (nextNode != NULL) {
-        fprintf(stdout, "%s_%s: ", functionName, nextNode->name);
-        nextNode = nextNode->next;
-    }
-    fprintf(stdout, "\n");
+void asmMoveValueStack(long numValue, long offset) {
+    offset = offset * 8;
+    fprintf(stdout, "\tmovq\t$%ld, %ld(%%rsp)\n", numValue, offset);
 }
 
-void asmReturnValue(char *returnRegister) {
-    if (returnRegister != NULL && strcmp("rax", returnRegister) != 0) {
-        asmMoveRegister(returnRegister, "rax");
-    }
-
-    asmReturn();
+void asmMoveRegisterStack(char *sourceRegister, long offset) {
+    offset = offset * 8;
+    fprintf(stdout, "\tmovq\t%%%s, %ld(%%rsp)\n", sourceRegister, offset);
 }
 
-void asmClearHeap(long size) {
-    size = (size + 1) * 8;
-    fprintf(stdout, "\taddq\t$%ld, %%r15\n", size);
+void asmMoveRegisterParameter(char *sourceRegister, char *destRegister) {
+    fprintf(stdout, "\tmovq\t%%%s, %s\n", sourceRegister, destRegister);
+}
+
+void asmMoveValueParameter(long numValue, char *destRegister) {
+    fprintf(stdout, "\tmovq\t$%ld, %s\n", numValue, destRegister);
+}
+
+void asmMoveStackVariable(long offset, char *dst) {
+    offset = offset * 8;
+    fprintf(stdout, "\tmovq\t%ld(%%rsp), %%%s\n", offset, dst);
 }
 
 void asmMoveValueHeap(long numValue, long offset) {
+    offset = (offset + 1) * 8;
     fprintf(stdout, "\tmovq\t$%ld, %ld(%%r15)\n", numValue, offset);
 }
 
@@ -287,4 +267,25 @@ void asmMoveAddressHeap(char *name, char *destRegister) {
     fprintf(stdout, "\tmovq\t%%%s, 0(%%r15)\n", destRegister);
 
     fprintf(stdout, "\tleaq\t0(%%r15), %%%s\n", destRegister);
+}
+
+void asmClearHeap(long size) {
+    size = (size + 1) * 8;
+    fprintf(stdout, "\taddq\t$%ld, %%r15\n", size);
+}
+
+void asmReturn() {
+    if (withVariables) {
+        fprintf(stdout, "\tleave\n");
+    }
+
+    fprintf(stdout, "\tret\n");
+}
+
+void asmReturnValue(char *returnRegister) {
+    if (returnRegister != NULL && strcmp("rax", returnRegister) != 0) {
+        asmMoveRegister(returnRegister, "rax");
+    }
+
+    asmReturn();
 }

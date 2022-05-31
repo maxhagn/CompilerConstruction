@@ -24,8 +24,8 @@
 @attributes { ListNode *labels; char *functionName; } Labeldef
 @attributes { ListNode *in; ListNode* out; long variableCount; long variableOffset; char *functionName; } Stats
 @attributes { ListNode *in; ListNode* out; TreeNode *tree; long variableCount; long variableOffset; char *functionName; long exprCount; } Stat
-@attributes { ListNode *ids; TreeNode *tree; char *functionName; long exprCount;} Expr Term AndTerm MulTerm AddTerm NotOrSub Lexpr
-@attributes { ListNode *ids; TreeNode *tree; char *functionName; long exprCount; } ParamsExpr ExprLoop
+@attributes { ListNode *ids; TreeNode *tree; char *functionName; long exprCount; } Expr Term AndTerm MulTerm AddTerm NotOrSub Lexpr
+@attributes { ListNode *ids; TreeNode *tree; char *functionName; long exprCount; long exprOffset; } Params RepeatExpr
 
 @traversal @preorder register
 @traversal @preorder codegen
@@ -105,7 +105,7 @@ Stats       :
             	@i @Stats.0.variableCount@ = @Stat.variableCount@ + @Stats.1.variableCount@;
 
 				@codegen if(@Labeldef.labels@ != NULL) { asmLabelDef(@Labeldef.labels@, @Labeldef.functionName@); }
-				@codegen asmClearHeap(@Stat.exprCount@);
+				@codegen if(@Stat.exprCount@ > 0) asmClearHeap(@Stat.exprCount@);
             	@codegen invoke_burm(@Stat.tree@);
 	    	@}
             ;
@@ -200,7 +200,7 @@ Stat        : RETURN Expr
 
 Lexpr       : ID
 			@{
-				@i @Lexpr.tree@ = getIndex(@Lexpr.ids@, @ID.name@) != -1 ? newRegisterTreeNode(@ID.name@, getIndex(@Lexpr.ids@, @ID.name@), getOffset(@Lexpr.ids@, @ID.name@)) : newVariableTreeNode(@ID.name@, getVariableOffset(@Lexpr.ids@, @ID.name@));
+				@i @Lexpr.tree@ = getParameterIndex(@Lexpr.ids@, @ID.name@) != -1 ? newRegisterTreeNode(@ID.name@, getParameterIndex(@Lexpr.ids@, @ID.name@), getParameterOffset(@Lexpr.ids@, @ID.name@)) : newVariableTreeNode(@ID.name@, getVariableOffset(@Lexpr.ids@, @ID.name@));
 
 				@i @Lexpr.0.exprCount@ = 0;
 
@@ -222,7 +222,6 @@ Expr        : NotOrSub
 				@register @NotOrSub.tree@->reg = @Expr.tree@->reg;
 
 				@i @Expr.exprCount@ = @NotOrSub.exprCount@;
-
 			@}
             | Term AddTerm
             @{
@@ -346,28 +345,27 @@ Term        : BRACKET_OPEN Expr BRACKET_CLOSE
 			@}
             | ID
             @{
-            	@i @Term.tree@ = getIndex(@Term.ids@, @ID.name@) != -1 ? newRegisterTreeNode(@ID.name@, getIndex(@Term.ids@, @ID.name@), getOffset(@Term.ids@, @ID.name@)) : newVariableTreeNode(@ID.name@, getVariableOffset(@Term.ids@, @ID.name@));
+            	@i @Term.tree@ = getParameterIndex(@Term.ids@, @ID.name@) != -1 ? newRegisterTreeNode(@ID.name@, getParameterIndex(@Term.ids@, @ID.name@), getParameterOffset(@Term.ids@, @ID.name@)) : newVariableTreeNode(@ID.name@, getVariableOffset(@Term.ids@, @ID.name@));
 
             	@i @Term.exprCount@ = 0;
 
 				@visibility isVisible(@Term.ids@, @ID.name@, VARIABLE, @ID.line@);
 			@}
-            | ID BRACKET_OPEN ParamsExpr BRACKET_CLOSE
+            | ID BRACKET_OPEN Params BRACKET_CLOSE
             @{
-				@i @Term.tree@ = newRegisterTreeNode(@ID.name@, getIndex(@Term.ids@, @ID.name@), getOffset(@Term.ids@, @ID.name@));
+				@i @Term.tree@ = newRegisterTreeNode(@ID.name@, getParameterIndex(@Term.ids@, @ID.name@), getParameterOffset(@Term.ids@, @ID.name@));
 
 				@i @Term.exprCount@ = 0;
 			@}
-            | ID CURLY_BRACKET_OPEN ParamsExpr CURLY_BRACKET_CLOSE
+            | ID CURLY_BRACKET_OPEN Params CURLY_BRACKET_CLOSE
             @{
-				@i @Term.tree@ = newLevelOneTreeNode(@ID.name@, @ParamsExpr.tree@, @ParamsExpr.exprCount@);
+				@i @Term.tree@ = newLevelOneTreeNode(@ID.name@, @Params.tree@, @Params.exprCount@);
 
-				@i @Term.exprCount@ = @ParamsExpr.exprCount@;
+				@i @Term.exprCount@ = @Params.exprCount@;
 
-				@register @ParamsExpr.tree@->reg = getRegister(NULL);
-
+				@register @Params.tree@->reg = getRegister(NULL);
 			@}
-            | Term AT_SIGN BRACKET_OPEN ParamsExpr BRACKET_CLOSE
+            | Term AT_SIGN BRACKET_OPEN Params BRACKET_CLOSE
             @{
 				@i @Term.tree@ = newTreeNode(OP_AND, @Term.1.tree@, @Term.1.tree@);
 
@@ -375,44 +373,45 @@ Term        : BRACKET_OPEN Expr BRACKET_CLOSE
 			@}
             ;
 
-ParamsExpr  : Expr
+Params  : Expr
 			@{
-				@i @ParamsExpr.tree@ = newWriteHeapTreeNode(@Expr.tree@, newEmptyTreeNode(), @ParamsExpr.exprCount@);
+				@i @Params.tree@ = newWriteHeapTreeNode(@Expr.tree@, newEmptyTreeNode(), @Params.exprOffset@);
 
-				@i @ParamsExpr.exprCount@ = 1;
+				@i @Params.exprOffset@ = 0;
+				@i @Params.exprCount@ = 1;
 
-				@register @Expr.tree@->reg = @ParamsExpr.tree@->reg;
-
+				@register @Expr.tree@->reg = @Params.tree@->reg;
 			@}
-            | Expr ExprLoop
+            | Expr RepeatExpr
             @{
-            	@i @ParamsExpr.tree@ = newWriteHeapTreeNode(@ExprLoop.tree@, @Expr.tree@, @ParamsExpr.exprCount@);
+            	@i @Params.tree@ = newWriteHeapTreeNode(@Expr.tree@, @RepeatExpr.tree@, @Params.exprOffset@);
 
-            	@i @ParamsExpr.exprCount@ = @ExprLoop.exprCount@ + 1;
+				@i @Params.exprOffset@ = 0;
+				@i @RepeatExpr.exprOffset@ = 1;
+            	@i @Params.exprCount@ = @RepeatExpr.exprCount@ + 1;
 
-				@register @Expr.tree@->reg = @ParamsExpr.tree@->reg;
-				@register @ExprLoop.tree@->reg = getRegister(@Expr.tree@->reg);
-
+				@register @Expr.tree@->reg = @Params.tree@->reg;
+				@register @RepeatExpr.tree@->reg = getRegister(@Expr.tree@->reg);
 			@}
             ;
 
-ExprLoop    : COMMA Expr
+RepeatExpr  : COMMA Expr
 			@{
-				@i @ExprLoop.tree@ = newWriteHeapTreeNode(@Expr.tree@, newEmptyTreeNode(), @ExprLoop.exprCount@);
+				@i @RepeatExpr.tree@ = newWriteHeapTreeNode(@Expr.tree@, newEmptyTreeNode(), @RepeatExpr.exprOffset@);
 
-				@i @ExprLoop.exprCount@ = 1;
+				@i @RepeatExpr.exprCount@ = 1;
 
-				@register @Expr.tree@->reg = @ExprLoop.tree@->reg;
+				@register @Expr.tree@->reg = @RepeatExpr.tree@->reg;
 			@}
-            | ExprLoop COMMA Expr
+            | COMMA Expr RepeatExpr
             @{
-            	@i @ExprLoop.tree@ = newWriteHeapTreeNode(@ExprLoop.1.tree@, @Expr.tree@, @ExprLoop.0.exprCount@);
+            	@i @RepeatExpr.tree@ = newWriteHeapTreeNode(@RepeatExpr.1.tree@, @Expr.tree@, @RepeatExpr.0.exprOffset@);
 
-            	@i @ExprLoop.0.exprCount@ = @ExprLoop.1.exprCount@ + 1;
+            	@i @RepeatExpr.0.exprCount@ = @RepeatExpr.1.exprCount@ + 1;
+            	@i @RepeatExpr.1.exprOffset@ = @RepeatExpr.0.exprCount@;
 
-				@register @Expr.tree@->reg = @ExprLoop.0.tree@->reg;
-            	@register @ExprLoop.1.tree@->reg = getRegister(@Expr.tree@->reg);
-
+				@register @Expr.tree@->reg = @RepeatExpr.0.tree@->reg;
+            	@register @RepeatExpr.1.tree@->reg = getRegister(@RepeatExpr.0.tree@->reg);
 			@}
             ;
 

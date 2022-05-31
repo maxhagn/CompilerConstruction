@@ -26,8 +26,10 @@ void isVisible(ListNode *, char *, short, int);
 
 short getType(ListNode *, char *);
 
-int getOffset(ListNode *, char *);
+int getParameterOffset(ListNode *, char *);
 
-int getIndex(ListNode *, char *);
+int getParameterIndex(ListNode *, char *);
+
+int getVariableOffset(ListNode *, char *);
 
 #endif
