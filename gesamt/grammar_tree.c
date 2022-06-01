@@ -95,13 +95,14 @@ TreeNode *newFunctionCallTreeNode(char *name, TreeNode *left, long offset) {
     return node;
 }
 
-TreeNode *newWriteParamTreeNode(TreeNode *left, TreeNode *right, char * name) {
+TreeNode *newWriteParamTreeNode(TreeNode *left, TreeNode *right, char * name, long offset) {
     TreeNode *node = (TreeNode *) malloc(sizeof(TreeNode));
 
     node->op = OP_WRITE_PARAM;
     node->kids[0] = left;
     node->kids[1] = right;
     node->name = name;
+    node->offset = offset;
     node->index = -1;
 
     return node;

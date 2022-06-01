@@ -207,7 +207,7 @@ void asmSaveRegister(int paramIndex, int registerIndex)
     char *paramRegisters[] = { "rdi", "rsi", "rdx", "rcx", "r8", "r9" };
     char *registers[] = {"r11", "r10", "r9", "r8", "rcx", "rdx", "rsi", "rdi"};
 
-    for (int i = 0; i <= paramIndex; i++)
+    for (int i = 0; i < paramIndex; i++)
     {
         fprintf(stdout, "\tpushq\t%%%s\n", paramRegisters[i]);
     }
@@ -220,6 +220,11 @@ void asmSaveRegister(int paramIndex, int registerIndex)
         }
     }
 
+}
+void asmSaveReg(int index)
+{
+    char *paramRegisters[] = { "rdi", "rsi", "rdx", "rcx", "r8", "r9" };
+    fprintf(stdout, "\tpushq\t%%%s\n", paramRegisters[index]);
 }
 
 void asmRestoreRegisters(int paramIndex, int registerIndex)
@@ -235,7 +240,7 @@ void asmRestoreRegisters(int paramIndex, int registerIndex)
         }
     }
 
-    for (int i = paramIndex; i >= 0; i--)
+    for (int i = paramIndex -1; i >= 0; i--)
     {
         fprintf(stdout, "\tpopq\t%%%s\n", paramRegisters[i]);
     }

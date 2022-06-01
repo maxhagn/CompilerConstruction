@@ -1,7 +1,9 @@
-f(a, b, c)
-    return g(b, c, a);
+f(x, y)
+    var z = x + y;
+    var w = g(z);
+    return w + 2;
 end;
 
-g(x, y, z)
-    return y;
+g(x)
+    return x * 2;
 end;

@@ -15,7 +15,7 @@
 %start Program
 
 @autoinh ids variableOffset functionName
-@autosyn tree variableCount exprCount
+@autosyn tree variableCount exprCount paramCount
 
 @attributes { long value; } NUM
 @attributes { char *name; int line; } ID
@@ -24,9 +24,9 @@
 @attributes { ListNode *labels; char *functionName; } Labeldef
 @attributes { ListNode *in; ListNode* out; long variableCount; long variableOffset; char *functionName; } Stats
 @attributes { ListNode *in; ListNode* out; TreeNode *tree; long variableCount; long variableOffset; char *functionName; long exprCount; } Stat
-@attributes { ListNode *ids; TreeNode *tree; char *functionName; } FunctionCallParams RepeatFunctionCallParams
 @attributes { ListNode *ids; TreeNode *tree; char *functionName; long exprCount; } Expr Term AndTerm MulTerm AddTerm NotOrSub Lexpr
 @attributes { ListNode *ids; TreeNode *tree; char *functionName; long exprCount; long exprOffset; } LevelOneParams RepeatLevelOneParams
+@attributes { ListNode *ids; TreeNode *tree; char *functionName; long paramCount; long paramOffset; } FunctionCallParams RepeatFunctionCallParams
 
 @traversal @preorder register
 @traversal @preorder codegen
@@ -354,7 +354,7 @@ Term        				: BRACKET_OPEN Expr BRACKET_CLOSE
 							@}
 							| ID BRACKET_OPEN FunctionCallParams BRACKET_CLOSE
 							@{
-								@i @Term.tree@ = newFunctionCallTreeNode(@ID.name@, @FunctionCallParams.tree@, getParameterOffset(@Term.ids@, @ID.name@));
+								@i @Term.tree@ = newFunctionCallTreeNode(@ID.name@, @FunctionCallParams.tree@, @FunctionCallParams.paramCount@);
 
 								@i @Term.exprCount@ = 0;
 								@i @FunctionCallParams.functionName@ = @ID.name@;
@@ -379,13 +379,20 @@ Term        				: BRACKET_OPEN Expr BRACKET_CLOSE
 
 FunctionCallParams  		: Expr
 							@{
-								@i @FunctionCallParams.tree@ = newWriteParamTreeNode(@Expr.tree@, newEmptyTreeNode(), @FunctionCallParams.functionName@);
+								@i @FunctionCallParams.tree@ = newWriteParamTreeNode(@Expr.tree@, newEmptyTreeNode(), @FunctionCallParams.functionName@, @FunctionCallParams.paramOffset@);
+
+								@i @FunctionCallParams.paramOffset@ = 0;
+								@i @FunctionCallParams.paramCount@ = 1;
 
 								@register @Expr.tree@->reg = @FunctionCallParams.tree@->reg;
 							@}
 							| Expr RepeatFunctionCallParams
 							@{
-								@i @FunctionCallParams.tree@ = newWriteParamTreeNode(@Expr.tree@, @RepeatFunctionCallParams.tree@, 0);
+								@i @FunctionCallParams.tree@ = newWriteParamTreeNode(@Expr.tree@, @RepeatFunctionCallParams.tree@, 0, @FunctionCallParams.paramOffset@);
+
+								@i @FunctionCallParams.paramOffset@ = 0;
+								@i @RepeatFunctionCallParams.paramOffset@ = 1;
+								@i @FunctionCallParams.paramCount@ = @RepeatFunctionCallParams.paramCount@ + 1;
 
 								@register @Expr.tree@->reg = @FunctionCallParams.tree@->reg;
 								@register @RepeatFunctionCallParams.tree@->reg = getRegister(@Expr.tree@->reg);
@@ -394,13 +401,18 @@ FunctionCallParams  		: Expr
 
 RepeatFunctionCallParams  	: COMMA Expr
 							@{
-								@i @RepeatFunctionCallParams.tree@ = newWriteParamTreeNode(@Expr.tree@, newEmptyTreeNode(), 0);
+								@i @RepeatFunctionCallParams.tree@ = newWriteParamTreeNode(@Expr.tree@, newEmptyTreeNode(), 0, @RepeatFunctionCallParams.paramOffset@);
+
+								@i @RepeatFunctionCallParams.paramCount@ = 1;
 
 								@register @Expr.tree@->reg = @RepeatFunctionCallParams.tree@->reg;
 							@}
 							| COMMA Expr RepeatFunctionCallParams
 							@{
-								@i @RepeatFunctionCallParams.0.tree@ = newWriteParamTreeNode(@Expr.tree@, @RepeatFunctionCallParams.1.tree@, 0);
+								@i @RepeatFunctionCallParams.0.tree@ = newWriteParamTreeNode(@Expr.tree@, @RepeatFunctionCallParams.1.tree@, 0, @RepeatFunctionCallParams.0.paramOffset@);
+
+								@i @RepeatFunctionCallParams.0.paramCount@ = @RepeatFunctionCallParams.1.paramCount@ + 1;
+								@i @RepeatFunctionCallParams.1.paramOffset@ = @RepeatFunctionCallParams.0.paramOffset@ + 1;
 
 								@register @Expr.tree@->reg = @RepeatFunctionCallParams.0.tree@->reg;
 								@register @RepeatFunctionCallParams.1.tree@->reg = getRegister(@RepeatFunctionCallParams.0.tree@->reg);

@@ -73,7 +73,7 @@ TreeNode *newFunctionCallTreeNode(char *, TreeNode *, long);
 
 TreeNode *newEmptyTreeNode();
 
-TreeNode *newWriteParamTreeNode(TreeNode *, TreeNode *, char *);
+TreeNode *newWriteParamTreeNode(TreeNode *, TreeNode *, char *, long);
 
 TreeNode *newWriteHeapTreeNode(TreeNode *, TreeNode *, long);
 

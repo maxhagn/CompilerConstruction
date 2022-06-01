@@ -24,7 +24,6 @@ stat:    assign                          # 0 #
 stat:    goto                            # 0 #
 stat:    if                              # 0 #
 stat:    term                            # 0 #
-stat:    param                           # 0 #
 
 term:    OP_TERM                         # 0 #
 
@@ -78,11 +77,11 @@ expr:    OP_WRITE_HEAP(const, expr)      # 1 #   asmMoveValueHeap(bnode->kids[0]
 expr:    OP_WRITE_HEAP(expr, OP_EMPTY)   # 1 #   asmMoveRegisterHeap(bnode->reg, bnode->offset);
 expr:    OP_WRITE_HEAP(const, OP_EMPTY)  # 1 #   asmMoveValueHeap(bnode->kids[0]->value, bnode->offset);
 
-expr:    OP_FUNCTION_CALL(param)         # 1 #   asmSaveRegister(6,0); burm_label(bnode->kids[0]); burm_reduce(bnode->kids[0], 1); asmFunctionCall(bnode->name); asmRestoreRegisters(6,0); asmMoveRegister("rax", bnode->reg);
-param:   OP_WRITE_PARAM(expr, param)     # 1 #   fprintf(stdout, "\tmovq\t%%r10, %%rdi\n"); fprintf(stdout, "\tmovq\t%%r11, %%rsi\n");
-param:   OP_WRITE_PARAM(const, param)    # 1 #   printf("%s", "hi2");
-param:   OP_WRITE_PARAM(expr, OP_EMPTY)  # 1 #   fprintf(stdout, "\tmovq\t%%r11, %%rdi\n");
-param:   OP_WRITE_PARAM(const, OP_EMPTY) # 1 #   fprintf(stdout, "\tmovq\t%%r11, %%rdi\n");
+expr:    OP_FUNCTION_CALL(param)         # 1 #   asmFunctionCall(bnode->name); asmRestoreRegisters(bnode->offset,0); asmMoveRegister("rax", bnode->reg);
+param:   OP_WRITE_PARAM(expr, param)     # 1 #   asmSaveReg(bnode->offset); asmMoveRegisterParameter(bnode->kids[0]->reg, getParameterRegister(bnode->offset,0));
+param:   OP_WRITE_PARAM(const, param)    # 1 #   asmSaveReg(bnode->offset); asmMoveValueParameter(bnode->kids[0]->value, getParameterRegister(bnode->offset,0));
+param:   OP_WRITE_PARAM(expr, OP_EMPTY)  # 1 #   asmSaveReg(bnode->offset); asmMoveRegisterParameter(bnode->kids[0]->reg, getParameterRegister(bnode->offset,0));
+param:   OP_WRITE_PARAM(const, OP_EMPTY) # 1 #   asmSaveReg(bnode->offset); asmMoveValueParameter(bnode->kids[0]->value, getParameterRegister(bnode->offset,0));
 
 const:   OP_NUMBER                       # 0 #
 const:   OP_ADD(const, const)            # 0 #   bnode->value =  bnode->kids[0]->value  + bnode->kids[1]->value;
