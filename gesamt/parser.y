@@ -26,6 +26,7 @@
 @attributes { ListNode *in; ListNode* out; TreeNode *tree; long variableCount; long variableOffset; char *functionName; long exprCount; } Stat
 @attributes { ListNode *ids; TreeNode *tree; char *functionName; long exprCount; } Expr Term AndTerm MulTerm AddTerm NotOrSub Lexpr
 @attributes { ListNode *ids; TreeNode *tree; char *functionName; long exprCount; long exprOffset; } LevelOneParams RepeatLevelOneParams
+@attributes { ListNode *ids; TreeNode *tree; char *functionName; long exprCount; long exprOffset; } LevelTwoParams RepeatLevelTwoParams
 @attributes { ListNode *ids; TreeNode *tree; char *functionName; long paramCount; long paramOffset; } FunctionCallParams RepeatFunctionCallParams
 
 @traversal @preorder register
@@ -359,7 +360,7 @@ Term        				: BRACKET_OPEN Expr BRACKET_CLOSE
 								@i @Term.exprCount@ = 0;
 								@i @FunctionCallParams.functionName@ = @ID.name@;
 
-								@register @FunctionCallParams.tree@->reg = getRegister(NULL);
+								@register @FunctionCallParams.tree@->reg = @Term.tree@->reg;
 							@}
 							| ID CURLY_BRACKET_OPEN LevelOneParams CURLY_BRACKET_CLOSE
 							@{
@@ -367,13 +368,15 @@ Term        				: BRACKET_OPEN Expr BRACKET_CLOSE
 
 								@i @Term.exprCount@ = @LevelOneParams.exprCount@;
 
-								@register @LevelOneParams.tree@->reg = getRegister(NULL);
+								@register @LevelOneParams.tree@->reg = @Term.tree@->reg;
 							@}
-							| Term AT_SIGN BRACKET_OPEN LevelOneParams BRACKET_CLOSE
+							| Term AT_SIGN BRACKET_OPEN LevelTwoParams BRACKET_CLOSE
 							@{
-								@i @Term.tree@ = newTreeNode(OP_AND, @Term.1.tree@, @Term.1.tree@);
+								@i @Term.tree@ = newLevelTwoTreeNode(@Term.1.tree@, @LevelTwoParams.tree@);
 
 								@i @Term.exprCount@ = 0;
+
+								@register @LevelTwoParams.tree@->reg = @Term.tree@->reg;
 							@}
 							;
 
@@ -458,6 +461,48 @@ RepeatLevelOneParams  		: COMMA Expr
 
 								@register @Expr.tree@->reg = @RepeatLevelOneParams.0.tree@->reg;
 								@register @RepeatLevelOneParams.1.tree@->reg = getRegister(@RepeatLevelOneParams.0.tree@->reg);
+							@}
+							;
+
+LevelTwoParams  			: Expr
+							@{
+								@i @LevelTwoParams.tree@ = newWriteLevelTwoTreeNode(@Expr.tree@, newEmptyTreeNode(), @LevelTwoParams.exprOffset@);
+
+								@i @LevelTwoParams.exprOffset@ = 0;
+								@i @LevelTwoParams.exprCount@ = 1;
+
+								@register @Expr.tree@->reg = @LevelTwoParams.tree@->reg;
+							@}
+							| Expr RepeatLevelTwoParams
+							@{
+								@i @LevelTwoParams.tree@ = newWriteLevelTwoTreeNode(@Expr.tree@, @RepeatLevelTwoParams.tree@, @LevelTwoParams.exprOffset@);
+
+								@i @LevelTwoParams.exprOffset@ = 0;
+								@i @RepeatLevelTwoParams.exprOffset@ = 1;
+								@i @LevelTwoParams.exprCount@ = @RepeatLevelTwoParams.exprCount@ + 1;
+
+								@register @Expr.tree@->reg = @LevelTwoParams.tree@->reg;
+								@register @RepeatLevelTwoParams.tree@->reg = getRegister(@Expr.tree@->reg);
+							@}
+							;
+
+RepeatLevelTwoParams  		: COMMA Expr
+							@{
+								@i @RepeatLevelTwoParams.tree@ = newWriteLevelTwoTreeNode(@Expr.tree@, newEmptyTreeNode(), @RepeatLevelTwoParams.exprOffset@);
+
+								@i @RepeatLevelTwoParams.exprCount@ = 1;
+
+								@register @Expr.tree@->reg = @RepeatLevelTwoParams.tree@->reg;
+							@}
+							| COMMA Expr RepeatLevelTwoParams
+							@{
+								@i @RepeatLevelTwoParams.tree@ = newWriteLevelTwoTreeNode(@RepeatLevelTwoParams.1.tree@, @Expr.tree@, @RepeatLevelTwoParams.0.exprOffset@);
+
+								@i @RepeatLevelTwoParams.0.exprCount@ = @RepeatLevelTwoParams.1.exprCount@ + 1;
+								@i @RepeatLevelTwoParams.1.exprOffset@ = @RepeatLevelTwoParams.0.exprCount@;
+
+								@register @Expr.tree@->reg = @RepeatLevelTwoParams.0.tree@->reg;
+								@register @RepeatLevelTwoParams.1.tree@->reg = getRegister(@RepeatLevelTwoParams.0.tree@->reg);
 							@}
 							;
 

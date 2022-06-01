@@ -1,9 +1,8 @@
-f(x, y)
-    var z = x + y;
-    var w = g(z);
-    return w + 2;
+f(x)
+    var h = g{x};
+    return h@(1);
 end;
 
-g(x)
-    return x * 2;
+g{x}(y)
+    return (x+y);
 end;

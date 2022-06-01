@@ -30,7 +30,9 @@ typedef enum {
     OP_WRITE_HEAP = 16,
     OP_EMPTY = 17,
     OP_FUNCTION_CALL = 18,
-    OP_WRITE_PARAM = 19
+    OP_WRITE_PARAM = 19,
+    OP_LEVEL_TWO = 20,
+    OP_WRITE_LEVEL_TWO = 21
 } operators_t;
 
 typedef struct TreeNode {
@@ -69,6 +71,8 @@ TreeNode *newVariableTreeNode(char *, int);
 
 TreeNode *newLevelOneTreeNode(char *, TreeNode *, long);
 
+TreeNode *newLevelTwoTreeNode(TreeNode *, long);
+
 TreeNode *newFunctionCallTreeNode(char *, TreeNode *, long);
 
 TreeNode *newEmptyTreeNode();
@@ -76,6 +80,8 @@ TreeNode *newEmptyTreeNode();
 TreeNode *newWriteParamTreeNode(TreeNode *, TreeNode *, char *, long);
 
 TreeNode *newWriteHeapTreeNode(TreeNode *, TreeNode *, long);
+
+TreeNode *newWriteLevelTwoTreeNode(TreeNode *, TreeNode *, long);
 
 void compileError(char *, ...);
 

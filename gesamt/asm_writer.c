@@ -1,6 +1,7 @@
 #include "asm_writer.h"
 
 int withVariables = 0;
+int registerCount = 0;
 
 int getIntegerLength(int value) {
     int l = 1;
@@ -9,6 +10,10 @@ int getIntegerLength(int value) {
         value /= 10;
     }
     return l;
+}
+
+int getRegisterCount() {
+    return registerCount;
 }
 
 char *getParameterRegister(int paramIndex, int paramOffset) {
@@ -50,6 +55,7 @@ char *getParameterRegister(int paramIndex, int paramOffset) {
 
 char *getRegister(char *lastRegister) {
     if (lastRegister == NULL) {
+        registerCount = 1;
         return "r11";
     }
 
@@ -57,6 +63,7 @@ char *getRegister(char *lastRegister) {
 
     for (int i = 0; i < 7; i++) {
         if (strcmp(registers[i], lastRegister) == 0) {
+            registerCount = i + 1;
             return registers[i + 1];
         }
     }
@@ -202,26 +209,21 @@ void asmFunctionCall(char *functionName)
     fprintf(stdout, "\tcall\t%s\n", functionName);
 }
 
-void asmSaveRegister(int paramIndex, int registerIndex)
+
+void asmSaveRegister(int index)
 {
-    char *paramRegisters[] = { "rdi", "rsi", "rdx", "rcx", "r8", "r9" };
     char *registers[] = {"r11", "r10", "r9", "r8", "rcx", "rdx", "rsi", "rdi"};
 
-    for (int i = 0; i < paramIndex; i++)
+    if (index > 0)
     {
-        fprintf(stdout, "\tpushq\t%%%s\n", paramRegisters[i]);
-    }
-
-    if (registerIndex > 0)
-    {
-        for (int i = 0; i < registerIndex; i++)
+        for (int i = 0; i < index; i++)
         {
             fprintf(stdout, "\tpushq\t%%%s\n", registers[i]);
         }
     }
-
 }
-void asmSaveReg(int index)
+
+void asmSaveParameterRegister(int index)
 {
     char *paramRegisters[] = { "rdi", "rsi", "rdx", "rcx", "r8", "r9" };
     fprintf(stdout, "\tpushq\t%%%s\n", paramRegisters[index]);
