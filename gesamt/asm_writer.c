@@ -209,6 +209,10 @@ void asmFunctionCall(char *functionName)
     fprintf(stdout, "\tcall\t%s\n", functionName);
 }
 
+void asmFunctionCallAddress(char *addressRegister)
+{
+    fprintf(stdout, "\tcall\t0(%%%s)\n", addressRegister);
+}
 
 void asmSaveRegister(int index)
 {
@@ -320,6 +324,10 @@ void asmMoveAddressHeap(char *name, char *destRegister) {
     fprintf(stdout, "\tmovq\t%%%s, 0(%%r15)\n", destRegister);
 
     fprintf(stdout, "\tleaq\t0(%%r15), %%%s\n", destRegister);
+}
+
+void asmMoveHeapParameter(char *sourceRegister, char *destRegister) {
+    fprintf(stdout, "\tmovq\t%%%s, %s\n", sourceRegister, destRegister);
 }
 
 void asmClearHeap(long size) {

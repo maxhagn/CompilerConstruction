@@ -376,7 +376,8 @@ Term        				: BRACKET_OPEN Expr BRACKET_CLOSE
 
 								@i @Term.exprCount@ = 0;
 
-								@register @LevelTwoParams.tree@->reg = @Term.tree@->reg;
+								@register @Term.1.tree@->reg =  @Term.0.tree@->reg;
+								@register @LevelTwoParams.0.tree@->reg = getRegister(@Term.0.tree@->reg);
 							@}
 							;
 

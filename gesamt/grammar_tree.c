@@ -82,14 +82,13 @@ TreeNode *newLevelOneTreeNode(char *name, TreeNode *left, long offset) {
     return node;
 }
 
-TreeNode *newLevelTwoTreeNode(TreeNode *left, long offset) {
+TreeNode *newLevelTwoTreeNode(TreeNode *left, TreeNode *right) {
     TreeNode *node = (TreeNode *) malloc(sizeof(TreeNode));
 
     node->op = OP_LEVEL_TWO;
     node->kids[0] = left;
-    node->kids[1] = (TreeNode *) NULL;
+    node->kids[1] = right;
     node->index = -1;
-    node->offset = offset;
 
     return node;
 }

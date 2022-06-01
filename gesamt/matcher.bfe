@@ -76,11 +76,11 @@ expr:    OP_WRITE_HEAP(const, expr)             # 1 #   asmMoveValueHeap(bnode->
 expr:    OP_WRITE_HEAP(expr, OP_EMPTY)          # 1 #   asmMoveRegisterHeap(bnode->reg, bnode->offset);
 expr:    OP_WRITE_HEAP(const, OP_EMPTY)         # 1 #   asmMoveValueHeap(bnode->kids[0]->value, bnode->offset);
 
-expr:    OP_LEVEL_TWO                     # 1 #   fprintf(stdout, "\tmovq\t8(%%r15), %%rax\n");
-expr:    OP_WRITE_LEVEL_TWO(expr, expr)         # 1 #
-expr:    OP_WRITE_LEVEL_TWO(const, expr)        # 1 #
-expr:    OP_WRITE_LEVEL_TWO(expr, OP_EMPTY)     # 1 #
-expr:    OP_WRITE_LEVEL_TWO(const, OP_EMPTY)    # 1 #
+expr:    OP_LEVEL_TWO(expr, expr)               # 1 #  asmMoveRegisterParameter(bnode->kids[0]->reg, "%rsi"); asmFunctionCallAddress(bnode->kids[0]->reg); asmMoveRegister("rax", bnode->reg);
+expr:    OP_WRITE_LEVEL_TWO(expr, expr)         # 1 #  asmMoveHeapParameter(bnode->kids[0]->reg, getParameterRegister(bnode->offset,0));
+expr:    OP_WRITE_LEVEL_TWO(const, expr)        # 1 #  asmMoveValueParameter(bnode->kids[0]->value, getParameterRegister(bnode->offset,0));
+expr:    OP_WRITE_LEVEL_TWO(expr, OP_EMPTY)     # 1 #  asmMoveHeapParameter(bnode->kids[0]->reg, getParameterRegister(bnode->offset,0));
+expr:    OP_WRITE_LEVEL_TWO(const, OP_EMPTY)    # 1 #  asmMoveValueParameter(bnode->kids[0]->value, getParameterRegister(bnode->offset,0));
 
 expr:    OP_FUNCTION_CALL(param)                # 1 #   asmSaveRegister(getRegisterCount()); asmFunctionCall(bnode->name); asmRestoreRegisters(bnode->offset,getRegisterCount()); asmMoveRegister("rax", bnode->reg);
 param:   OP_WRITE_PARAM(expr, param)            # 1 #   asmSaveParameterRegister(bnode->offset); asmMoveRegisterParameter(bnode->kids[0]->reg, getParameterRegister(bnode->offset,0));
