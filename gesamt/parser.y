@@ -184,9 +184,8 @@ Stat        				: RETURN Expr
 
 								@i @Stat.tree@ = newTreeNode(OP_EQUAL, @Lexpr.tree@, @Expr.tree@);
 
-								@register @Stat.tree@->reg = getRegister(NULL);
-								@register @Lexpr.tree@->reg = @Stat.tree@->reg;
-								@register @Expr.tree@->reg = getRegister(@Stat.tree@->reg);
+
+								@register @Expr.tree@->reg = getRegister(@Lexpr.0.tree@->reg);
 							@}
 							| Term
 							@{
@@ -196,7 +195,9 @@ Stat        				: RETURN Expr
 								@i @Stat.variableCount@ = 0;
 								@i @Stat.exprCount@ = @Term.exprCount@;
 
-								@i @Stat.tree@ = newTreeNode(OP_TERM, NULL, NULL);
+								@i @Stat.tree@ = newTreeNode(OP_TERM, @Term.0.tree@, NULL);
+
+								@register @Term.tree@->reg = getRegister(NULL);
 							@}
 							;
 
@@ -214,8 +215,9 @@ Lexpr       				: ID
 
 								@i @Lexpr.0.exprCount@ = @Term.0.exprCount@;
 
-								@register @Term.0.tree@->reg =  @Lexpr.0.tree@->reg;
-								@register @Expr.0.tree@->reg = getRegister(@Lexpr.0.tree@->reg);
+								@register @Term.0.tree@->reg =  getRegister(NULL);
+								@register @Expr.0.tree@->reg = getRegister(@Term.0.tree@->reg);
+								@register @Lexpr.0.tree@->reg = @Expr.0.tree@->reg;
 							@}
 							;
 

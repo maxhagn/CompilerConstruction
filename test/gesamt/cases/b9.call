@@ -1,0 +1,9 @@
+struct f_stage1 {
+  long (*func)(long, struct f_stage1 *);
+  long x;
+  long y;
+};
+extern long f(long z, struct f_stage1 *fs1);
+extern struct f_stage1 *g(long, long);
+struct f_stage1 *f1 = g(3,-5);
+RET((f1->func)(7,f1) == -168);

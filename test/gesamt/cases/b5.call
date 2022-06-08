@@ -1,0 +1,2 @@
+extern long gcd(long,long);
+RET(gcd(18,42)==6);

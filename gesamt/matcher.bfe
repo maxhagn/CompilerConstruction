@@ -13,89 +13,90 @@
 
 %%
 
-program: def                                    # 0 #
+program: def                                            # 0 #
 
-def:     stats                                  # 0 #
+def:     stats                                          # 0 #
 
-stats:   stat                                   # 0 #
+stats:   stat                                           # 0 #
 
-stat:    ret                                    # 0 #
-stat:    assign                                 # 0 #
-stat:    goto                                   # 0 #
-stat:    if                                     # 0 #
-stat:    term                                   # 0 #
+stat:    ret                                            # 0 #
+stat:    assign                                         # 0 #
+stat:    goto                                           # 0 #
+stat:    if                                             # 0 #
+stat:    term                                           # 0 #
 
-term:    OP_TERM                                # 0 #
+term:    OP_TERM(expr)                                        # 0 #
 
-ret:     OP_RETURN(expr)                        # 1 #   asmReturnValue(bnode->reg);
+ret:     OP_RETURN(expr)                                # 1 #   asmReturnValue(bnode->reg);
 
-goto:    OP_GOTO                                # 1 #   asmGoto(bnode->name);
+goto:    OP_GOTO                                        # 1 #   asmGoto(bnode->name);
 
-assign:  OP_EQUAL(OP_ID, const)                 # 1 #   bnode->kids[0]->index == -1 ? asmMoveValueStack(bnode->kids[1]->value, bnode->kids[0]->offset) : asmMoveValueParameter(bnode->kids[1]->value, getParameterRegister(bnode->kids[0]->index, bnode->kids[0]->offset));
-assign:  OP_EQUAL(OP_ID, expr)                  # 1 #   bnode->kids[0]->index == -1 ? asmMoveRegisterStack(bnode->kids[1]->reg, bnode->kids[0]->offset) : asmMoveRegisterParameter(bnode->kids[1]->reg, getParameterRegister(bnode->kids[0]->index, bnode->kids[0]->offset));
+assign:  OP_EQUAL(OP_ID, const)                         # 1 #   bnode->kids[0]->index == -1 ? asmMoveValueStack(bnode->kids[1]->value, bnode->kids[0]->offset) : asmMoveValueParameter(bnode->kids[1]->value, getParameterRegister(bnode->kids[0]->index, bnode->kids[0]->offset));
+assign:  OP_EQUAL(OP_ID, expr)                          # 1 #   bnode->kids[0]->index == -1 ? asmMoveRegisterStack(bnode->kids[1]->reg, bnode->kids[0]->offset) : asmMoveRegisterParameter(bnode->kids[1]->reg, getParameterRegister(bnode->kids[0]->index, bnode->kids[0]->offset));
 
-assign:  OP_EQUAL(OP_WRITE_ARRAY, const)        # 1 #   bnode->kids[0]->index == -1 ? asmMoveRegisterStack(bnode->kids[1]->reg, bnode->kids[0]->offset) : asmWriteArrayValue(bnode->kids[1]->value, bnode->kids[0]->kids[1]->value, getParameterRegister(bnode->kids[0]->kids[0]->index, bnode->kids[0]->kids[0]->offset));
-assign:  OP_EQUAL(OP_WRITE_ARRAY, expr)         # 1 #   bnode->kids[0]->index == -1 ? asmMoveRegisterStack(bnode->kids[1]->reg, bnode->kids[0]->offset) : asmWriteArrayRegister(bnode->kids[1]->reg, bnode->kids[0]->kids[1]->value, getParameterRegister(bnode->kids[0]->kids[0]->index, bnode->kids[0]->kids[0]->offset));
+assign:  OP_EQUAL(OP_WRITE_ARRAY(expr,const), const)    # 1 #   bnode->kids[0]->index == -1 ? asmMoveRegisterStack(bnode->kids[1]->reg, bnode->kids[0]->offset) : asmWriteArrayValue(bnode->kids[1]->value, bnode->kids[0]->kids[1]->value, getParameterRegister(bnode->kids[0]->kids[0]->index, bnode->kids[0]->kids[0]->offset));
+assign:  OP_EQUAL(OP_WRITE_ARRAY(expr,const), expr)     # 1 #   bnode->kids[0]->index == -1 ? asmMoveRegisterStack(bnode->kids[1]->reg, bnode->kids[0]->offset) : asmWriteArrayRegister(bnode->kids[1]->reg, bnode->kids[0]->kids[1]->value, getParameterRegister(bnode->kids[0]->kids[0]->index, bnode->kids[0]->kids[0]->offset));
+assign:  OP_EQUAL(OP_WRITE_ARRAY(expr,expr), expr)      # 1 #   bnode->kids[0]->index == -1 ? asmMoveRegisterStack(bnode->kids[1]->reg, bnode->kids[0]->offset) : asmWriteArrayRegisterOffset(bnode->kids[1]->reg, bnode->kids[0]->kids[1]->reg, getParameterRegister(bnode->kids[0]->kids[0]->index, bnode->kids[0]->kids[0]->offset));
 
-if:      OP_IF(OP_ID, expr)                     # 1 #   asmIf(bnode->reg, bnode->kids[0]->name);
+if:      OP_IF(OP_ID, expr)                             # 1 #   asmIf(bnode->reg, bnode->kids[0]->name);
 
-expr:    const                                  # 1 #   asmMoveValue(bnode->value, bnode->reg);
+expr:    const                                          # 1 #   asmMoveValue(bnode->value, bnode->reg);
 
-expr:    OP_READ_ARRAY(expr, expr)              # 1 #   asmReadArrayRegister(bnode->kids[0]->reg, bnode->kids[1]->reg, bnode->reg);
-expr:    OP_READ_ARRAY(const, expr)             # 1 #   asmReadArrayValue(bnode->kids[1]->reg, bnode->kids[0]->value, bnode->reg);
-expr:    OP_READ_ARRAY(expr, const)             # 1 #   asmReadArrayValue(bnode->kids[0]->reg, bnode->kids[1]->value, bnode->reg);
+expr:    OP_READ_ARRAY(expr, expr)                      # 1 #   asmReadArrayRegister(bnode->kids[0]->reg, bnode->kids[1]->reg, bnode->reg);
+expr:    OP_READ_ARRAY(const, expr)                     # 1 #   asmReadArrayValue(bnode->kids[1]->reg, bnode->kids[0]->value, bnode->reg);
+expr:    OP_READ_ARRAY(expr, const)                     # 1 #   asmReadArrayValue(bnode->kids[0]->reg, bnode->kids[1]->value, bnode->reg);
 
-expr:    OP_NOT(expr)                           # 1 #   asmNotRegister(bnode->reg);
-expr:    OP_NEG(expr)                           # 1 #   asmNegateRegister(bnode->reg);
+expr:    OP_NOT(expr)                                   # 1 #   asmNotRegister(bnode->reg);
+expr:    OP_NEG(expr)                                   # 1 #   asmNegateRegister(bnode->reg);
 
-expr:    OP_ADD(expr, expr)                     # 1 #   asmAddRegister(bnode->kids[1]->reg, bnode->kids[0]->reg);
-expr:    OP_ADD(const, expr)                    # 1 #   asmAddValue(bnode->kids[0]->value, bnode->kids[1]->reg); asmMoveRegister(bnode->kids[1]->reg, bnode->reg);
-expr:    OP_ADD(expr, const)                    # 1 #   asmAddValue(bnode->kids[1]->value, bnode->kids[0]->reg);
+expr:    OP_ADD(expr, expr)                             # 1 #   asmAddRegister(bnode->kids[1]->reg, bnode->kids[0]->reg);
+expr:    OP_ADD(const, expr)                            # 1 #   asmAddValue(bnode->kids[0]->value, bnode->kids[1]->reg); asmMoveRegister(bnode->kids[1]->reg, bnode->reg);
+expr:    OP_ADD(expr, const)                            # 1 #   asmAddValue(bnode->kids[1]->value, bnode->kids[0]->reg);
 
-expr:    OP_MUL(expr, expr)                     # 1 #   asmMulRegister(bnode->kids[1]->reg, bnode->kids[0]->reg);
-expr:    OP_MUL(const, expr)                    # 1 #   asmMulValue(bnode->kids[0]->value, bnode->kids[1]->reg); asmMoveRegister(bnode->kids[1]->reg, bnode->reg);
-expr:    OP_MUL(expr, const)                    # 1 #   asmMulValue(bnode->kids[1]->value, bnode->kids[0]->reg);
+expr:    OP_MUL(expr, expr)                             # 1 #   asmMulRegister(bnode->kids[1]->reg, bnode->kids[0]->reg);
+expr:    OP_MUL(const, expr)                            # 1 #   asmMulValue(bnode->kids[0]->value, bnode->kids[1]->reg); asmMoveRegister(bnode->kids[1]->reg, bnode->reg);
+expr:    OP_MUL(expr, const)                            # 1 #   asmMulValue(bnode->kids[1]->value, bnode->kids[0]->reg);
 
-expr:    OP_AND(expr, expr)                     # 1 #   asmAndRegister(bnode->kids[1]->reg, bnode->kids[0]->reg);
-expr:    OP_AND(const, expr)                    # 1 #   asmAndValue(bnode->kids[0]->value, bnode->kids[1]->reg); asmMoveRegister(bnode->kids[1]->reg, bnode->reg);
-expr:    OP_AND(expr, const)                    # 1 #   asmAndValue(bnode->kids[1]->value, bnode->kids[0]->reg);
+expr:    OP_AND(expr, expr)                             # 1 #   asmAndRegister(bnode->kids[1]->reg, bnode->kids[0]->reg);
+expr:    OP_AND(const, expr)                            # 1 #   asmAndValue(bnode->kids[0]->value, bnode->kids[1]->reg); asmMoveRegister(bnode->kids[1]->reg, bnode->reg);
+expr:    OP_AND(expr, const)                            # 1 #   asmAndValue(bnode->kids[1]->value, bnode->kids[0]->reg);
 
-expr:    OP_GREATER(expr, expr)                 # 1 #   asmGreaterRegister(bnode->kids[0]->reg, bnode->kids[1]->reg, bnode->reg);
-expr:    OP_GREATER(const, expr)                # 1 #   asmGreaterValueRegister(bnode->kids[0]->value, bnode->kids[1]->reg, bnode->reg);
-expr:    OP_GREATER(expr, const)                # 1 #   asmGreaterRegisterValue(bnode->kids[0]->reg, bnode->kids[1]->value, bnode->reg);
+expr:    OP_GREATER(expr, expr)                         # 1 #   asmGreaterRegister(bnode->kids[0]->reg, bnode->kids[1]->reg, bnode->reg);
+expr:    OP_GREATER(const, expr)                        # 1 #   asmGreaterValueRegister(bnode->kids[0]->value, bnode->kids[1]->reg, bnode->reg);
+expr:    OP_GREATER(expr, const)                        # 1 #   asmGreaterRegisterValue(bnode->kids[0]->reg, bnode->kids[1]->value, bnode->reg);
 
-expr:    OP_EQUAL(expr, expr)                   # 1 #   asmEqualRegister(bnode->kids[0]->reg, bnode->kids[1]->reg, bnode->reg);
-expr:    OP_EQUAL(const, expr)                  # 1 #   asmEqualValue(bnode->kids[0]->value, bnode->kids[1]->reg, bnode->reg);
-expr:    OP_EQUAL(expr, const)                  # 1 #   asmEqualValue(bnode->kids[1]->value, bnode->kids[0]->reg, bnode->reg);
+expr:    OP_EQUAL(expr, expr)                           # 1 #   asmEqualRegister(bnode->kids[0]->reg, bnode->kids[1]->reg, bnode->reg);
+expr:    OP_EQUAL(const, expr)                          # 1 #   asmEqualValue(bnode->kids[0]->value, bnode->kids[1]->reg, bnode->reg);
+expr:    OP_EQUAL(expr, const)                          # 1 #   asmEqualValue(bnode->kids[1]->value, bnode->kids[0]->reg, bnode->reg);
 
-expr:    OP_ID                                  # 1 #   bnode->index == -1 ? asmMoveStackVariable(bnode->offset, bnode->reg) : asmMoveParameter(getParameterRegister(bnode->index, bnode->offset), bnode->reg);
+expr:    OP_ID                                          # 1 #   bnode->index == -1 ? asmMoveStackVariable(bnode->offset, bnode->reg) : asmMoveParameter(getParameterRegister(bnode->index, bnode->offset), bnode->reg);
 
-expr:    OP_LEVEL_ONE(expr)                     # 1 #   asmMoveAddressHeap(bnode->name, bnode->reg);
-expr:    OP_WRITE_HEAP(expr, expr)              # 1 #   asmMoveRegisterHeap(bnode->reg, bnode->offset);
-expr:    OP_WRITE_HEAP(const, expr)             # 1 #   asmMoveValueHeap(bnode->kids[0]->value, bnode->offset);
-expr:    OP_WRITE_HEAP(expr, OP_EMPTY)          # 1 #   asmMoveRegisterHeap(bnode->reg, bnode->offset);
-expr:    OP_WRITE_HEAP(const, OP_EMPTY)         # 1 #   asmMoveValueHeap(bnode->kids[0]->value, bnode->offset);
+expr:    OP_LEVEL_ONE(expr)                             # 1 #   asmMoveAddressHeap(bnode->name, bnode->reg);
+expr:    OP_WRITE_HEAP(expr, expr)                      # 1 #   asmMoveRegisterHeap(bnode->reg, bnode->offset);
+expr:    OP_WRITE_HEAP(const, expr)                     # 1 #   asmMoveValueHeap(bnode->kids[0]->value, bnode->offset);
+expr:    OP_WRITE_HEAP(expr, OP_EMPTY)                  # 1 #   asmMoveRegisterHeap(bnode->reg, bnode->offset);
+expr:    OP_WRITE_HEAP(const, OP_EMPTY)                 # 1 #   asmMoveValueHeap(bnode->kids[0]->value, bnode->offset);
 
-expr:    OP_LEVEL_TWO(expr, expr)               # 1 #  asmMoveRegisterParameter(bnode->kids[0]->reg, "%rsi"); asmFunctionCallAddress(bnode->kids[0]->reg); asmMoveRegister("rax", bnode->reg);
-expr:    OP_WRITE_LEVEL_TWO(expr, expr)         # 1 #  asmMoveHeapParameter(bnode->kids[0]->reg, getParameterRegister(bnode->offset,0));
-expr:    OP_WRITE_LEVEL_TWO(const, expr)        # 1 #  asmMoveValueParameter(bnode->kids[0]->value, getParameterRegister(bnode->offset,0));
-expr:    OP_WRITE_LEVEL_TWO(expr, OP_EMPTY)     # 1 #  asmMoveHeapParameter(bnode->kids[0]->reg, getParameterRegister(bnode->offset,0));
-expr:    OP_WRITE_LEVEL_TWO(const, OP_EMPTY)    # 1 #  asmMoveValueParameter(bnode->kids[0]->value, getParameterRegister(bnode->offset,0));
+expr:    OP_LEVEL_TWO(expr, expr)                       # 1 #   asmMoveRegisterParameter(bnode->kids[0]->reg, "%rsi"); asmSaveRegister(getRegisterCount()); asmFunctionCallAddress(bnode->kids[0]->reg); asmRestoreRegisters(bnode->offset,getRegisterCount()); asmMoveRegister("rax", bnode->reg);
+expr:    OP_WRITE_LEVEL_TWO(expr, expr)                 # 1 #   asmMoveHeapParameter(bnode->kids[0]->reg, getParameterRegister(bnode->offset,0));
+expr:    OP_WRITE_LEVEL_TWO(const, expr)                # 1 #   asmMoveValueParameter(bnode->kids[0]->value, getParameterRegister(bnode->offset,0));
+expr:    OP_WRITE_LEVEL_TWO(expr, OP_EMPTY)             # 1 #   asmMoveHeapParameter(bnode->kids[0]->reg, getParameterRegister(bnode->offset,0));
+expr:    OP_WRITE_LEVEL_TWO(const, OP_EMPTY)            # 1 #   asmMoveValueParameter(bnode->kids[0]->value, getParameterRegister(bnode->offset,0));
 
-expr:    OP_FUNCTION_CALL(param)                # 1 #   asmSaveRegister(getRegisterCount()); asmFunctionCall(bnode->name); asmRestoreRegisters(bnode->offset,getRegisterCount()); asmMoveRegister("rax", bnode->reg);
-param:   OP_WRITE_PARAM(expr, param)            # 1 #   asmSaveParameterRegister(bnode->offset); asmMoveRegisterParameter(bnode->kids[0]->reg, getParameterRegister(bnode->offset,0));
-param:   OP_WRITE_PARAM(const, param)           # 1 #   asmSaveParameterRegister(bnode->offset); asmMoveValueParameter(bnode->kids[0]->value, getParameterRegister(bnode->offset,0));
-param:   OP_WRITE_PARAM(expr, OP_EMPTY)         # 1 #   asmSaveParameterRegister(bnode->offset); asmMoveRegisterParameter(bnode->kids[0]->reg, getParameterRegister(bnode->offset,0));
-param:   OP_WRITE_PARAM(const, OP_EMPTY)        # 1 #   asmSaveParameterRegister(bnode->offset); asmMoveValueParameter(bnode->kids[0]->value, getParameterRegister(bnode->offset,0));
+expr:    OP_FUNCTION_CALL(param)                        # 1 #   asmSaveRegister(getRegisterCount()); asmFunctionCall(bnode->name); asmRestoreRegisters(bnode->offset,getRegisterCount()); asmMoveRegister("rax", bnode->reg);
+param:   OP_WRITE_PARAM(expr, param)                    # 1 #   asmSaveParameterRegister(bnode->offset); asmMoveRegisterParameter(bnode->kids[0]->reg, getParameterRegister(bnode->offset,0));
+param:   OP_WRITE_PARAM(const, param)                   # 1 #   asmSaveParameterRegister(bnode->offset); asmMoveValueParameter(bnode->kids[0]->value, getParameterRegister(bnode->offset,0));
+param:   OP_WRITE_PARAM(expr, OP_EMPTY)                 # 1 #   asmSaveParameterRegister(bnode->offset); asmMoveRegisterParameter(bnode->kids[0]->reg, getParameterRegister(bnode->offset,0));
+param:   OP_WRITE_PARAM(const, OP_EMPTY)                # 1 #   asmSaveParameterRegister(bnode->offset); asmMoveValueParameter(bnode->kids[0]->value, getParameterRegister(bnode->offset,0));
 
-const:   OP_NUMBER                              # 0 #
-const:   OP_ADD(const, const)                   # 0 #   bnode->value =  bnode->kids[0]->value  + bnode->kids[1]->value;
-const:   OP_MUL(const, const)                   # 0 #   bnode->value =  bnode->kids[0]->value  * bnode->kids[1]->value;
-const:   OP_AND(const, const)                   # 0 #   bnode->value =  bnode->kids[0]->value  & bnode->kids[1]->value;
-const:   OP_GREATER(const, const)               # 0 #   bnode->value =  bnode->kids[0]->value  > bnode->kids[1]->value ? 1 : 0;
-const:   OP_EQUAL(const, const)                 # 0 #   bnode->value =  bnode->kids[0]->value == bnode->kids[1]->value ? 1 : 0;
-const:   OP_NOT(const)                          # 0 #   bnode->value = ~bnode->kids[0]->value;
-const:   OP_NEG(const)                          # 0 #   bnode->value = -bnode->kids[0]->value;
+const:   OP_NUMBER                                      # 0 #
+const:   OP_ADD(const, const)                           # 0 #   bnode->value =  bnode->kids[0]->value  + bnode->kids[1]->value;
+const:   OP_MUL(const, const)                           # 0 #   bnode->value =  bnode->kids[0]->value  * bnode->kids[1]->value;
+const:   OP_AND(const, const)                           # 0 #   bnode->value =  bnode->kids[0]->value  & bnode->kids[1]->value;
+const:   OP_GREATER(const, const)                       # 0 #   bnode->value =  bnode->kids[0]->value  > bnode->kids[1]->value ? 1 : 0;
+const:   OP_EQUAL(const, const)                         # 0 #   bnode->value =  bnode->kids[0]->value == bnode->kids[1]->value ? 1 : 0;
+const:   OP_NOT(const)                                  # 0 #   bnode->value = ~bnode->kids[0]->value;
+const:   OP_NEG(const)                                  # 0 #   bnode->value = -bnode->kids[0]->value;
 
 %%
 

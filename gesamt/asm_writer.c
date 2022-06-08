@@ -273,6 +273,10 @@ void asmWriteArrayRegister(char *sourceRegister, int arrayOffset, char *destRegi
     fprintf(stdout, "\tmovq\t%%%s, %d(%s)\n", sourceRegister, arrayOffset, destRegister);
 }
 
+void asmWriteArrayRegisterOffset(char *sourceRegister, char * arrayOffset, char *destRegister) {
+    fprintf(stdout, "\tmovq\t%%%s, (%s, %%%s, 8)\n", sourceRegister, destRegister, arrayOffset);
+}
+
 void asmMoveRegister(char *sourceRegister, char *destRegister) {
     fprintf(stdout, "\tmovq\t%%%s, %%%s\n", sourceRegister, destRegister);
 }
