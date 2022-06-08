@@ -1,3 +1,0 @@
-extern long f(long *, long);
-long b[]={1,2,3,4};
-RET(f(b,2) == b && b[0]==1 && b[1]==2 && b[2]==7 && b[3]==4);

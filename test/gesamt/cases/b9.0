@@ -1,2 +1,0 @@
-f{x,y}(z) return x*y*z; end;
-g(x,y) return f{y+1,x*2}; end;

@@ -1,2 +1,0 @@
-extern long even(long);
-RET(even(6)==1 && even(9)==0 && even(-2)==1);

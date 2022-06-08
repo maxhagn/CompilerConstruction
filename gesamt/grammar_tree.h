@@ -71,7 +71,7 @@ TreeNode *newVariableTreeNode(char *, int);
 
 TreeNode *newLevelOneTreeNode(char *, TreeNode *, long);
 
-TreeNode *newLevelTwoTreeNode(TreeNode *, TreeNode *);
+TreeNode *newLevelTwoTreeNode(TreeNode *, TreeNode *, long);
 
 TreeNode *newFunctionCallTreeNode(char *, TreeNode *, long);
 

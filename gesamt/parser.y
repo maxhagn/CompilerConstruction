@@ -155,6 +155,7 @@ Stat        				: RETURN Expr
 								@i @Stat.exprCount@ = @Expr.exprCount@;
 
 								@i @Stat.tree@ = newTreeNode(OP_IF, newLabelTreeNode(getLabelName(@Stat.functionName@, @ID.name@)), @Expr.tree@);
+
 								@register @Stat.tree@->reg = getRegister(NULL);
 								@register @Expr.tree@->reg = @Stat.tree@->reg;
 
@@ -184,8 +185,10 @@ Stat        				: RETURN Expr
 
 								@i @Stat.tree@ = newTreeNode(OP_EQUAL, @Lexpr.tree@, @Expr.tree@);
 
+								@register @Stat.0.tree@->reg = getRegister(NULL);
+								@register @Expr.tree@->reg = @Stat.0.tree@->reg;
+								@register @Lexpr.tree@->reg = getRegister(@Expr.tree@->reg);
 
-								@register @Expr.tree@->reg = getRegister(@Lexpr.0.tree@->reg);
 							@}
 							| Term
 							@{
@@ -197,7 +200,8 @@ Stat        				: RETURN Expr
 
 								@i @Stat.tree@ = newTreeNode(OP_TERM, @Term.0.tree@, NULL);
 
-								@register @Term.tree@->reg = getRegister(NULL);
+								@register @Stat.0.tree@->reg = getRegister(NULL);
+								@register @Term.tree@->reg = @Stat.0.tree@->reg;
 							@}
 							;
 
@@ -215,9 +219,8 @@ Lexpr       				: ID
 
 								@i @Lexpr.0.exprCount@ = @Term.0.exprCount@;
 
-								@register @Term.0.tree@->reg =  getRegister(NULL);
+								@register @Term.0.tree@->reg =  getRegister(@Lexpr.0.tree@->reg);
 								@register @Expr.0.tree@->reg = getRegister(@Term.0.tree@->reg);
-								@register @Lexpr.0.tree@->reg = @Expr.0.tree@->reg;
 							@}
 							;
 
@@ -374,7 +377,7 @@ Term        				: BRACKET_OPEN Expr BRACKET_CLOSE
 							@}
 							| Term AT_SIGN BRACKET_OPEN LevelTwoParams BRACKET_CLOSE
 							@{
-								@i @Term.tree@ = newLevelTwoTreeNode(@Term.1.tree@, @LevelTwoParams.tree@);
+								@i @Term.tree@ = newLevelTwoTreeNode(@Term.1.tree@, @LevelTwoParams.tree@, @LevelTwoParams.exprCount@);
 
 								@i @Term.exprCount@ = 0;
 

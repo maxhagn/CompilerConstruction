@@ -1,2 +1,0 @@
-extern long fib(long);
-RET(3==fib(4) && 0==fib(0));

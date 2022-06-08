@@ -1,3 +1,0 @@
-extern long* iota(long *,long);
-long b[] = {9,9,9,9,9};
-RET(iota(b+1,3)==b+1 && b[0]==9 && b[1]==0 && b[2]==1 && b[3]==2 && b[4]==9);

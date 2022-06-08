@@ -1,8 +1,0 @@
-iota(a,n)
-  var i=0;
-  goto entry;
-  s: a[i]=i;
-  i=i+1;
-  entry: if n>i goto s;
-  return a;
-end;

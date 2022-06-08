@@ -1,5 +1,0 @@
-gcd(a,b)
-  st: if not(a>b) goto le; a=a+(-b); goto st;
-  le: if a=b goto eq;      b=(-a)+b; goto st;
-  eq: return a;
-end;

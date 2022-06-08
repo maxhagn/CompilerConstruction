@@ -1,2 +1,0 @@
-extern long f(long);
-RET(f(6) == 8 && f(-3)==-1);
