@@ -33,8 +33,9 @@ goto:    OP_GOTO                         # 1 #   asmGoto(bnode->name);
 assign:  OP_EQUAL(OP_ID, const)          # 1 #   bnode->kids[0]->index == -1 ? asmMoveValueStack(bnode->kids[1]->value, bnode->kids[0]->offset) : asmMoveValueParameter(bnode->kids[1]->value, getParameterRegister(bnode->kids[0]->index, bnode->kids[0]->offset));
 assign:  OP_EQUAL(OP_ID, expr)           # 1 #   bnode->kids[0]->index == -1 ? asmMoveRegisterStack(bnode->kids[1]->reg, bnode->kids[0]->offset) : asmMoveRegisterParameter(bnode->kids[1]->reg, getParameterRegister(bnode->kids[0]->index, bnode->kids[0]->offset));
 
-assign:  OP_EQUAL(OP_WRITE_ARRAY, const) # 1 #   bnode->kids[0]->index == -1 ? asmMoveRegisterStack(bnode->kids[1]->reg, bnode->kids[0]->offset) : asmWriteArrayValue(bnode->kids[1]->value, bnode->kids[0]->kids[1]->value, getParameterRegister(bnode->kids[0]->kids[0]->index, bnode->kids[0]->kids[0]->offset));
-assign:  OP_EQUAL(OP_WRITE_ARRAY, expr)  # 1 #   bnode->kids[0]->index == -1 ? asmMoveRegisterStack(bnode->kids[1]->reg, bnode->kids[0]->offset) : asmWriteArrayRegister(bnode->kids[1]->reg, bnode->kids[0]->kids[1]->value, getParameterRegister(bnode->kids[0]->kids[0]->index, bnode->kids[0]->kids[0]->offset));
+assign:  OP_EQUAL(OP_WRITE_ARRAY(expr,const), const)    # 1 #   bnode->kids[0]->index == -1 ? asmMoveRegisterStack(bnode->kids[1]->reg, bnode->kids[0]->offset) : asmWriteArrayValue(bnode->kids[1]->value, bnode->kids[0]->kids[1]->value, getParameterRegister(bnode->kids[0]->kids[0]->index, bnode->kids[0]->kids[0]->offset));
+assign:  OP_EQUAL(OP_WRITE_ARRAY(expr,const), expr)     # 1 #   bnode->kids[0]->index == -1 ? asmMoveRegisterStack(bnode->kids[1]->reg, bnode->kids[0]->offset) : asmWriteArrayRegister(bnode->kids[1]->reg, bnode->kids[0]->kids[1]->value, getParameterRegister(bnode->kids[0]->kids[0]->index, bnode->kids[0]->kids[0]->offset));
+assign:  OP_EQUAL(OP_WRITE_ARRAY(expr,expr), expr)      # 1 #   bnode->kids[0]->index == -1 ? asmMoveRegisterStack(bnode->kids[1]->reg, bnode->kids[0]->offset) : asmWriteArrayRegisterOffset(bnode->kids[1]->reg, bnode->kids[0]->kids[1]->reg, getParameterRegister(bnode->kids[0]->kids[0]->index, bnode->kids[0]->kids[0]->offset));
 
 if:      OP_IF(OP_ID, expr)              # 1 #   asmIf(bnode->reg, bnode->kids[0]->name);
 

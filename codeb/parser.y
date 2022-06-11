@@ -212,8 +212,8 @@ Lexpr       				: ID
 
 								@i @Lexpr.0.exprCount@ = @Term.0.exprCount@;
 
-								@register @Term.0.tree@->reg =  @Lexpr.0.tree@->reg;
-								@register @Expr.0.tree@->reg = getRegister(@Lexpr.0.tree@->reg);
+								@register @Term.0.tree@->reg =  getRegister(@Lexpr.0.tree@->reg);
+								@register @Expr.0.tree@->reg = getRegister(@Term.0.tree@->reg);
 							@}
 							;
 

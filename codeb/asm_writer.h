@@ -62,6 +62,8 @@ void asmWriteArrayValue(long, int, char *);
 
 void asmWriteArrayRegister(char *, int, char *);
 
+void asmWriteArrayRegisterOffset(char *, char *, char *);
+
 void asmMoveRegister(char *, char *);
 
 void asmMoveValue(long, char *);

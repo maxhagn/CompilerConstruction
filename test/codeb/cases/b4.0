@@ -1,0 +1,1 @@
+even(x) if x goto odd; return 1; odd: return 0; end;
