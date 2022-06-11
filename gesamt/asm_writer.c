@@ -153,21 +153,21 @@ void asmEqualRegister(char *registerA, char *registerB, char *destRegister) {
 }
 
 void asmEqualValue(long numValue, char *sourceRegister, char *destRegister) {
-    fprintf(stdout, "\tcmp\t\t$%ld, %%%s\n", numValue, sourceRegister);
+    fprintf(stdout, "\tcmp\t$%ld, %%%s\n", numValue, sourceRegister);
     fprintf(stdout, "\tsete\t%%%s\n", getByteRegister(destRegister));
     fprintf(stdout, "\tand\t$1, %%%s\n", destRegister);
 }
 
 void asmGreaterRegister(char *registerA, char *registerB, char *destRegister) {
-    fprintf(stdout, "\tcmp\t\t%%%s, %%%s\n", registerB, registerA);
+    fprintf(stdout, "\tcmp\t%%%s, %%%s\n", registerB, registerA);
     fprintf(stdout, "\tsetg\t%%%s\n", getByteRegister(destRegister));
-    fprintf(stdout, "\tand\t\t$1, %%%s\n", destRegister);
+    fprintf(stdout, "\tand\t$1, %%%s\n", destRegister);
 }
 
 void asmGreaterValueRegister(long numValue, char *sourceRegister, char *destRegister) {
-    fprintf(stdout, "\tcmp\t\t$%ld, %%%s\n", numValue, sourceRegister);
+    fprintf(stdout, "\tcmp\t$%ld, %%%s\n", numValue, sourceRegister);
     fprintf(stdout, "\tsetle\t%%%s\n", getByteRegister(destRegister));
-    fprintf(stdout, "\tand\t\t$1, %%%s\n", destRegister);
+    fprintf(stdout, "\tand\t$1, %%%s\n", destRegister);
 }
 
 void asmGreaterRegisterValue(char *registerA, long numValue, char *destRegister) {
@@ -194,10 +194,8 @@ void asmLabelDef(ListNode *head, char *functionName) {
 }
 
 void asmIf(char *src, char *labelName) {
-
-    fprintf(stdout, "\tand \t$1, %%%s\n", getByteRegister(src));
-    fprintf(stdout, "\tand \t$1, %%%s\n", getByteRegister(src));
-    fprintf(stdout, "\tjnz  \t%s\n", labelName);
+    fprintf(stdout, "\tand\t$1, %%%s\n", getByteRegister(src));
+    fprintf(stdout, "\tjnz\t%s\n", labelName);
 }
 
 void asmGoto(char *labelName) {

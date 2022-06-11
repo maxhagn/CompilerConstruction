@@ -187,8 +187,6 @@ void asmLabelDef(ListNode *head, char *functionName) {
 }
 
 void asmIf(char *src, char *labelName) {
-
-    fprintf(stdout, "\tand \t$1, %%%s\n", getByteRegister(src));
     fprintf(stdout, "\tand \t$1, %%%s\n", getByteRegister(src));
     fprintf(stdout, "\tjnz  \t%s\n", labelName);
 }
