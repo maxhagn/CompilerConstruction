@@ -265,9 +265,7 @@ void asmMoveRegisterHeap(char *sourceRegister, long offset) {
 
 void asmMoveAddressHeap(char *name, char *destRegister) {
     fprintf(stdout, "\tleaq\t%s(%%rip), %%%s\n", name, destRegister);
-
     fprintf(stdout, "\tmovq\t%%%s, 0(%%r15)\n", destRegister);
-
     fprintf(stdout, "\tleaq\t0(%%r15), %%%s\n", destRegister);
 }
 

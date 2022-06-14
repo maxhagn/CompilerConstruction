@@ -1,8 +1,0 @@
-f(x)
-    var h = g{x};
-    return h@(1);
-end;
-
-g{x}(y)
-    return (x+y);
-end;

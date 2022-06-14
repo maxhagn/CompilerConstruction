@@ -25,7 +25,7 @@ stat:    goto                                           # 0 #
 stat:    if                                             # 0 #
 stat:    term                                           # 0 #
 
-term:    OP_TERM(expr)                                        # 0 #
+term:    OP_TERM(expr)                                  # 0 #
 
 ret:     OP_RETURN(expr)                                # 1 #   asmReturnValue(bnode->reg);
 

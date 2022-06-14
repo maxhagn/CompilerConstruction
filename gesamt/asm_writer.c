@@ -202,54 +202,42 @@ void asmGoto(char *labelName) {
     fprintf(stdout, "\tjmp\t%s\n", labelName);
 }
 
-void asmFunctionCall(char *functionName)
-{
+void asmFunctionCall(char *functionName) {
     fprintf(stdout, "\tcall\t%s\n", functionName);
 }
 
-void asmFunctionCallAddress(char *addressRegister)
-{
+void asmFunctionCallAddress(char *addressRegister) {
     fprintf(stdout, "\tcall\t0(%%%s)\n", addressRegister);
 }
 
-void asmSaveRegister(int index)
-{
+void asmSaveRegister(int index) {
     char *registers[] = {"r11", "r10", "r9", "r8", "rcx", "rdx", "rsi", "rdi"};
 
-    if (index > 0)
-    {
-        for (int i = 0; i < index; i++)
-        {
+    if (index > 0) {
+        for (int i = 0; i < index; i++) {
             fprintf(stdout, "\tpushq\t%%%s\n", registers[i]);
         }
     }
 }
 
-void asmSaveParameterRegister(int index)
-{
-    char *paramRegisters[] = { "rdi", "rsi", "rdx", "rcx", "r8", "r9" };
+void asmSaveParameterRegister(int index) {
+    char *paramRegisters[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
     fprintf(stdout, "\tpushq\t%%%s\n", paramRegisters[index]);
 }
 
-void asmRestoreRegisters(int paramIndex, int registerIndex)
-{
-    char *paramRegisters[] = { "rdi", "rsi", "rdx", "rcx", "r8", "r9" };
+void asmRestoreRegisters(int paramIndex, int registerIndex) {
+    char *paramRegisters[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
     char *registers[] = {"r11", "r10", "r9", "r8", "rcx", "rdx", "rsi", "rdi"};
 
-    if (registerIndex > 0)
-    {
-        for (int i = registerIndex - 1; i >= 0; i--)
-        {
+    if (registerIndex > 0) {
+        for (int i = registerIndex - 1; i >= 0; i--) {
             fprintf(stdout, "\tpopq\t%%%s\n", registers[i]);
         }
     }
 
-    for (int i = paramIndex -1; i >= 0; i--)
-    {
+    for (int i = paramIndex - 1; i >= 0; i--) {
         fprintf(stdout, "\tpopq\t%%%s\n", paramRegisters[i]);
     }
-
-
 }
 
 void asmReadArrayValue(char *sourceRegister, int arrayOffset, char *destRegister) {
@@ -271,7 +259,7 @@ void asmWriteArrayRegister(char *sourceRegister, int arrayOffset, char *destRegi
     fprintf(stdout, "\tmovq\t%%%s, %d(%s)\n", sourceRegister, arrayOffset, destRegister);
 }
 
-void asmWriteArrayRegisterOffset(char *sourceRegister, char * arrayOffset, char *destRegister) {
+void asmWriteArrayRegisterOffset(char *sourceRegister, char *arrayOffset, char *destRegister) {
     fprintf(stdout, "\tmovq\t%%%s, (%s, %%%s, 8)\n", sourceRegister, destRegister, arrayOffset);
 }
 
@@ -322,9 +310,7 @@ void asmMoveRegisterHeap(char *sourceRegister, long offset) {
 
 void asmMoveAddressHeap(char *name, char *destRegister) {
     fprintf(stdout, "\tleaq\t%s(%%rip), %%%s\n", name, destRegister);
-
     fprintf(stdout, "\tmovq\t%%%s, 0(%%r15)\n", destRegister);
-
     fprintf(stdout, "\tleaq\t0(%%r15), %%%s\n", destRegister);
 }
 

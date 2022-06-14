@@ -54,6 +54,16 @@ void asmIf(char *, char *);
 
 void asmGoto(char *);
 
+void asmFunctionCall(char *);
+
+void asmFunctionCallAddress(char *);
+
+void asmSaveRegister(int);
+
+void asmSaveParameterRegister(int);
+
+void asmRestoreRegisters(int, int);
+
 void asmReadArrayValue(char *, int, char *);
 
 void asmReadArrayRegister(char *, char *, char *);
@@ -61,6 +71,8 @@ void asmReadArrayRegister(char *, char *, char *);
 void asmWriteArrayValue(long, int, char *);
 
 void asmWriteArrayRegister(char *, int, char *);
+
+void asmWriteArrayRegisterOffset(char *, char *, char *);
 
 void asmMoveRegister(char *, char *);
 
@@ -83,6 +95,8 @@ void asmMoveValueHeap(long, long);
 void asmMoveRegisterHeap(char *, long);
 
 void asmMoveAddressHeap(char *, char *);
+
+void asmMoveHeapParameter(char *, char *);
 
 void asmClearHeap(long);
 
