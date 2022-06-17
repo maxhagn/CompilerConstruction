@@ -4,14 +4,14 @@ This repository contains my first self-written programming language, which I dev
 
 # Points
 
-| Assignment | Points |
-|:-----------|-------:|
-| asma       |   100% |
-| asmb       |   117% |
-| scanner    |   100% |
-| parser     |   100% |
-| ag         |   100% |
-| codea      |   101% |
-| codeb      |    82% |
-| gesamt     |    89% |
-| **Total**  | **~99%** |
+| Assignment | Points  | Reached Points |
+|:-----------|--------:|---------------:|
+| asma       |      10 |           10   |
+| asmb       |      10 |           11.7 |
+| scanner    |      10 |           10   |
+| parser     |      10 |           10   |
+| ag         |      20 |           20   |
+| codea      |      20 |           20.2 |
+| codeb      |      20 |           16.4 |
+| gesamt     |      20 |           17.8 |
+| **Total**  | **120** |      **116,1** |
