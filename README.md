@@ -13,5 +13,5 @@ This repository contains my first self-written programming language, which I dev
 | ag         |   100% |
 | codea      |   101% |
 | codeb      |    82% |
-| gesamt     |     ?% |
-| **Total**  | **?%** |
+| gesamt     |    89% |
+| **Total**  | **98,625%** |
