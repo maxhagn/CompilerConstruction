@@ -186,8 +186,9 @@ Stat        				: RETURN Expr
 								@i @Stat.tree@ = newTreeNode(OP_EQUAL, @Lexpr.tree@, @Expr.tree@);
 
 								@register @Stat.0.tree@->reg = getRegister(NULL);
-								@register @Expr.tree@->reg = @Stat.0.tree@->reg;
-								@register @Lexpr.tree@->reg = getRegister(@Expr.tree@->reg);
+								@register @Lexpr.tree@->reg = @Stat.0.tree@->reg;
+								@register @Expr.tree@->reg = getRegister(@Lexpr.tree@->reg);
+
 
 							@}
 							| Term
@@ -219,7 +220,7 @@ Lexpr       				: ID
 
 								@i @Lexpr.0.exprCount@ = @Term.0.exprCount@;
 
-								@register @Term.0.tree@->reg =  getRegister(@Lexpr.0.tree@->reg);
+								@register @Term.0.tree@->reg =  @Lexpr.0.tree@->reg;
 								@register @Expr.0.tree@->reg = getRegister(@Term.0.tree@->reg);
 							@}
 							;
@@ -337,7 +338,7 @@ AndTerm     				: AND Term
 Term        				: BRACKET_OPEN Expr BRACKET_CLOSE
 							| NUM
 							@{
-								@i @Term.tree@ =  newNumberTreeNode(@NUM.value@);
+								@i @Term.tree@ = newNumberTreeNode(@NUM.value@);
 
 								@i @Term.exprCount@ = 0;
 							@}

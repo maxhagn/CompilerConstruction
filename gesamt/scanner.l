@@ -68,6 +68,5 @@ void syntaxError(void) {
     printf("\tdelimiter: ';', ':', ',', '@'. \n");
     printf("\tbrackets: '(', ')', '{', '}', '[', ']'. \n");
     printf("\toperators: '=', '>', '+', '-', '*' \n");
-
 	exit(1);
 }

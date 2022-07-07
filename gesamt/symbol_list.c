@@ -171,9 +171,7 @@ int getVariableOffset(ListNode *list, char *name) {
 
         if (strcmp(nextNode->name, name) == 0) {
             if (nextNode->type == VARIABLE) {
-                if (strcmp(nextNode->name, name) == 0) {
-                    return offset;
-                }
+                return offset;
             }
         }
 
