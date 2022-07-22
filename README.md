@@ -15,5 +15,5 @@ This repository contains my first self-written programming language, which I dev
 | codeb      |      20 |           16.4 |       82% |
 | gesamt     |      20 |           17.8 |       89% |
 | **Total Assignments**  | **120** |      **116,1** | **~97%** |
-| **Oral Exam**  |  |  | **1** |
+| **Oral Exam**  | **1** |
 | **Total Grade**  |  |  | **1** |
