@@ -1,0 +1,4 @@
+function f() {
+    if (10 < 5) 10
+    else 20;
+}
